@@ -1,4 +1,4 @@
-package com.website.loveconnect.Exception.ExceptionModel;
+package com.website.loveconnect.exception.exceptionmodel;
 
 
 import lombok.*;

@@ -1,6 +1,6 @@
-package com.website.loveconnect.Exception;
+package com.website.loveconnect.exception;
 
-import com.website.loveconnect.Exception.ExceptionModel.ErrorDetail;
+import com.website.loveconnect.exception.exceptionmodel.ErrorDetail;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;

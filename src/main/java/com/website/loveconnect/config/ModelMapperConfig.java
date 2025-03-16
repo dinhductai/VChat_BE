@@ -1,4 +1,4 @@
-package com.website.loveconnect.Config;
+package com.website.loveconnect.config;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;

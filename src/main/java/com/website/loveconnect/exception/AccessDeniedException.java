@@ -1,4 +1,4 @@
-package com.website.loveconnect.Exception;
+package com.website.loveconnect.exception;
 
 public class AccessDeniedException extends RuntimeException{
     public AccessDeniedException(String message){
