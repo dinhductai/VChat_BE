@@ -17,7 +17,7 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserProfileEntity implements Serializable {
+public class UserProfile implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -71,6 +71,6 @@ public class UserProfileEntity implements Serializable {
     @ManyToOne
     @JsonIgnore
     @JoinColumn(name = "user_id")
-    private UserEntity user;
+    private User user;
 
 }

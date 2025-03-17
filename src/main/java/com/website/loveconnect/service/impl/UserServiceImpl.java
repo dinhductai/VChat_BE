@@ -4,6 +4,9 @@ import com.website.loveconnect.dto.response.UserResponse;
 import com.website.loveconnect.enumpackage.AccountStatus;
 import com.website.loveconnect.repository.UserRepository;
 import com.website.loveconnect.service.UserService;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +21,12 @@ import java.util.List;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserServiceImpl implements UserService {
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private ModelMapper modelMapper;
+    
+    UserRepository userRepository;
+    ModelMapper modelMapper;
 
     @Override
     public Page<UserResponse> getAllUser(int page, int size) {

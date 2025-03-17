@@ -15,7 +15,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserEntity implements Serializable {
+public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -45,6 +45,6 @@ public class UserEntity implements Serializable {
     private AccountStatus accountStatus = AccountStatus.active;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<UserProfileEntity> userProfiles = new ArrayList<>();
+    private List<UserProfile> userProfiles = new ArrayList<>();
 
 }
