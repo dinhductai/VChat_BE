@@ -113,6 +113,7 @@ CREATE TABLE interests (
 -- 9. Bảng USER_INTERESTS: Liên kết sở thích với người dùng
 -- ====================================
 CREATE TABLE user_interests (
+    user_interests_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     interest_id INT NOT NULL,
     PRIMARY KEY (user_id, interest_id),
