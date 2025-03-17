@@ -59,6 +59,9 @@ public class UserProfile implements Serializable {
     @Column(name = "education")
     private String education;
 
+    @Column(name = "description")
+    private String description;
+
     @Column(name = "profile_complete")
     private Boolean profileComplete;
 

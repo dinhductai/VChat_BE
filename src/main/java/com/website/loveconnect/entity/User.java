@@ -1,5 +1,6 @@
 package com.website.loveconnect.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.website.loveconnect.enumpackage.AccountStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -44,7 +45,21 @@ public class User implements Serializable {
     @Enumerated(EnumType.STRING)
     private AccountStatus accountStatus = AccountStatus.active;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserProfile> userProfiles = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "ownedPhoto", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Photo> ownedPhotos = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "reviewedBy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Photo> reviewedPhotos = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<UserInterest> userInterests;
+
 
 }
