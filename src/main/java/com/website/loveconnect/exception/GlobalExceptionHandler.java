@@ -1,6 +1,7 @@
 package com.website.loveconnect.exception;
 
 import com.website.loveconnect.exception.exceptionmodel.ErrorDetail;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -49,4 +50,11 @@ public class GlobalExceptionHandler {
         }
         return new ResponseEntity<>(errors,HttpStatus.BAD_REQUEST);
     }
+    
+//    @ExceptionHandler(DataAccessException.class)
+//    public ResponseEntity<ErrorDetail> handleDataAccessException(DataAccessException ex, WebRequest request){
+//        ErrorDetail errorDetail = new ErrorDetail(LocalDateTime.now(),"xảy ra lỗi truy vấn cơ sở dữ liệu :" +
+//                ex.getMessage(),request.getDescription(false));
+//        return new ResponseEntity<>(errorDetail,HttpStatus.NOT_FOUND);
+//    }
 }

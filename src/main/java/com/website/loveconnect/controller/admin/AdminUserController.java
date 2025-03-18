@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +30,12 @@ public class AdminUserController {
 
     @GetMapping(value = "/users/{userId}")
     public ResponseEntity<ApiResponse<UserResponse>> getUserById(@PathVariable int userId) {
-        return ResponseEntity.ok(new ApiResponse<>(true,"get user successful",userService.getUserById(userId)));
+        UserResponse user = userService.getUserById(userId);
+        if(user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse<>(false,
+                    "user not fould", null));
+        }
+        return ResponseEntity.ok(new ApiResponse<>(true,"get user successful",user));
     }
 
 }
