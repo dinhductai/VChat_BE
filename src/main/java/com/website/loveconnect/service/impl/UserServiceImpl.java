@@ -1,20 +1,27 @@
 package com.website.loveconnect.service.impl;
 
+import com.website.loveconnect.dto.request.UserUpdateRequest;
 import com.website.loveconnect.dto.response.ListUserResponse;
-import com.website.loveconnect.dto.response.UserResponse;
+import com.website.loveconnect.dto.response.UserUpdateResponse;
+import com.website.loveconnect.dto.response.UserViewResponse;
 import com.website.loveconnect.entity.User;
+import com.website.loveconnect.entity.UserProfile;
 import com.website.loveconnect.enumpackage.AccountStatus;
 import com.website.loveconnect.enumpackage.Gender;
 import com.website.loveconnect.exception.UserNotFoundException;
+import com.website.loveconnect.mapper.UserMapper;
+import com.website.loveconnect.repository.UserProfileRepository;
 import com.website.loveconnect.repository.UserRepository;
 import com.website.loveconnect.service.UserService;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Tuple;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -22,10 +29,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 
 @Slf4j
@@ -33,9 +40,12 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserServiceImpl implements UserService {
-    
+    @PersistenceContext
+    private EntityManager entityManager;
     UserRepository userRepository;
     ModelMapper modelMapper;
+    UserMapper userMapper;
+    UserProfileRepository userProfileRepository;
 
     @Override
     public Page<ListUserResponse> getAllUser(int page, int size) {
@@ -76,31 +86,13 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public UserResponse getUserById(int idUser) {
+    public UserViewResponse getUserById(int idUser) {
         try {
-            if(idUser <= 0){
-                throw new UserNotFoundException("User with id "+ idUser + " not found");
-            }
-            Object[] user = userRepository.getUserById(idUser);
-            if (user == null) {
-                throw new UserNotFoundException("User with id "+ idUser + " not found");
-            }
-            return UserResponse.builder()
-                    .userId((Integer) user[0])
-                    .photoUrl((String) user[1])
-                    .fullName((String) user[2])
-                    .email((String) user[3])
-                    .gender(Gender.valueOf((String) user[4]))
-                    .location((String) user[5])
-                    .description((String) user[6])
-                    //chuyển chuỗi thành list
-                    .interestName(user[7] != null ?
-                            Arrays.asList(((String) user[7]).split(", ")) : List.of())
-                    .registrationDate((Timestamp) user[8])
-                    .birthDate((Date) user[9])
-                    .phoneNumber((String) user[10])
-                    .accountStatus(AccountStatus.valueOf((String) user[11]))
-                    .build();
+            validateUserId(idUser);
+            return Optional.ofNullable(userRepository.getUserById(idUser))
+                    .map(tuple -> userMapper.toUserViewResponse(tuple))
+                    .orElseThrow(() -> new UserNotFoundException("User with id "+ idUser + " not found"));
+
         } catch (NoResultException | EmptyResultDataAccessException e) { // bắt lỗi user ko tồn tại trước 404
             log.info("No result found for user ID {}: {}", idUser, e.getMessage());
             throw new UserNotFoundException("User with ID " + idUser + " not found");
@@ -149,6 +141,68 @@ public class UserServiceImpl implements UserService {
         }
         else{
             log.info("User with ID {} is already active", idUser);
+        }
+    }
+
+    @Override
+    public UserUpdateResponse getUserUpdateById(int idUser) {
+        try {
+            validateUserId(idUser);
+            return Optional.ofNullable(userRepository.getUserForUpdateById(idUser))
+                    .map(tuple -> userMapper.toUserUpdateResponse(tuple))
+                    .orElseThrow(() -> new UserNotFoundException("User with id "+ idUser + " not found"));
+
+        } catch (NoResultException | EmptyResultDataAccessException e) { // bắt lỗi user ko tồn tại trước 404
+            log.info("No result found for user ID {}: {}", idUser, e.getMessage());
+            throw new UserNotFoundException("User with ID " + idUser + " not found");
+        } catch (DataAccessException e) { // không thể truy cập database 500
+            log.error("Database access error for user ID {}: {}", idUser, e.getMessage());
+            throw new DataAccessException("Failed to access database: " + e.getMessage()) {
+            };
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid argument for user ID {}: {}", idUser, e.getMessage());
+            throw new IllegalArgumentException("Invalid data format: " + e.getMessage());
+        } catch (Exception e) {
+            log.error("Unexpected error for user ID {}: {}", idUser, e.getMessage());
+            throw new RuntimeException("An unexpected error occurred while retrieving user");
+        }
+    }
+
+    @Override
+    public UserUpdateResponse updateUser(Integer idUser,UserUpdateRequest userRequest) {
+//        try{
+//            validateUserId(idUser);
+//            User user = userRepository.findById(idUser)
+//                    .orElseThrow(()-> new UserNotFoundException("User with id "+ idUser + " not found"));
+//            user.setPhoneNumber(userRequest.getPhoneNumber());
+//            user.setEmail(userRequest.getEmail());
+//            user.setAccountStatus(userRequest.getAccountStatus());
+//
+//            UserProfile userProfile = userProfileRepository.findByUser_UserId(idUser);
+//            if(userProfile == null) {
+//                throw new RuntimeException("User with id "+ idUser + " not found");
+//            }
+//            else{
+//                userProfile.setFullName(userRequest.getFullName());
+//                userProfile.setBirthDate(userRequest.getBirthDate());
+//                userProfile.setGender(userRequest.getGender());
+//                userProfile.setLocation(userRequest.getLocation());
+//                userProfile.setDescription(userRequest.getDescription());
+//            }
+//            // còn mấy bảng nữa
+//            userRepository.save(user);
+//            userProfileRepository.save(userProfile);
+//
+//
+//        }catch (Exception e){
+//
+//        }
+        return null;
+    }
+
+    private void validateUserId(int idUser) {
+        if (idUser <= 0) {
+            throw new IllegalArgumentException("User ID must be positive");
         }
     }
 }

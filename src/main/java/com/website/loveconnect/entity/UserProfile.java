@@ -22,7 +22,8 @@ public class UserProfile implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer profile_id;
+    @Column(name = "profile_id")
+    private Integer id;
 
     @Column(name = "full_name",nullable = false)
     private String fullName;

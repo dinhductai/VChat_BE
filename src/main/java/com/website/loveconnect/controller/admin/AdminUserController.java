@@ -2,14 +2,13 @@ package com.website.loveconnect.controller.admin;
 
 import com.website.loveconnect.dto.response.ApiResponse;
 import com.website.loveconnect.dto.response.ListUserResponse;
-import com.website.loveconnect.dto.response.UserResponse;
+import com.website.loveconnect.dto.response.UserUpdateResponse;
+import com.website.loveconnect.dto.response.UserViewResponse;
 import com.website.loveconnect.service.UserService;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,8 +30,8 @@ public class AdminUserController {
 
     //lấy thông tin chi tiết người dùng
     @GetMapping(value = "/users/{userId}")
-    public ResponseEntity<ApiResponse<UserResponse>> getUserById(@PathVariable int userId) {
-        UserResponse user = userService.getUserById(userId);
+    public ResponseEntity<ApiResponse<UserViewResponse>> getUserById(@PathVariable int userId) {
+        UserViewResponse user = userService.getUserById(userId);
         return ResponseEntity.ok(new ApiResponse<>(true,"Get user successful",user));
     }
 
@@ -50,5 +49,9 @@ public class AdminUserController {
         return ResponseEntity.ok(new ApiResponse<>(true,"User unblocked successfully", null));
     }
 
-
+    @GetMapping(value = "/users/{userId}/update")
+    public ResponseEntity<ApiResponse<UserUpdateResponse>> getUserUpdateById(@PathVariable int userId) {
+        UserUpdateResponse user = userService.getUserUpdateById(userId);
+        return ResponseEntity.ok(new ApiResponse<>(true,"Get user successful",user));
+    }
 }

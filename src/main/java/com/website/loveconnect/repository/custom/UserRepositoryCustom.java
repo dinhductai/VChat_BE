@@ -1,5 +1,8 @@
 package com.website.loveconnect.repository.custom;
 
+import jakarta.persistence.Tuple;
+
 public interface UserRepositoryCustom {
-    Object[] getUserById(Integer idUser);
+    Tuple getUserById(Integer idUser);
+    Tuple getUserForUpdateById(Integer idUser);
 }
