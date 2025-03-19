@@ -2,8 +2,10 @@ package com.website.loveconnect.service.impl;
 
 import com.website.loveconnect.dto.response.ListUserResponse;
 import com.website.loveconnect.dto.response.UserResponse;
+import com.website.loveconnect.entity.User;
 import com.website.loveconnect.enumpackage.AccountStatus;
 import com.website.loveconnect.enumpackage.Gender;
+import com.website.loveconnect.exception.UserNotFoundException;
 import com.website.loveconnect.repository.UserRepository;
 import com.website.loveconnect.service.UserService;
 import jakarta.persistence.NoResultException;
@@ -14,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -71,12 +74,16 @@ public class UserServiceImpl implements UserService {
     }
 
 
+
     @Override
     public UserResponse getUserById(int idUser) {
         try {
+            if(idUser <= 0){
+                throw new UserNotFoundException("User with id "+ idUser + " not found");
+            }
             Object[] user = userRepository.getUserById(idUser);
-            if (user.length == 0) {
-                return null;
+            if (user == null) {
+                throw new UserNotFoundException("User with id "+ idUser + " not found");
             }
             return UserResponse.builder()
                     .userId((Integer) user[0])
@@ -94,21 +101,54 @@ public class UserServiceImpl implements UserService {
                     .phoneNumber((String) user[10])
                     .accountStatus(AccountStatus.valueOf((String) user[11]))
                     .build();
+        } catch (NoResultException | EmptyResultDataAccessException e) { // bắt lỗi user ko tồn tại trước 404
+            log.info("No result found for user ID {}: {}", idUser, e.getMessage());
+            throw new UserNotFoundException("User with ID " + idUser + " not found");
+        } catch (DataAccessException e) { // không thể truy cập database 500
+            log.error("Database access error for user ID {}: {}", idUser, e.getMessage());
+            throw new DataAccessException("Failed to access database: " + e.getMessage()) {
+            };
         } catch (IllegalArgumentException e) {
-            log.error("Tham số không hợp lệ: {}", e.getMessage());
-            throw new RuntimeException("Tham số không hợp lệ: " + e.getMessage());
+            log.error("Invalid argument for user ID {}: {}", idUser, e.getMessage());
+            throw new IllegalArgumentException("Invalid data format: " + e.getMessage());
+        } catch (Exception e) {
+            log.error("Unexpected error for user ID {}: {}", idUser, e.getMessage());
+            throw new RuntimeException("An unexpected error occurred while retrieving user");
         }
-        catch (DataAccessException e) {
-            log.error("Lỗi truy vấn cơ sở dữ liệu: {}", e.getMessage());
-            return null;
+    }
+
+    @Override
+    public void blockUser(int idUser) {
+        if(idUser <= 0){
+            log.error("Invalid user ID: {}", idUser);
+            throw new IllegalArgumentException("User ID must be a positive integer");
         }
-        catch (NoResultException e){
-            log.error("Lỗi không tìm thấy kết quả khi truy vấn: {}", e.getMessage());
-            throw new RuntimeException("Lỗi không tìm thấy dữ liệu");
+        User userById = userRepository.findById(idUser)
+                .orElseThrow(()-> new UserNotFoundException("User with ID " + idUser + " not found"));
+        if(userById.getAccountStatus() == AccountStatus.blocked){
+            log.info("User with ID {} is already blocked", idUser);
+            return;
         }
-        catch (Exception e) {
-            log.error("Lỗi không xác định: {}", e.getMessage(), e);
-            throw new RuntimeException("Đã xảy ra lỗi không xác định: " + e.getMessage());
+        userById.setAccountStatus(AccountStatus.blocked);
+        userRepository.save(userById);
+        log.info("User with ID {} has been blocked successfully", idUser);
+    }
+
+    @Override
+    public void unblockUser(int idUser) {
+        if(idUser <= 0){
+            log.error("Invalid user ID: {}", idUser);
+            throw new IllegalArgumentException("User ID must be a positive integer");
+        }
+        User userById = userRepository.findById(idUser)
+                .orElseThrow(()-> new UserNotFoundException("User with ID " + idUser + " not found"));
+        if(userById.getAccountStatus() == AccountStatus.blocked){
+            userById.setAccountStatus(AccountStatus.active);
+            userRepository.save(userById);
+            log.info("User with ID {} has been active successfully", idUser);
+        }
+        else{
+            log.info("User with ID {} is already active", idUser);
         }
     }
 }

@@ -4,6 +4,7 @@ import com.website.loveconnect.exception.exceptionmodel.ErrorDetail;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,28 +18,48 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    // Xử lý mọi ngoại lệ chung
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorDetail> handleAllExceptions(Exception ex, WebRequest request){
-        ErrorDetail errorDetail = new ErrorDetail(LocalDateTime.now(),"An error occurred :"+ex.getMessage(),
-                "check this uri :"+request.getDescription(false));
+    public ResponseEntity<ErrorDetail> handleAllExceptions(Exception ex, WebRequest request) {
+        ErrorDetail errorDetail = new ErrorDetail(
+                LocalDateTime.now(),
+                "An unexpected error occurred",
+                request.getDescription(false)
+        );
         return new ResponseEntity<>(errorDetail, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    // Xử lý lỗi quyền truy cập
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ErrorDetail> handleAccessDeniedException(AccessDeniedException ex, WebRequest request){
-        ErrorDetail errorDetail = new ErrorDetail(LocalDateTime.now(),ex.getMessage(),request.getDescription(false));
-        return new ResponseEntity<>(errorDetail,HttpStatus.FORBIDDEN);
+    public ResponseEntity<ErrorDetail> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
+        ErrorDetail errorDetail = new ErrorDetail(
+                LocalDateTime.now(),
+                "Access denied",
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetail, HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler(HttpMessageNotReadableExceptionHandler.class)
-    public ResponseEntity<ErrorDetail> handleHttpMessageNotReadableException(HttpMessageNotReadableExceptionHandler ex, WebRequest request){
-        ErrorDetail errorDetail = new ErrorDetail(LocalDateTime.now(),ex.getMessage(),request.getDescription(false));
-        return new ResponseEntity<>(errorDetail,HttpStatus.BAD_REQUEST);
+    // Xử lý lỗi đọc HTTP message (sửa tên lớp)
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorDetail> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex, WebRequest request) {
+        ErrorDetail errorDetail = new ErrorDetail(
+                LocalDateTime.now(),
+                "Invalid request body",
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetail, HttpStatus.BAD_REQUEST);
     }
 
+    // Xử lý lỗi không tìm thấy người dùng
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ErrorDetail> handleUserNotFoundException(UserNotFoundException ex, WebRequest request){
-        ErrorDetail errorDetail = new ErrorDetail(LocalDateTime.now(),ex.getMessage(),request.getDescription(false));
-        return new ResponseEntity<>(errorDetail,HttpStatus.NOT_FOUND);
+    public ResponseEntity<ErrorDetail> handleUserNotFoundException(UserNotFoundException ex, WebRequest request) {
+        ErrorDetail errorDetail = new ErrorDetail(
+                LocalDateTime.now(),
+                ex.getMessage(), // Giữ lỗi cụ thể từ exception
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetail, HttpStatus.NOT_FOUND);
     }
 
     //bat loi validation khi du lieu request body khong hop le
@@ -50,11 +71,15 @@ public class GlobalExceptionHandler {
         }
         return new ResponseEntity<>(errors,HttpStatus.BAD_REQUEST);
     }
-    
-//    @ExceptionHandler(DataAccessException.class)
-//    public ResponseEntity<ErrorDetail> handleDataAccessException(DataAccessException ex, WebRequest request){
-//        ErrorDetail errorDetail = new ErrorDetail(LocalDateTime.now(),"xảy ra lỗi truy vấn cơ sở dữ liệu :" +
-//                ex.getMessage(),request.getDescription(false));
-//        return new ResponseEntity<>(errorDetail,HttpStatus.NOT_FOUND);
-//    }
+
+    // Xử lý lỗi truy cập dữ liệu
+    @ExceptionHandler(DataAccessException.class)
+    public ResponseEntity<ErrorDetail> handleDataAccessException(DataAccessException ex, WebRequest request) {
+        ErrorDetail errorDetail = new ErrorDetail(
+                LocalDateTime.now(),
+                "Database error occurred",
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetail, HttpStatus.INTERNAL_SERVER_ERROR);// trường hợp cho cả ko tìm thấy user
+    }
 }

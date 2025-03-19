@@ -9,4 +9,6 @@ import java.util.List;
 public interface UserService {
     Page<ListUserResponse> getAllUser(int page, int size);
     UserResponse getUserById(int idUser);
+    void blockUser(int idUser);
+    void unblockUser(int idUser);
 }

@@ -22,20 +22,33 @@ public class AdminUserController {
 
     UserService userService;
 
+    //lấy tất cả người dùng
     @GetMapping(value = "/users")
     public ResponseEntity<ApiResponse<Page<ListUserResponse>>> getAllUser(@RequestParam(defaultValue = "0") int page,
                                                                           @RequestParam(defaultValue = "10") int size) {
         return  ResponseEntity.ok(new ApiResponse<>(true,"get list user successful",userService.getAllUser(page,size)));
     }
 
+    //lấy thông tin chi tiết người dùng
     @GetMapping(value = "/users/{userId}")
     public ResponseEntity<ApiResponse<UserResponse>> getUserById(@PathVariable int userId) {
         UserResponse user = userService.getUserById(userId);
-        if(user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse<>(false,
-                    "user not fould", null));
-        }
-        return ResponseEntity.ok(new ApiResponse<>(true,"get user successful",user));
+        return ResponseEntity.ok(new ApiResponse<>(true,"Get user successful",user));
     }
+
+    //block người dùng bằng id
+    @PutMapping(value = "/users/{userId}/block")
+    public ResponseEntity<ApiResponse<String>> blockUser(@PathVariable int userId) {
+        userService.blockUser(userId);
+        return ResponseEntity.ok(new ApiResponse<>(true,"User blocked successfully", null));
+    }
+
+    //unblock người dùng bằng id
+    @PutMapping(value = "/users/{userId}/unblock")
+    public ResponseEntity<ApiResponse<String>> unblockUser(@PathVariable int userId) {
+        userService.unblockUser(userId);
+        return ResponseEntity.ok(new ApiResponse<>(true,"User unblocked successfully", null));
+    }
+
 
 }
