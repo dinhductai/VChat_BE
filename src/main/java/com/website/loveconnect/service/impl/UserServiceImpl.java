@@ -53,6 +53,7 @@ public class UserServiceImpl implements UserService {
     PhotoRepository photoRepository;
 
 
+    //hàm lấy tất cả thông tin người dùng
     @Override
     public Page<ListUserResponse> getAllUser(int page, int size) {
         try {
@@ -115,6 +116,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    //hàm block người dùng bằng id
     @Override
     public void blockUser(int idUser) {
         if(idUser <= 0){
@@ -132,6 +134,7 @@ public class UserServiceImpl implements UserService {
         log.info("User with ID {} has been blocked successfully", idUser);
     }
 
+    //hàm gỡ block người dùng bằng id
     @Override
     public void unblockUser(int idUser) {
         if(idUser <= 0){
@@ -151,6 +154,7 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    // hàm lấy thông tin người dùng bằng id để hiển thị lên giao diện sửa 1 người dùng
     @Override
     public UserUpdateResponse getUserUpdateById(int idUser) {
         try {
@@ -203,6 +207,8 @@ public class UserServiceImpl implements UserService {
             photoRepository.save(photo);
             //chưa cập nhật dữ liệu ở interest
 
+            //trả về dữ liệu mới cho giao diện
+            //sử dụng mapper
             return userMapper.toUserUpdateResponseBuilder(idUser, userRequest);
 
         } catch (NoResultException | EmptyResultDataAccessException e) { // bắt lỗi user ko tồn tại trước    404

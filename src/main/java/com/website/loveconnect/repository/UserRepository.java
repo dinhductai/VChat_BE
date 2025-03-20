@@ -16,6 +16,7 @@ public interface UserRepository extends JpaRepository<User, Integer>, UserReposi
                 "from users u " +
                 "join user_profiles up on up.user_id = u.user_id " +
                 " ", nativeQuery = true)
+        //cần trả về tuple
         Page<Object[]> getAllUser (Pageable pageable);
 
 }
