@@ -1,5 +1,6 @@
 package com.website.loveconnect.mapper;
 
+import com.website.loveconnect.dto.request.UserUpdateRequest;
 import com.website.loveconnect.dto.response.UserUpdateResponse;
 import com.website.loveconnect.dto.response.UserViewResponse;
 import com.website.loveconnect.entity.User;
@@ -59,4 +60,19 @@ public class UserMapper {
                 .build();
     }
 
+    public UserUpdateResponse toUserUpdateResponseBuilder(Integer idUser, UserUpdateRequest userUpdateRequest) {
+        return UserUpdateResponse.builder()
+                .userId(idUser)
+                .fullName(userUpdateRequest.getFullName())
+                .birthDate(userUpdateRequest.getBirthDate())
+                .location(userUpdateRequest.getLocation())
+                .description(userUpdateRequest.getDescription())
+                .interestName(userUpdateRequest.getInterestName())
+                .photoUrl(userUpdateRequest.getPhotoUrl())
+                .phoneNumber(userUpdateRequest.getPhoneNumber())
+                .email(userUpdateRequest.getEmail())
+                .gender(userUpdateRequest.getGender())
+                .accountStatus(userUpdateRequest.getAccountStatus())
+                .build();
+    }
 }

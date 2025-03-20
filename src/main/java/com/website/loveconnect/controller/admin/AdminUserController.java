@@ -1,5 +1,6 @@
 package com.website.loveconnect.controller.admin;
 
+import com.website.loveconnect.dto.request.UserUpdateRequest;
 import com.website.loveconnect.dto.response.ApiResponse;
 import com.website.loveconnect.dto.response.ListUserResponse;
 import com.website.loveconnect.dto.response.UserUpdateResponse;
@@ -54,4 +55,13 @@ public class AdminUserController {
         UserUpdateResponse user = userService.getUserUpdateById(userId);
         return ResponseEntity.ok(new ApiResponse<>(true,"Get user successful",user));
     }
+
+
+    @PostMapping(value = "/users/{userId}/update")
+    public ResponseEntity<ApiResponse<UserUpdateResponse>> updateUserById(@PathVariable int userId,
+                                                                          @RequestBody UserUpdateRequest userUpdateRequest) {
+        UserUpdateResponse user = userService.updateUser(userId,userUpdateRequest);
+        return ResponseEntity.ok(new ApiResponse<>(true,"Get user successful",user));
+    }
+
 }

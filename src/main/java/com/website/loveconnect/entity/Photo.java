@@ -18,7 +18,8 @@ public class Photo implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer photo_id;
+    @Column(name = "photo_id")
+    private Integer id;
 
     @Column(name = "photo_url",nullable = false)
     private String photoUrl;

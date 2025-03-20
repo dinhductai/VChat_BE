@@ -4,12 +4,14 @@ import com.website.loveconnect.dto.request.UserUpdateRequest;
 import com.website.loveconnect.dto.response.ListUserResponse;
 import com.website.loveconnect.dto.response.UserUpdateResponse;
 import com.website.loveconnect.dto.response.UserViewResponse;
+import com.website.loveconnect.entity.Photo;
 import com.website.loveconnect.entity.User;
 import com.website.loveconnect.entity.UserProfile;
 import com.website.loveconnect.enumpackage.AccountStatus;
 import com.website.loveconnect.enumpackage.Gender;
 import com.website.loveconnect.exception.UserNotFoundException;
 import com.website.loveconnect.mapper.UserMapper;
+import com.website.loveconnect.repository.PhotoRepository;
 import com.website.loveconnect.repository.UserProfileRepository;
 import com.website.loveconnect.repository.UserRepository;
 import com.website.loveconnect.service.UserService;
@@ -17,6 +19,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Tuple;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -39,6 +42,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Transactional
 public class UserServiceImpl implements UserService {
     @PersistenceContext
     private EntityManager entityManager;
@@ -46,6 +50,8 @@ public class UserServiceImpl implements UserService {
     ModelMapper modelMapper;
     UserMapper userMapper;
     UserProfileRepository userProfileRepository;
+    PhotoRepository photoRepository;
+
 
     @Override
     public Page<ListUserResponse> getAllUser(int page, int size) {
@@ -144,6 +150,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+
     @Override
     public UserUpdateResponse getUserUpdateById(int idUser) {
         try {
@@ -168,36 +175,48 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    //hàm cập nhật thông tin người dùng
     @Override
     public UserUpdateResponse updateUser(Integer idUser,UserUpdateRequest userRequest) {
-//        try{
-//            validateUserId(idUser);
-//            User user = userRepository.findById(idUser)
-//                    .orElseThrow(()-> new UserNotFoundException("User with id "+ idUser + " not found"));
-//            user.setPhoneNumber(userRequest.getPhoneNumber());
-//            user.setEmail(userRequest.getEmail());
-//            user.setAccountStatus(userRequest.getAccountStatus());
-//
-//            UserProfile userProfile = userProfileRepository.findByUser_UserId(idUser);
-//            if(userProfile == null) {
-//                throw new RuntimeException("User with id "+ idUser + " not found");
-//            }
-//            else{
-//                userProfile.setFullName(userRequest.getFullName());
-//                userProfile.setBirthDate(userRequest.getBirthDate());
-//                userProfile.setGender(userRequest.getGender());
-//                userProfile.setLocation(userRequest.getLocation());
-//                userProfile.setDescription(userRequest.getDescription());
-//            }
-//            // còn mấy bảng nữa
-//            userRepository.save(user);
-//            userProfileRepository.save(userProfile);
-//
-//
-//        }catch (Exception e){
-//
-//        }
-        return null;
+        try{
+            validateUserId(idUser);
+            User user = userRepository.findById(idUser)
+                    .orElseThrow(()-> new UserNotFoundException("User with id "+ idUser + " not found"));
+            user.setPhoneNumber(userRequest.getPhoneNumber());
+            user.setEmail(userRequest.getEmail());
+            user.setAccountStatus(userRequest.getAccountStatus());
+
+            Optional<UserProfile> userProfileOptional = userProfileRepository.findByUser_Id(idUser);
+            UserProfile userProfile = userProfileOptional.orElseThrow(()->new RuntimeException("User with id "+ idUser + " not found"));
+            userProfile.setFullName(userRequest.getFullName());
+            userProfile.setBirthDate(userRequest.getBirthDate());
+            userProfile.setGender(userRequest.getGender());
+            userProfile.setLocation(userRequest.getLocation());
+            userProfile.setDescription(userRequest.getDescription());
+
+            Optional<Photo> photoOptional = photoRepository.findOneByUserId(idUser);
+            Photo photo = photoOptional.orElseThrow(()-> new RuntimeException("This user not have profile image"));
+            photo.setPhotoUrl(userRequest.getPhotoUrl());
+
+            userRepository.save(user);
+            userProfileRepository.save(userProfile);
+            photoRepository.save(photo);
+            //chưa cập nhật dữ liệu ở interest
+
+            return userMapper.toUserUpdateResponseBuilder(idUser, userRequest);
+
+        } catch (NoResultException | EmptyResultDataAccessException e) { // bắt lỗi user ko tồn tại trước    404
+            log.info("No result found for user ID {}: {}", idUser, e.getMessage());
+            throw new UserNotFoundException("User with ID " + idUser + " not found");
+        } catch (DataAccessException e) { // không thể truy cập database 500
+            log.error("Database access error for user ID {}: {}", idUser, e.getMessage());
+            throw new DataAccessException("Failed to access database: " + e.getMessage()) {
+            };
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid argument for user ID {}: {}", idUser, e.getMessage());
+            throw new IllegalArgumentException("Invalid data format: " + e.getMessage());
+        }
+
     }
 
     private void validateUserId(int idUser) {
