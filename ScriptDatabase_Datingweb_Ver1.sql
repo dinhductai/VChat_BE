@@ -47,7 +47,7 @@ CREATE TABLE users (
     is_verified BOOLEAN DEFAULT FALSE,
     registration_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     last_login_date DATETIME,
-    account_status ENUM('active', 'inactive', 'blocked') DEFAULT 'active'
+    account_status ENUM('ACTIVE', 'INACTIVE', 'BLOCKED','DELETED') DEFAULT 'ACTIVE'
 );
 
 -- ====================================
@@ -69,8 +69,8 @@ CREATE TABLE user_profiles (
     user_id INT NOT NULL,
     full_name VARCHAR(100) NOT NULL,
     birthdate DATE NOT NULL,
-    gender ENUM('male', 'female', 'other') NOT NULL,
-    looking_for ENUM('male', 'female', 'other') NOT NULL,
+    gender ENUM('MALE', 'FEMALE', 'OTHER') NOT NULL,
+    looking_for ENUM('MALE', 'FEMALE', 'OTHER') NOT NULL,
     bio TEXT,
     height INT,
     weight INT,
@@ -78,6 +78,7 @@ CREATE TABLE user_profiles (
     job_title VARCHAR(255),
     company VARCHAR(100),
     education VARCHAR(100),
+    description TEXT,
     profile_complete BOOLEAN DEFAULT FALSE,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -113,9 +114,10 @@ CREATE TABLE interests (
 -- 9. Bảng USER_INTERESTS: Liên kết sở thích với người dùng
 -- ====================================
 CREATE TABLE user_interests (
+    user_interests_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     interest_id INT NOT NULL,
-    PRIMARY KEY (user_id, interest_id),
+    UNIQUE (user_id, interest_id), -- Đảm bảo không trùng lặp user_id & interest_id
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
     FOREIGN KEY (interest_id) REFERENCES interests(interest_id) ON DELETE CASCADE
 );
@@ -237,3 +239,42 @@ CREATE TABLE reports (
     show_me_to_others BOOLEAN DEFAULT TRUE,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
+
+
+-- Chèn dữ liệu vào bảng users
+INSERT INTO users (email, password, phone_number, is_verified, registration_date, last_login_date, account_status)
+VALUES
+('alice@example.com', 'hashed_password_1', '0987654321', TRUE, NOW(), NOW(), 'ACTIVE'),
+('bob@example.com', 'hashed_password_2', '0976543210', FALSE, NOW(), NULL, 'ACTIVE'),
+('charlie@example.com', 'hashed_password_3', '0965432109', TRUE, NOW(), NOW(), 'ACTIVE'),
+('david@example.com', 'hashed_password_4', '0954321098', TRUE, NOW(), NOW(), 'ACTIVE'),
+('eve@example.com', 'hashed_password_5', '0943210987', FALSE, NOW(), NULL, 'ACTIVE'),
+('frank@example.com', 'hashed_password_6', '0932109876', TRUE, NOW(), NOW(), 'ACTIVE'),
+('grace@example.com', 'hashed_password_7', '0921098765', FALSE, NOW(), NULL, 'ACTIVE'),
+('henry@example.com', 'hashed_password_8', '0910987654', TRUE, NOW(), NOW(), 'ACTIVE'),
+('irene@example.com', 'hashed_password_9', '0909876543', TRUE, NOW(), NOW(), 'DELETED'),
+('jack@example.com', 'hashed_password_10', '0898765432', TRUE, NOW(), NOW(), 'ACTIVE'),
+('kate@example.com', 'hashed_password_11', '0887654321', FALSE, NOW(), NULL, 'DELETED'),
+('leo@example.com', 'hashed_password_12', '0876543210', TRUE, NOW(), NOW(), 'ACTIVE'),
+('mia@example.com', 'hashed_password_13', '0865432109', FALSE, NOW(), NULL, 'ACTIVE'),
+('nathan@example.com', 'hashed_password_14', '0854321098', TRUE, NOW(), NOW(), 'ACTIVE'),
+('olivia@example.com', 'hashed_password_15', '0843210987', TRUE, NOW(), NOW(), 'ACTIVE');
+
+-- Chèn dữ liệu vào bảng user_profiles
+INSERT INTO user_profiles (user_id, full_name, birthdate, gender, looking_for, bio, height, weight, location, job_title, company, education, profile_complete)
+VALUES
+(1, 'Alice Johnson', '1995-03-12', 'MALE', 'FEMALE', 'Love hiking and coffee!', 165, 55, 'New York', 'Software Engineer', 'Google', 'MIT', TRUE),
+(2, 'Bob Smith', '1992-07-24', 'MALE', 'FEMALE', 'Gamer and foodie.', 180, 75, 'Los Angeles', 'Graphic Designer', 'Freelance', 'UCLA', FALSE),
+(3, 'Charlie Brown', '1998-10-05', 'MALE', 'MALE', 'Music producer.', 175, 70, 'Chicago', 'Musician', 'Independent', 'Berklee', TRUE),
+(4, 'David Williams', '1990-05-18', 'MALE', 'FEMALE', 'Fitness trainer.', 182, 80, 'San Francisco', 'Personal Trainer', 'GymX', 'Stanford', TRUE),
+(5, 'Eve Adams', '1996-12-01', 'MALE', 'FEMALE', 'Passionate about tech.', 160, 50, 'Seattle', 'Data Scientist', 'Amazon', 'Harvard', FALSE),
+(6, 'Frank Miller', '1993-06-30', 'MALE', 'MALE', 'Adventurer and writer.', 178, 72, 'Denver', 'Journalist', 'CNN', 'NYU', TRUE),
+(7, 'Grace Lee', '1997-09-21', 'MALE', 'FEMALE', 'Dog lover.', 162, 53, 'Austin', 'Veterinarian', 'PetCare', 'Texas A&M', TRUE),
+(8, 'Henry Clark', '1994-02-14', 'MALE', 'MALE', 'Coffee addict.', 185, 78, 'Boston', 'Barista', 'Starbucks', 'BU', FALSE),
+(9, 'Irene Foster', '1991-11-29', 'MALE', 'FEMALE', 'Entrepreneur.', 167, 58, 'Miami', 'Startup Founder', 'Self-employed', 'Wharton', TRUE),
+(10, 'Jack Martinez', '1995-08-10', 'MALE', 'FEMALE', 'Photographer.', 172, 68, 'Portland', 'Photographer', 'Freelance', 'RISD', TRUE),
+(11, 'Kate Lewis', '1999-04-15', 'MALE', 'MALE', 'Passionate about cooking.', 159, 49, 'Houston', 'Chef', 'RestaurantX', 'Culinary Institute', FALSE),
+(12, 'Leo White', '1990-01-25', 'MALE', 'FEMALE', 'Love traveling.', 177, 74, 'Phoenix', 'Travel Blogger', 'Freelance', 'UCLA', TRUE),
+(13, 'Mia Robinson', '1993-07-08', 'MALE', 'MALE', 'Painter and artist.', 163, 52, 'San Diego', 'Artist', 'GalleryX', 'Yale', FALSE),
+(14, 'Nathan Green', '1996-05-20', 'MALE', 'FEMALE', 'Nature lover.', 180, 76, 'Nashville', 'Environmental Scientist', 'NGO', 'Berkeley', TRUE),
+(15, 'Olivia Carter', '1992-03-17', 'MALE', 'FEMALE', 'Yoga instructor.', 166, 56, 'Atlanta', 'Yoga Teacher', 'Wellness Studio', 'Duke', TRUE);
