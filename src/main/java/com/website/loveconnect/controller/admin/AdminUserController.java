@@ -33,7 +33,7 @@ public class AdminUserController {
     @GetMapping(value = "/users/{userId}")
     public ResponseEntity<ApiResponse<UserViewResponse>> getUserById(@PathVariable int userId) {
         UserViewResponse user = userService.getUserById(userId);
-        return ResponseEntity.ok(new ApiResponse<>(true,"Get user successful",user));
+        return ResponseEntity.ok(new ApiResponse<>(true, "Get user successful", user));
     }
 
     //block người dùng bằng id
