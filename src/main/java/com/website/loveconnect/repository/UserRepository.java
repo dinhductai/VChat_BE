@@ -10,12 +10,12 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer>, UserRepositoryCustom {
-        // lấy tất cả user với tất cả trạng thái
+        // lấy tất cả user với tất cả trạng thái trừ deleted
         @Query(value = " select u.user_id, up.full_name, u.email, " +
                 " u.phone_number, u.registration_date, u.account_status " +
                 "from users u " +
                 "join user_profiles up on up.user_id = u.user_id " +
-                " ", nativeQuery = true)
+                "where u.account_status <> 'DELETED' ", nativeQuery = true)
         //cần trả về tuple
         Page<Object[]> getAllUser (Pageable pageable);
 
