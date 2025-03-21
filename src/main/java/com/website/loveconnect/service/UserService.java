@@ -13,4 +13,5 @@ public interface UserService {
     void unblockUser(int idUser);
     UserUpdateResponse getUserUpdateById(int idUser);
     UserUpdateResponse updateUser(Integer idUser,UserUpdateRequest userRequest);
+    void deleteUser(int idUser);
 }

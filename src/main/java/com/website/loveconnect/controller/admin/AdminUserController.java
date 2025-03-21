@@ -57,11 +57,16 @@ public class AdminUserController {
     }
 
 
-    @PostMapping(value = "/users/{userId}/update")
+    @PutMapping(value = "/users/{userId}/update")
     public ResponseEntity<ApiResponse<UserUpdateResponse>> updateUserById(@PathVariable int userId,
                                                                           @RequestBody UserUpdateRequest userUpdateRequest) {
         UserUpdateResponse user = userService.updateUser(userId,userUpdateRequest);
         return ResponseEntity.ok(new ApiResponse<>(true,"Get user successful",user));
     }
 
+    @DeleteMapping(value = "/users/{userId}/delete")
+    public ResponseEntity<Void> deleteUser(@PathVariable int userId) {
+        userService.deleteUser(userId);
+        return ResponseEntity.noContent().build();
+    }
 }

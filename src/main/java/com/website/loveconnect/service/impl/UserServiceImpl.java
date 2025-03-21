@@ -225,6 +225,21 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
+    public void deleteUser(int idUser) {
+        validateUserId(idUser);
+        User user = userRepository.findById(idUser)
+                .orElseThrow(()-> new UserNotFoundException("User with id "+ idUser + " not found"));
+        if(user.getAccountStatus() != AccountStatus.blocked){
+            //chỉ đổi trạng thái tài khoản chứ ko xóa hoàn toàn
+            user.setAccountStatus(AccountStatus.blocked);
+            userRepository.save(user);
+        }else{
+            log.info("User with Id {} is already blocked", idUser);
+        }
+
+    }
+
     private void validateUserId(int idUser) {
         if (idUser <= 0) {
             throw new IllegalArgumentException("User ID must be positive");
