@@ -4,7 +4,9 @@ import com.website.loveconnect.dto.request.InterestDTO;
 import com.website.loveconnect.dto.response.ApiResponse;
 import com.website.loveconnect.entity.Interest;
 import com.website.loveconnect.service.UserService;
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,11 +16,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/user/interest")
-@AllArgsConstructor
 @Slf4j
-public class UserController {
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@RequiredArgsConstructor
+public class InterestController {
 
-    private final UserService userService;
+    UserService userService;
 
     // Request Get all Interest
     @GetMapping("/{idUser}")
