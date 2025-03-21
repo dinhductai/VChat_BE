@@ -1,6 +1,10 @@
 package com.website.loveconnect.service.impl;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+//import com.cloudinary.utils.StringUtils;
 import com.website.loveconnect.dto.request.InterestDTO;
+import com.website.loveconnect.dto.request.UserCreateRequest;
 import com.website.loveconnect.dto.request.UserUpdateRequest;
 import com.website.loveconnect.dto.response.ListUserResponse;
 import com.website.loveconnect.dto.response.UserUpdateResponse;
@@ -27,11 +31,20 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import org.apache.commons.lang3.StringUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 
 @Slf4j
@@ -47,9 +60,7 @@ public class UserServiceImpl implements UserService {
     UserMapper userMapper;
     UserProfileRepository userProfileRepository;
     PhotoRepository photoRepository;
-
-    InterestRepository interestRepository;
-    UserInterestRepository userInterestRepository;
+    private final Cloudinary cloudinary;
 
 
     //hàm lấy tất cả thông tin người dùng
@@ -239,67 +250,88 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    //lỗi 500 từ postman sai kiểu yêu cầu
     @Override
-    public void addInterest(int idUser, InterestDTO interestDTO) {
+    public void createUser(UserCreateRequest userRequest, MultipartFile photoProfile) {
         try {
-            User user = userRepository.findById(idUser).orElseThrow(() -> new UserNotFoundException("User with id "+ idUser + " not found"));
-
-            Interest interest = Interest.builder()
-                    .interestName(interestDTO.getInterestName())
-                    .category(interestDTO.getCategory())
-                    .build();
-
-            UserInterest ui = UserInterest.builder()
-                    .user(user)
-                    .interest(interest)
-                    .build();
-
-            interestRepository.save(interest);
-            userInterestRepository.save(ui);
-
-            log.info("Sở thích đã được thêm thành công");
-        } catch (Exception e) {
-            log.error("Không thể thêm được sở thích vì {}" , e.getMessage() , e.getCause());
+            assert photoProfile.getOriginalFilename() != null;
+            String publicValue = generatePublicValue(photoProfile.getOriginalFilename());
+            log.info("publicValue is: {}", publicValue);
+            String extension = getFileName(photoProfile.getOriginalFilename())[1];
+            log.info("extension is: {}", extension);
+            File fileUpload = convertFile(photoProfile);
+            log.info("fileUpload is: {}", fileUpload);
+            cloudinary.uploader().upload(fileUpload, ObjectUtils.asMap("public_id", publicValue));
+            cleanDisk(fileUpload);
+            String photoUrl =cloudinary.url().generate(StringUtils.join(publicValue, ".", extension));
+            User newUser = new User();
+            UserProfile newUserProfile = new UserProfile();
+            Photo newPhoto = new Photo();
+            newUser.setEmail(userRequest.getEmail());
+            newUser.setPassword(userRequest.getPassword());
+            newUser.setPhoneNumber(userRequest.getPhoneNumber());
+            newUser.setAccountStatus(AccountStatus.ACTIVE);
+            newUserProfile.setFullName(userRequest.getFullName());
+            newUserProfile.setBirthDate(userRequest.getBirthDate());
+            newUserProfile.setGender(userRequest.getGender());
+            newUserProfile.setLocation(userRequest.getLocation());
+            newUserProfile.setDescription(userRequest.getDescription());
+            newPhoto.setPhotoUrl(photoUrl);
+            userRepository.save(newUser);
+            userProfileRepository.save(newUserProfile);
+            photoRepository.save(newPhoto);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
         }
     }
 
     @Override
-    public void deleterInterest(int idUser, int idInterest) {
-        User user = userRepository.findById(idUser).orElseThrow(() -> new UserNotFoundException("User with id "+ idUser + " not found"));
-        Interest interest = interestRepository.findById(idInterest).orElseThrow(() -> new UserNotFoundException("Interest with id "+ idInterest + " not found"));
-        interestRepository.delete(interest);
-
-        log.info("Xóa thành công sở thích có idInterest : {}" , idInterest);
+    public String uploadImage(MultipartFile file) throws IOException {
+        assert file.getOriginalFilename() != null;
+        String publicValue = generatePublicValue(file.getOriginalFilename());
+        log.info("publicValue is: {}", publicValue);
+        String extension = getFileName(file.getOriginalFilename())[1];
+        log.info("extension is: {}", extension);
+        File fileUpload = convertFile(file);
+        log.info("fileUpload is: {}", fileUpload);
+        cloudinary.uploader().upload(fileUpload, ObjectUtils.asMap("public_id", publicValue));
+        cleanDisk(fileUpload);
+        //tìm user rồi lưu xuống csdl
+        return  cloudinary.url().generate(StringUtils.join(publicValue, ".", extension));
     }
 
-    @Override
-    public void updateInterest(int idInterest, int idUser, InterestDTO interestDTO) {
+    //convert file ảnh từ multifile sang file
+    private File convertFile(MultipartFile file) throws IOException {
+        assert file.getOriginalFilename() != null;
+        File convertFile = new File(StringUtils.join(generatePublicValue(file.getOriginalFilename()),getFileName(file.getOriginalFilename())[1]));
+        try(InputStream inputStream = file.getInputStream()) {
+            Files.copy(inputStream,convertFile.toPath());
+        }
+        return convertFile;
+    }
+
+    public String generatePublicValue(String originalName){
+        String fileName = getFileName(originalName)[0];
+        return StringUtils.join(UUID.randomUUID().toString().split("-"), fileName);
+    }
+
+    private void cleanDisk(File file) {
         try {
-            User user = userRepository.findById(idUser).orElseThrow(() -> new UserNotFoundException("User with id "+ idUser + " not found"));
-            // Xác định xem User có ID idUser có sở thích có ID idInterest không
-            UserInterest ui = userInterestRepository.findUserInterestWithIdUserAndIdInterest(idInterest , idUser).orElseThrow(() -> new UserNotFoundException("Not found UserInterest need find !!! "));;
-            Interest interest = interestRepository.findById(idInterest).orElseThrow(() -> new UserNotFoundException("Interest with id "+ idInterest + " not found"));
-            interest.setInterestName(interestDTO.getInterestName());
-            interest.setCategory(interestDTO.getCategory());
-
-            interestRepository.save(interest);
-            log.info("Interest has been updated successfully , idInterest = {}" , idInterest);
-        } catch (Exception e) {
-            log.error("Không thể sửa được sở thích vì {}" , e.getMessage() , e.getCause());
+            log.info("file.toPath(): {}", file.toPath());
+            Path filePath = file.toPath();
+            Files.delete(filePath);
+        } catch (IOException e) {
+            log.error("Error");
         }
     }
 
-    @Override
-    public List<Interest> getAllInterest(int idUser) {
-        List<Interest> interestList = interestRepository.getAllInterest(idUser);
-        if (interestList.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Người dùng chưa có sở thích nào.");
-        }
-        log.info("Danh sách sở thích đã được lấy thành công");
-        return interestList;
+    //tách chuỗi ảnh
+    public String[] getFileName(String originalName){
+        return originalName.split("\\.");
     }
 
-    private void validateUserId(int idUser) {
+    private void validateUserId(int idUser)  {
         if (idUser <= 0) {
             throw new IllegalArgumentException("User ID must be positive");
         }

@@ -17,7 +17,8 @@ public class UserInterest implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer user_interests_id;
+    @Column(name = "user_interests_id")
+    private Integer id;
 
     @ManyToOne
     @JsonIgnore
