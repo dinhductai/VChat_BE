@@ -1,5 +1,5 @@
 package com.website.loveconnect.enumpackage;
 
 public enum AccountStatus {
-    active,inactive,blocked
+    ACTIVE,INACTIVE,BLOCKED,DELETED
 }

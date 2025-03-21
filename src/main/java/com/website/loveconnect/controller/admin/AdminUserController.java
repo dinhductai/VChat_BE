@@ -69,4 +69,6 @@ public class AdminUserController {
         userService.deleteUser(userId);
         return ResponseEntity.noContent().build();
     }
+
+
 }

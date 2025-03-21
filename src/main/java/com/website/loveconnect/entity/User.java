@@ -44,7 +44,7 @@ public class User implements Serializable {
 
     @Column(name = "account_status")
     @Enumerated(EnumType.STRING)
-    private AccountStatus accountStatus = AccountStatus.active;
+    private AccountStatus accountStatus = AccountStatus.ACTIVE;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

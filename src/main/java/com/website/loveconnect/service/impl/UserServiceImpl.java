@@ -125,11 +125,11 @@ public class UserServiceImpl implements UserService {
         }
         User userById = userRepository.findById(idUser)
                 .orElseThrow(()-> new UserNotFoundException("User with ID " + idUser + " not found"));
-        if(userById.getAccountStatus() == AccountStatus.blocked){
+        if(userById.getAccountStatus() == AccountStatus.BLOCKED){
             log.info("User with ID {} is already blocked", idUser);
             return;
         }
-        userById.setAccountStatus(AccountStatus.blocked);
+        userById.setAccountStatus(AccountStatus.BLOCKED);
         userRepository.save(userById);
         log.info("User with ID {} has been blocked successfully", idUser);
     }
@@ -143,8 +143,8 @@ public class UserServiceImpl implements UserService {
         }
         User userById = userRepository.findById(idUser)
                 .orElseThrow(()-> new UserNotFoundException("User with ID " + idUser + " not found"));
-        if(userById.getAccountStatus() == AccountStatus.blocked){
-            userById.setAccountStatus(AccountStatus.active);
+        if(userById.getAccountStatus() == AccountStatus.BLOCKED){
+            userById.setAccountStatus(AccountStatus.ACTIVE);
             userRepository.save(userById);
             log.info("User with ID {} has been active successfully", idUser);
         }
@@ -230,9 +230,9 @@ public class UserServiceImpl implements UserService {
         validateUserId(idUser);
         User user = userRepository.findById(idUser)
                 .orElseThrow(()-> new UserNotFoundException("User with id "+ idUser + " not found"));
-        if(user.getAccountStatus() != AccountStatus.blocked){
+        if(user.getAccountStatus() != AccountStatus.DELETED){
             //chỉ đổi trạng thái tài khoản chứ ko xóa hoàn toàn
-            user.setAccountStatus(AccountStatus.blocked);
+            user.setAccountStatus(AccountStatus.DELETED);
             userRepository.save(user);
         }else{
             log.info("User with Id {} is already blocked", idUser);
