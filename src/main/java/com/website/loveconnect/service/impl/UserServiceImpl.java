@@ -11,6 +11,8 @@ import com.website.loveconnect.dto.response.UserUpdateResponse;
 import com.website.loveconnect.dto.response.UserViewResponse;
 import com.website.loveconnect.entity.*;
 import com.website.loveconnect.enumpackage.AccountStatus;
+import com.website.loveconnect.enumpackage.Gender;
+import com.website.loveconnect.exception.EmailAlreadyInUseException;
 import com.website.loveconnect.exception.UserNotFoundException;
 import com.website.loveconnect.mapper.UserMapper;
 import com.website.loveconnect.repository.*;
@@ -60,7 +62,6 @@ public class UserServiceImpl implements UserService {
     UserMapper userMapper;
     UserProfileRepository userProfileRepository;
     PhotoRepository photoRepository;
-    private final Cloudinary cloudinary;
 
 
     //hàm lấy tất cả thông tin người dùng
@@ -228,6 +229,8 @@ public class UserServiceImpl implements UserService {
             log.error("Database access error for user ID {}: {}", idUser, e.getMessage());
             throw new DataAccessException("Failed to access database: " + e.getMessage()) {
             };
+
+
         } catch (IllegalArgumentException e) {
             log.error("Invalid argument for user ID {}: {}", idUser, e.getMessage());
             throw new IllegalArgumentException("Invalid data format: " + e.getMessage());
@@ -250,93 +253,41 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    //lỗi 500 từ postman sai kiểu yêu cầu
+    //chưa hoàn thiện
     @Override
-    public void createUser(UserCreateRequest userRequest, MultipartFile photoProfile) {
-        try {
-            assert photoProfile.getOriginalFilename() != null;
-            String publicValue = generatePublicValue(photoProfile.getOriginalFilename());
-            log.info("publicValue is: {}", publicValue);
-            String extension = getFileName(photoProfile.getOriginalFilename())[1];
-            log.info("extension is: {}", extension);
-            File fileUpload = convertFile(photoProfile);
-            log.info("fileUpload is: {}", fileUpload);
-            cloudinary.uploader().upload(fileUpload, ObjectUtils.asMap("public_id", publicValue));
-            cleanDisk(fileUpload);
-            String photoUrl =cloudinary.url().generate(StringUtils.join(publicValue, ".", extension));
+    public void createUser(UserCreateRequest userRequest) {
+        if (StringUtils.isBlank(userRequest.getEmail()) || StringUtils.isBlank(userRequest.getPassword())) {
+            log.error("Email or Password is blank in create user request");
+            throw new IllegalArgumentException("Email or Password cannot be blank");
+        }
+        //kiểm tra xem có trùng email ai không
+        User existingUser = userRepository.getUserByEmail(userRequest.getEmail());
+        if(existingUser == null) {
             User newUser = new User();
             UserProfile newUserProfile = new UserProfile();
-            Photo newPhoto = new Photo();
+
             newUser.setEmail(userRequest.getEmail());
             newUser.setPassword(userRequest.getPassword());
             newUser.setPhoneNumber(userRequest.getPhoneNumber());
             newUser.setAccountStatus(AccountStatus.ACTIVE);
+
             newUserProfile.setFullName(userRequest.getFullName());
             newUserProfile.setBirthDate(userRequest.getBirthDate());
             newUserProfile.setGender(userRequest.getGender());
             newUserProfile.setLocation(userRequest.getLocation());
             newUserProfile.setDescription(userRequest.getDescription());
-            newPhoto.setPhotoUrl(photoUrl);
-            userRepository.save(newUser);
-            userProfileRepository.save(newUserProfile);
-            photoRepository.save(newPhoto);
-        }catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public String uploadImage(MultipartFile file) throws IOException {
-        assert file.getOriginalFilename() != null;
-        String publicValue = generatePublicValue(file.getOriginalFilename());
-        log.info("publicValue is: {}", publicValue);
-        String extension = getFileName(file.getOriginalFilename())[1];
-        log.info("extension is: {}", extension);
-        File fileUpload = convertFile(file);
-        log.info("fileUpload is: {}", fileUpload);
-        cloudinary.uploader().upload(fileUpload, ObjectUtils.asMap("public_id", publicValue));
-        cleanDisk(fileUpload);
-        //tìm user rồi lưu xuống csdl
-        return  cloudinary.url().generate(StringUtils.join(publicValue, ".", extension));
-    }
-
-    @Override
-    public String uploadImage2(MultipartFile file) throws IOException {
-        Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
-        String photoUrl = (String) uploadResult.get("url");
-
-        return photoUrl;
-    }
-
-    //convert file ảnh từ multifile sang file
-    private File convertFile(MultipartFile file) throws IOException {
-        assert file.getOriginalFilename() != null;
-        File convertFile = new File(StringUtils.join(generatePublicValue(file.getOriginalFilename()),getFileName(file.getOriginalFilename())[1]));
-        try(InputStream inputStream = file.getInputStream()) {
-            Files.copy(inputStream,convertFile.toPath());
-        }
-        return convertFile;
-    }
-
-    public String generatePublicValue(String originalName){
-        String fileName = getFileName(originalName)[0];
-        return StringUtils.join(UUID.randomUUID().toString().split("-"), fileName);
-    }
-
-    private void cleanDisk(File file) {
-        try {
-            log.info("file.toPath(): {}", file.toPath());
-            Path filePath = file.toPath();
-            Files.delete(filePath);
-        } catch (IOException e) {
-            log.error("Error");
-        }
-    }
-
-    //tách chuỗi ảnh
-    public String[] getFileName(String originalName){
-        return originalName.split("\\.");
+            newUserProfile.setLookingFor(Gender.FEMALE); //tạm thời set cứng
+            newUserProfile.setUser(newUser);
+            try {
+                userRepository.save(newUser);
+                userProfileRepository.save(newUserProfile);
+                log.info("Create user successful");
+            } catch (DataAccessException dae) {
+                log.error("Database access error", dae.getMessage());
+                throw new DataAccessException("Failed to save new user", dae) {
+                };
+            }
+        }else throw new EmailAlreadyInUseException("Email was already in use");
     }
 
     private void validateUserId(int idUser)  {

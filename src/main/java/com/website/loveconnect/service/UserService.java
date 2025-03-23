@@ -21,8 +21,5 @@ public interface UserService {
     UserUpdateResponse getUserUpdateById(int idUser);
     UserUpdateResponse updateUser(Integer idUser,UserUpdateRequest userRequest);
     void deleteUser(int idUser);
-    void createUser(UserCreateRequest userRequest, MultipartFile photoProfile);
-    String uploadImage(MultipartFile file) throws IOException;
-    String uploadImage2(MultipartFile file) throws IOException;
-
+    void createUser(UserCreateRequest userRequest);
 }

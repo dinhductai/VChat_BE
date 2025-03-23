@@ -1,5 +1,6 @@
 package com.website.loveconnect.controller.admin;
 
+import com.cloudinary.Api;
 import com.website.loveconnect.dto.request.UserCreateRequest;
 import com.website.loveconnect.dto.request.UserUpdateRequest;
 import com.website.loveconnect.dto.response.ApiResponse;
@@ -12,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -78,27 +80,21 @@ public class AdminUserController {
     }
 
 
-    @PostMapping(value = "/users/create",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<String>> createUser(@RequestParam("user") UserCreateRequest userCreateRequest,
-                                                          @RequestParam("photoProfile") MultipartFile photoProfile) throws IOException {
-        userService.createUser(userCreateRequest,photoProfile);
-        return ResponseEntity.ok(new ApiResponse<>(true,"Create user successful", null));
+    @PostMapping(value = "/users/create")
+    public ResponseEntity<ApiResponse<String>> createUser(@RequestBody UserCreateRequest userCreateRequest){
+        userService.createUser(userCreateRequest);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ApiResponse<>(true,"Create user successful", null));
     }
 
-    @PostMapping("/image")
-    public String uploadImage(@RequestParam("file")MultipartFile file) throws IOException {
-        return userService.uploadImage(file);
-    }
-
-    @PostMapping(value = "/image2")
-    public String uploadImage2(@RequestPart("file")MultipartFile file) throws IOException {
-        return userService.uploadImage2(file);
-    }
-
-    @PostMapping(value = "/image3")
-    public String uploadImage3(@RequestPart("file")MultipartFile file,
-                               @RequestPart("userEmail") String userEmail) throws IOException {
-        return imageService.saveImageProfile(file,userEmail);
+    //api dùng kèm với user create
+    //tạo ảnh profile với 1 file và user email
+    @PostMapping(value = "/users/profile-image/create",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<String>> createProfileImage(@RequestParam("file")MultipartFile file,
+                                                   @RequestParam("userEmail") String userEmail) throws IOException {
+        String urlImage = imageService.saveImageProfile(file,userEmail);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ApiResponse<>(true,"Save profile image successful", urlImage));
     }
 
 
