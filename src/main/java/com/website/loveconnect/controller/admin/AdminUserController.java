@@ -6,6 +6,7 @@ import com.website.loveconnect.dto.response.ApiResponse;
 import com.website.loveconnect.dto.response.ListUserResponse;
 import com.website.loveconnect.dto.response.UserUpdateResponse;
 import com.website.loveconnect.dto.response.UserViewResponse;
+import com.website.loveconnect.service.ImageService;
 import com.website.loveconnect.service.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ import java.io.IOException;
 public class AdminUserController {
 
     UserService userService;
+    ImageService imageService;
 
     //lấy tất cả người dùng
     @GetMapping(value = "/users")
@@ -76,15 +78,28 @@ public class AdminUserController {
     }
 
 
-//    @PostMapping(value = "/users/create",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//    public ResponseEntity<ApiResponse<String>> createUser(@RequestPart("user") UserCreateRequest userCreateRequest,
-//                                                          @RequestPart("photoProfile") MultipartFile photoProfile) throws IOException {
-//        userService.createUser(userCreateRequest,photoProfile);
-//        return ResponseEntity.ok(new ApiResponse<>(true,"Create user successful", null));
-//    }
+    @PostMapping(value = "/users/create",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<String>> createUser(@RequestParam("user") UserCreateRequest userCreateRequest,
+                                                          @RequestParam("photoProfile") MultipartFile photoProfile) throws IOException {
+        userService.createUser(userCreateRequest,photoProfile);
+        return ResponseEntity.ok(new ApiResponse<>(true,"Create user successful", null));
+    }
 
     @PostMapping("/image")
     public String uploadImage(@RequestParam("file")MultipartFile file) throws IOException {
         return userService.uploadImage(file);
     }
+
+    @PostMapping(value = "/image2")
+    public String uploadImage2(@RequestPart("file")MultipartFile file) throws IOException {
+        return userService.uploadImage2(file);
+    }
+
+    @PostMapping(value = "/image3")
+    public String uploadImage3(@RequestPart("file")MultipartFile file,
+                               @RequestPart("userEmail") String userEmail) throws IOException {
+        return imageService.saveImageProfile(file,userEmail);
+    }
+
+
 }

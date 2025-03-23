@@ -23,5 +23,6 @@ public interface UserService {
     void deleteUser(int idUser);
     void createUser(UserCreateRequest userRequest, MultipartFile photoProfile);
     String uploadImage(MultipartFile file) throws IOException;
+    String uploadImage2(MultipartFile file) throws IOException;
 
 }

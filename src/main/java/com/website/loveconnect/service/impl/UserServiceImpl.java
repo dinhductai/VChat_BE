@@ -301,6 +301,14 @@ public class UserServiceImpl implements UserService {
         return  cloudinary.url().generate(StringUtils.join(publicValue, ".", extension));
     }
 
+    @Override
+    public String uploadImage2(MultipartFile file) throws IOException {
+        Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+        String photoUrl = (String) uploadResult.get("url");
+
+        return photoUrl;
+    }
+
     //convert file ảnh từ multifile sang file
     private File convertFile(MultipartFile file) throws IOException {
         assert file.getOriginalFilename() != null;

@@ -19,4 +19,6 @@ public interface UserRepository extends JpaRepository<User, Integer>, UserReposi
         //cần trả về tuple
         Page<Object[]> getAllUser (Pageable pageable);
 
+        User getUserByEmail(String email);
+
 }
