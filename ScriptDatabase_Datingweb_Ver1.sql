@@ -10,7 +10,7 @@ USE dating_website;
 -- ====================================
 CREATE TABLE roles (
     role_id INT AUTO_INCREMENT PRIMARY KEY,
-    role_name VARCHAR(50) NOT NULL UNIQUE,
+	role_name ENUM('ADMIN','USER'),
     description TEXT,
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP
 );
@@ -158,7 +158,7 @@ CREATE TABLE messages (
 -- ====================================
 CREATE TABLE notifications (
     notification_id INT AUTO_INCREMENT PRIMARY KEY,
-    notification_type ENUM('match', 'message', 'like', 'system') NOT NULL,
+    notification_type ENUM('MATCH', 'MESSAGE', 'LIKE', 'SYSTEM') NOT NULL,
     content TEXT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
@@ -196,8 +196,8 @@ CREATE TABLE user_subscriptions (
     plan_id INT NOT NULL,
     start_date DATETIME NOT NULL,
     end_date DATETIME NOT NULL,
-    payment_status ENUM('pending', 'completed', 'failed', 'refunded') NOT NULL,
-    subscription_status ENUM('active', 'expired', 'cancelled') DEFAULT 'active',
+    payment_status ENUM('PENDING', 'COMPLETED', 'FAILED', 'REFUNED') NOT NULL,
+    subscription_status ENUM('ACTIVE', 'EXPIRED', 'CANCELLED') DEFAULT 'ACTIVE',
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
     FOREIGN KEY (plan_id) REFERENCES subscription_plans(plan_id)
 );
@@ -220,7 +220,7 @@ CREATE TABLE reports (
      report_type_id INT NOT NULL, -- Loại vi phạm
      additional_details TEXT, -- Chi tiết thêm (nếu có)
      report_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-     status ENUM('pending', 'reviewed', 'resolved') DEFAULT 'pending',
+     status_report ENUM('PENDING', 'CHECKING', 'RESOLVED') DEFAULT 'PENDING',
      reviewed_by INT,
      review_date DATETIME,
      FOREIGN KEY (reporter_id) REFERENCES users(user_id) ON DELETE CASCADE,
