@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 @Table(name = "users")
@@ -60,7 +61,26 @@ public class User implements Serializable {
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<UserInterest> userInterests;
+    private List<UserInterest> userInterests = new ArrayList<>();
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<UserRole> userRoles = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<UserNotification> userNotifications = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "reporter", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Report> createdReports = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "reported",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Report> receivedReports = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "reviewer",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Report> reviewedReports = new ArrayList<>();
 
 }
