@@ -4,6 +4,10 @@ import com.website.loveconnect.dto.request.MatchRequestDTO;
 import com.website.loveconnect.dto.response.MatchResponse;
 import com.website.loveconnect.enumpackage.MatchStatus;
 import com.website.loveconnect.service.MatchService;
+import com.website.loveconnect.service.impl.MatchServiceImpl;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,12 +15,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AdminMatchController {
-    private final MatchService matchService;
-
-    public AdminMatchController(MatchService matchService) {
-        this.matchService = matchService;
-    }
+    MatchService matchService;
 
     // Tạo một Match mới
     @PostMapping("/matches/create")
