@@ -97,5 +97,17 @@ public class AdminUserController {
                 .body(new ApiResponse<>(true,"Save profile image successful", urlImage));
     }
 
+    //lấy danh sách người dùng bằng filter
+    @GetMapping(value = "/users/search")
+    public ResponseEntity<ApiResponse<Page<ListUserResponse>>> getAllUserByFilters(
+            @RequestParam(name = "status",required = false) String status,
+            @RequestParam(name = "gender",required = false) String gender,
+            @RequestParam(name = "sort", required = false) String sort,
+            @RequestParam(name = "keyword", required = false) String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size){
+        return ResponseEntity.ok(new ApiResponse<>(true,"Get list user by filters successful", userService.getAllUserByFilters(status,gender,sort,keyword,page,size)));
+    }
+
 
 }

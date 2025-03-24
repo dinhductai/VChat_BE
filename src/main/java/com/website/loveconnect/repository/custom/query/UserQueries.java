@@ -49,4 +49,19 @@ public  class UserQueries {
             "p.photo_url, u.phone_number, u.email, up.gender, u.account_status, p.upload_date \n" +
             "ORDER BY p.upload_date DESC \n" +
             "LIMIT 1 ; ";
+
+    public static final String GET_USER_BY_FILTERS =
+            "Select u.user_id as userId, up.full_name as fullName, u.email as email, " +
+            "u.phone_number as phone, u.registration_date as registrationDate, u.account_status as accountStatus " +
+            "from users u " +
+            "join user_profiles up on up.user_id = u.user_id " +
+            "where u.account_status <> 'DELETED' " +
+            "and (:status IS NULL OR u.account_status = :status ) " +
+            "and (:gender IS NULL OR up.gender = :gender ) " +
+            "and (:keyword IS NULL OR up.full_name LIKE CONCAT('%', :keyword ,'%') ) " +
+            "ORDER BY " +
+            "CASE WHEN :sort = 'newest' THEN u.registration_date END DESC, " +
+            "CASE WHEN :sort = 'oldest' THEN u.registration_date END ASC, " +
+            "CASE WHEN :sort = 'name_asc' THEN up.full_name END ASC, " + //A-Z
+            "CASE WHEN :sort = 'name_desc' THEN up.full_name END DESC"; //từ Z-A
 }

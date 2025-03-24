@@ -20,6 +20,7 @@ import com.website.loveconnect.service.UserService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Tuple;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -68,12 +69,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public Page<ListUserResponse> getAllUser(int page, int size) {
         try {
-            if (page < 0) {
-                page = 0;
-            }
-            if (size < 1) {
-                size = 10;
-            }
+            if (page < 0) { page = 0; }
+            if (size < 1) { size = 10; }
             //set thông số page
             Pageable pageable = PageRequest.of(page, size);
             Page<Object[]> listUserObject = userRepository.getAllUser(pageable);
@@ -288,6 +285,31 @@ public class UserServiceImpl implements UserService {
                 };
             }
         }else throw new EmailAlreadyInUseException("Email was already in use");
+    }
+
+    //lấy danh sách người dùng bằng filter
+    @Override
+    public Page<ListUserResponse> getAllUserByFilters(String status, String gender, String sortType, String keyword, int page, int size) {
+        try {
+            if (page < 0) { page = 0; }
+            if (size < 1) { size = 10; }
+            Pageable pageable = PageRequest.of(page,size);
+            Page<Tuple> listUserFindByFilters = userRepository.getAllUserByFilters(status,gender,sortType,keyword,pageable);
+            if (listUserFindByFilters.isEmpty()) {
+                return Page.empty();
+            }
+            //map dữ liệu chuyển từ tuple qua dto
+            Page<ListUserResponse> mappedUserResponse = listUserFindByFilters.map(userMapper::toUserViewByFilters);
+            return mappedUserResponse;
+        }
+        catch (DataAccessException e) {
+            log.error("Lỗi truy vấn cơ sở dữ liệu: {}", e.getMessage());
+            throw new RuntimeException("Lỗi truy vấn cơ sở dữ liệu");
+        }
+        catch (Exception e) {
+            log.error("Lỗi không xác định: {}", e.getMessage(), e);
+            throw new RuntimeException("Đã xảy ra lỗi không xác định: " + e.getMessage());
+        }
     }
 
     private void validateUserId(int idUser)  {

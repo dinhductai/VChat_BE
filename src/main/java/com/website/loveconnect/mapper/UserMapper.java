@@ -1,6 +1,7 @@
 package com.website.loveconnect.mapper;
 
 import com.website.loveconnect.dto.request.UserUpdateRequest;
+import com.website.loveconnect.dto.response.ListUserResponse;
 import com.website.loveconnect.dto.response.UserUpdateResponse;
 import com.website.loveconnect.dto.response.UserViewResponse;
 import com.website.loveconnect.entity.User;
@@ -73,6 +74,18 @@ public class UserMapper {
                 .email(userUpdateRequest.getEmail())
                 .gender(userUpdateRequest.getGender())
                 .accountStatus(userUpdateRequest.getAccountStatus())
+                .build();
+    }
+
+    public ListUserResponse toUserViewByFilters(Tuple tuple) {
+        return ListUserResponse.builder()
+                .userId(tuple.get("userId", Integer.class))
+                .fullName(tuple.get("fullName", String.class))
+                .email(tuple.get("email", String.class))
+                .phone(tuple.get("phone", String.class))
+                .registrationDate(tuple.get("registrationDate", java.sql.Timestamp.class))
+                .accountStatus(tuple.get("accountStatus", String.class) != null ?
+                        AccountStatus.valueOf(tuple.get("accountStatus", String.class)) : null)
                 .build();
     }
 }

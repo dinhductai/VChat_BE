@@ -8,9 +8,7 @@ import com.website.loveconnect.dto.response.UserUpdateResponse;
 import com.website.loveconnect.dto.response.UserViewResponse;
 import com.website.loveconnect.entity.Interest;
 import org.springframework.data.domain.Page;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface UserService {
@@ -22,4 +20,5 @@ public interface UserService {
     UserUpdateResponse updateUser(Integer idUser,UserUpdateRequest userRequest);
     void deleteUser(int idUser);
     void createUser(UserCreateRequest userRequest);
+    Page<ListUserResponse> getAllUserByFilters(String status, String gender, String sortType, String keyword, int page, int size);
 }
