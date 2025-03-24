@@ -6,7 +6,9 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Entity
@@ -35,4 +37,8 @@ public class Match {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private MatchStatus status = MatchStatus.PENDING;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "match",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    private List<Message> messagesInMatch = new ArrayList<>();
 }

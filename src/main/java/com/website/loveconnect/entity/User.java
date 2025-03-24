@@ -83,4 +83,26 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "reviewer",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Report> reviewedReports = new ArrayList<>();
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "sender", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    private List<Match> createdMatch = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "receiver",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    private List<Match> receivedMatch = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "sender",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    private List<Message> listMessageOfSender = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "receiver",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    private List<Message> listMessageOfReceiver = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    private List<UserSubscription> listSubOfUser = new ArrayList<>();
+
+
+
 }
