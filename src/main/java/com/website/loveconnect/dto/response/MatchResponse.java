@@ -2,11 +2,15 @@ package com.website.loveconnect.dto.response;
 
 import com.website.loveconnect.entity.Match;
 import com.website.loveconnect.enumpackage.MatchStatus;
-import lombok.Data;
+import lombok.*;
 
 import java.util.Date;
 
-@Data
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class MatchResponse {
     private Integer matchId;
     private Integer senderId;
@@ -16,8 +20,8 @@ public class MatchResponse {
 
     public MatchResponse(Match match) {
         this.matchId = match.getMatchId();
-        this.senderId = match.getSender().getId();
-        this.receiverId = match.getReceiver().getId();
+        this.senderId = match.getSender().getUserId();
+        this.receiverId = match.getReceiver().getUserId();
         this.matchDate = match.getMatchDate();
         this.status = match.getStatus();
     }

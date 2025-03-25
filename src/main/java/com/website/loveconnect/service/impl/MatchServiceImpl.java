@@ -44,7 +44,7 @@ public class MatchServiceImpl implements MatchService {
     }
     @Override
     public List<MatchResponse> getMatchesByUser(Integer userId) {
-        List<Match> matches = matchRepository.findBySenderIdOrReceiverId(userId, userId);
+        List<Match> matches = matchRepository.findBySenderUserIdOrReceiverUserId(userId, userId);
         return matches.stream()
                 .map(MatchResponse::new)
                 .collect(Collectors.toList());

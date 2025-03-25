@@ -59,7 +59,8 @@ public class ImageServiceImpl implements ImageService {
             }
             String photoUrl = (String) uploadResult.get("url");
 
-            User user = userRepository.getUserByEmail(userEmail);
+            User user = userRepository.getUserByEmail(userEmail)
+                    .orElseThrow(()->new UserNotFoundException("User not found"));
             if (user == null) {
                 throw new UserNotFoundException("User not found");
             }

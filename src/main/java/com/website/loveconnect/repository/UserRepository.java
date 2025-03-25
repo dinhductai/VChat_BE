@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer>, UserRepositoryCustom {
         // lấy tất cả user với tất cả trạng thái trừ deleted
@@ -19,6 +21,8 @@ public interface UserRepository extends JpaRepository<User, Integer>, UserReposi
         //cần trả về tuple
         Page<Object[]> getAllUser (Pageable pageable);
 
-        User getUserByEmail(String email);
+        Optional<User> getUserByEmail(String email);
+
+        boolean existsByEmail(String email);
 
 }

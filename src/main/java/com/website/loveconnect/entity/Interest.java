@@ -21,7 +21,7 @@ public class Interest implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "interest_id")
-    private Integer id;
+    private Integer interestId;
 
     @Column(name = "interest_name",nullable = false,unique = true)
     private String interestName;

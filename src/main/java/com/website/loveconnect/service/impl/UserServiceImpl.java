@@ -33,6 +33,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -198,7 +200,7 @@ public class UserServiceImpl implements UserService {
             user.setEmail(userRequest.getEmail());
             user.setAccountStatus(userRequest.getAccountStatus());
 
-            Optional<UserProfile> userProfileOptional = userProfileRepository.findByUser_Id(idUser);
+            Optional<UserProfile> userProfileOptional = userProfileRepository.findByUser_UserId(idUser);
             UserProfile userProfile = userProfileOptional.orElseThrow(()->new RuntimeException("User with id "+ idUser + " not found"));
             userProfile.setFullName(userRequest.getFullName());
             userProfile.setBirthDate(userRequest.getBirthDate());
@@ -258,13 +260,17 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Email or Password cannot be blank");
         }
         //kiểm tra xem có trùng email ai không
-        User existingUser = userRepository.getUserByEmail(userRequest.getEmail());
-        if(existingUser == null) {
+        boolean existingUser = false;
+        existingUser = userRepository.existsByEmail(userRequest.getEmail());
+        if(existingUser == false) {
             User newUser = new User();
             UserProfile newUserProfile = new UserProfile();
 
             newUser.setEmail(userRequest.getEmail());
-            newUser.setPassword(userRequest.getPassword());
+            //tạo mã hóa với độ phức tạp 10
+            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+            String passwordEncoded = passwordEncoder.encode(userRequest.getPassword());
+            newUser.setPassword(passwordEncoded);
             newUser.setPhoneNumber(userRequest.getPhoneNumber());
             newUser.setAccountStatus(AccountStatus.ACTIVE);
 
