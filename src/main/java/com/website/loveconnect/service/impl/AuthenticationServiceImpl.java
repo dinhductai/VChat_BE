@@ -45,8 +45,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     protected String SIGNED_KEY;
 
 
+    //hàm xác thực tài khoản người dùng bằng email và password
     @Override
-    public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest) {
+    public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest) throws JOSEException {
+        //tìm thông tin người dùng bằng email
         User user = userRepository.getUserByEmail(authenticationRequest.getEmail())
                 .orElseThrow(()->new UserNotFoundException("User not found with email: " +
                         authenticationRequest.getEmail()));
@@ -59,6 +61,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new BadCredentialsException("Incorrect email or password");
         }
 
+        //dựa vào iduser,tìm userprofile để lấy tên tài khoản cho token payload
         UserProfile userProfile = userProfileRepository.findByUser_UserId(user.getUserId())
                 .orElseThrow(()-> new UserNotFoundException("User not found with id: " + user.getUserId()));
 
@@ -69,6 +72,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .build();
     }
 
+
+    //hàm kiểm tra token hợp lệ,trạng thái của token
     @Override
     public IntrospectResponse introspect(IntrospectRequest introspectRequest) throws AuthenticationException {
         String token = introspectRequest.getToken();
@@ -91,24 +96,27 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     }
 
+    //hàm sinh token bằng HS512 và secret key
     private String generateToken(String userName) throws JOSEException {
         //thuật toán mã hóa header
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
         //set claim
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject(userName)//đại diện cho user đăng nhập
-                .issuer("website.com")//xác định token issue từ đâu ra
-                .issueTime(new Date())
+                .issuer("website.com")//xác định token issue từ đâu ra, xác định nguồn gốc của token
+                .issueTime(new Date()) //thời gian tạo
                 .expirationTime(new Date(
-                        //set thời gian token hết hạn là 1 giờ
+                        //set thời gian token hết hạn là 1 giờ sau đó
                         Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
                 ))
                 .build();
 
+        //set claim cho payload
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
 
         JWSObject jwsObject = new JWSObject(header,payload);
         try {
+            //ký với secret key
             jwsObject.sign(new MACSigner(SIGNED_KEY.getBytes(StandardCharsets.UTF_8)));
             return jwsObject.serialize();
         } catch (JOSEException e) {

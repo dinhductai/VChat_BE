@@ -1,6 +1,7 @@
 package com.website.loveconnect.controller.auth;
 
 import com.cloudinary.Api;
+import com.nimbusds.jose.JOSEException;
 import com.website.loveconnect.dto.request.AuthenticationRequest;
 import com.website.loveconnect.dto.request.IntrospectRequest;
 import com.website.loveconnect.dto.response.ApiResponse;
@@ -31,6 +32,8 @@ public class AuthenticationController {
             checkAuthenticate = authenticationService.authenticate(authenticationRequest);
         } catch (AuthenticationException e) {
             throw new RuntimeException(e);
+        } catch (JOSEException e) {
+            throw new RuntimeException(e);
         }
         return ResponseEntity.ok(ApiResponse.<AuthenticationResponse>builder()
                 .success(true)
@@ -50,6 +53,8 @@ public class AuthenticationController {
                     .data(introspectResponse)
                     .build());
         } catch (AuthenticationException e) {
+            throw new RuntimeException(e);
+        } catch (JOSEException e) {
             throw new RuntimeException(e);
         }
     }

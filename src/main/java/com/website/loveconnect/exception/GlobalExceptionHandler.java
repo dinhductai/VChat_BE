@@ -1,11 +1,11 @@
 package com.website.loveconnect.exception;
 
+import com.nimbusds.jose.JOSEException;
 import com.website.loveconnect.exception.exceptionmodel.ErrorDetail;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -151,9 +151,9 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorDetail, HttpStatus.UNAUTHORIZED);
     }
 
-    // Xử lý các AuthenticationException khác (nếu cần)
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<ErrorDetail> handleGenericAuthenticationException(AuthenticationException ex, WebRequest request) {
+    // Xử lý các AuthenticationException chung
+    @ExceptionHandler(GenericAuthenticationException.class)
+    public ResponseEntity<ErrorDetail> handleGenericAuthenticationException(GenericAuthenticationException ex, WebRequest request) {
         ErrorDetail errorDetail = new ErrorDetail(
                 LocalDateTime.now(),
                 "Authentication failed: " + ex.getMessage(),
@@ -164,7 +164,7 @@ public class GlobalExceptionHandler {
 
 
     // Xử lý lỗi JOSEException (liên quan đến JWT)
-    @ExceptionHandler(com.nimbusds.jose.JOSEException.class)
+    @ExceptionHandler(JOSEException.class)
     public ResponseEntity<ErrorDetail> handleJoseException(com.nimbusds.jose.JOSEException ex, WebRequest request) {
         ErrorDetail errorDetail = new ErrorDetail(
                 LocalDateTime.now(),
@@ -186,8 +186,8 @@ public class GlobalExceptionHandler {
     }
 
     // Xử lý AuthenticationException riêng cho introspect
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<ErrorDetail> handleIntrospectAuthenticationException(AuthenticationException ex, WebRequest request) {
+    @ExceptionHandler(IntrospectAuthenticationException.class)
+    public ResponseEntity<ErrorDetail> handleIntrospectAuthenticationException(IntrospectAuthenticationException ex, WebRequest request) {
         ErrorDetail errorDetail = new ErrorDetail(
                 LocalDateTime.now(),
                 "Token validation failed: " + ex.getMessage(),
