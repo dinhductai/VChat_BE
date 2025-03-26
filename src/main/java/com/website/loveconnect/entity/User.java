@@ -15,6 +15,7 @@ import java.util.Map;
 @Entity
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class User implements Serializable {

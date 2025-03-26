@@ -64,4 +64,19 @@ public  class UserQueries {
             "CASE WHEN :sort = 'oldest' THEN u.registration_date END ASC, " +
             "CASE WHEN :sort = 'name_asc' THEN up.full_name END ASC, " + //A-Z
             "CASE WHEN :sort = 'name_desc' THEN up.full_name END DESC"; //từ Z-A
+
+    public static final String EXIST_USER_BY_ROLE_ADMIN_AND_STATUS_ACTIVE =
+            "SELECT EXISTS ( SELECT 1 FROM users u " +
+                    "JOIN user_roles ur ON u.user_id = ur.user_id " +
+                    "JOIN roles r ON ur.role_id = r.role_id " +
+                    "WHERE r.role_name = 'ADMIN' " +
+                    "AND u.account_status = 'ACTIVE' " +
+                    ") AS admin_exists ";
+
+    public static final String GET_ALL_USER =
+            " select u.user_id, up.full_name, u.email, " +
+                    " u.phone_number, u.registration_date, u.account_status " +
+                    "from users u " +
+                    "join user_profiles up on up.user_id = u.user_id " +
+                    "where u.account_status <> 'DELETED' ";
 }
