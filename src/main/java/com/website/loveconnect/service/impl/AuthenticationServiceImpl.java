@@ -80,6 +80,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             //lấy thời gian hết hạn
             Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
             return IntrospectResponse.builder()
+                    //check token sau tg hiện tại và đc xác thực
                     .valid(checkVerified && expiryTime.after(new Date()))
                     .build();
         } catch (JOSEException e) {
@@ -90,15 +91,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     }
 
-    private String generateToken(String userName){
+    private String generateToken(String userName) throws JOSEException {
         //thuật toán mã hóa header
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
-
+        //set claim
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject(userName)//đại diện cho user đăng nhập
                 .issuer("website.com")//xác định token issue từ đâu ra
                 .issueTime(new Date())
                 .expirationTime(new Date(
+                        //set thời gian token hết hạn là 1 giờ
                         Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
                 ))
                 .build();
@@ -110,8 +112,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             jwsObject.sign(new MACSigner(SIGNED_KEY.getBytes(StandardCharsets.UTF_8)));
             return jwsObject.serialize();
         } catch (JOSEException e) {
-            log.error("Cannot create token",e);
-            throw new RuntimeException(e);
+            log.error("Cannot create token", e);
+            throw e;
         }
     }
 }

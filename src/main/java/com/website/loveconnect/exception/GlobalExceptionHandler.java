@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
 import javax.naming.AuthenticationException;
+import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -116,4 +118,81 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorDetail, HttpStatus.UNAUTHORIZED);
     }
 
+    // Xử lý sai email/password
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorDetail> handleBadCredentialsException(BadCredentialsException ex, WebRequest request) {
+        ErrorDetail errorDetail = new ErrorDetail(
+                LocalDateTime.now(),
+                "Incorrect email or password",
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetail, HttpStatus.UNAUTHORIZED);
+    }
+
+    // Xử lý user không tồn tại
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ErrorDetail> handleUsernameNotFoundException(UsernameNotFoundException ex, WebRequest request) {
+        ErrorDetail errorDetail = new ErrorDetail(
+                LocalDateTime.now(),
+                "User not found",
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetail, HttpStatus.UNAUTHORIZED);
+    }
+
+    // Xử lý token hết hạn (nếu dùng JWT)
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<ErrorDetail> handleExpiredJwtException(ExpiredJwtException ex, WebRequest request) {
+        ErrorDetail errorDetail = new ErrorDetail(
+                LocalDateTime.now(),
+                "Token has expired",
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetail, HttpStatus.UNAUTHORIZED);
+    }
+
+    // Xử lý các AuthenticationException khác (nếu cần)
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorDetail> handleGenericAuthenticationException(AuthenticationException ex, WebRequest request) {
+        ErrorDetail errorDetail = new ErrorDetail(
+                LocalDateTime.now(),
+                "Authentication failed: " + ex.getMessage(),
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetail, HttpStatus.UNAUTHORIZED);
+    }
+
+
+    // Xử lý lỗi JOSEException (liên quan đến JWT)
+    @ExceptionHandler(com.nimbusds.jose.JOSEException.class)
+    public ResponseEntity<ErrorDetail> handleJoseException(com.nimbusds.jose.JOSEException ex, WebRequest request) {
+        ErrorDetail errorDetail = new ErrorDetail(
+                LocalDateTime.now(),
+                "Error processing JWT: " + ex.getMessage(),
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetail, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    // Xử lý lỗi ParseException (liên quan đến parsing JWT)
+    @ExceptionHandler(ParseException.class)
+    public ResponseEntity<ErrorDetail> handleParseException(ParseException ex, WebRequest request) {
+        ErrorDetail errorDetail = new ErrorDetail(
+                LocalDateTime.now(),
+                "Invalid token format: " + ex.getMessage(),
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetail, HttpStatus.BAD_REQUEST);
+    }
+
+    // Xử lý AuthenticationException riêng cho introspect
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorDetail> handleIntrospectAuthenticationException(AuthenticationException ex, WebRequest request) {
+        ErrorDetail errorDetail = new ErrorDetail(
+                LocalDateTime.now(),
+                "Token validation failed: " + ex.getMessage(),
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetail, HttpStatus.UNAUTHORIZED);
+    }
 }
