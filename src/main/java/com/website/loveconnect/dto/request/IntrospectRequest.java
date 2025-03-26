@@ -1,4 +1,4 @@
-package com.website.loveconnect.dto.response;
+package com.website.loveconnect.dto.request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -9,8 +9,6 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AuthenticationResponse {
+public class IntrospectRequest {
     String token;
-    boolean authenticated;//true nếu người dùng cung cấp username password đúng
-
 }

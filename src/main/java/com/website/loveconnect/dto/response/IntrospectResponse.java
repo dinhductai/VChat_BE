@@ -9,8 +9,6 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AuthenticationResponse {
-    String token;
-    boolean authenticated;//true nếu người dùng cung cấp username password đúng
-
+public class IntrospectResponse {
+    boolean valid;
 }
