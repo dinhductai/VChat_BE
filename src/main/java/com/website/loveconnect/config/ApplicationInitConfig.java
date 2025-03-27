@@ -43,8 +43,6 @@ public class ApplicationInitConfig {
         return args -> {
             //check trong database chưa có bất kì tài khoản admin nào
             if(userRepository.existsByRoleAdminAndStatusActive() == 0) {
-//                var roles = new HashSet<String>();
-//                roles.add(RoleName.ADMIN.name());
                 User user = User.builder()
                         .email("admin@admin.com")
                         .password(passwordEncoder.encode("admin"))
