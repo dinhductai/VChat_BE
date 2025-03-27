@@ -109,6 +109,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         //set thời gian token hết hạn là 1 giờ sau đó
                         Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
                 ))
+                .claim("scope","custom")
                 .build();
 
         //set claim cho payload
