@@ -3,12 +3,15 @@ package com.website.loveconnect.repository;
 import com.website.loveconnect.entity.User;
 import com.website.loveconnect.repository.custom.UserRepositoryCustom;
 import com.website.loveconnect.repository.custom.query.UserQueries;
+import jakarta.persistence.Tuple;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -24,4 +27,7 @@ public interface UserRepository extends JpaRepository<User, Integer>, UserReposi
 
         @Query(value = UserQueries.EXIST_USER_BY_ROLE_ADMIN_AND_STATUS_ACTIVE,nativeQuery = true)
         Long existsByRoleAdminAndStatusActive();
+
+        @Query(value = UserQueries.GET_ALL_USER_ROLE_BY_USERID,nativeQuery = true)
+        List<String> getUserRoleByUserId(Integer idUser);
 }

@@ -15,6 +15,7 @@ import com.website.loveconnect.exception.UserNotFoundException;
 import com.website.loveconnect.repository.UserProfileRepository;
 import com.website.loveconnect.repository.UserRepository;
 import com.website.loveconnect.service.AuthenticationService;
+import jakarta.persistence.Tuple;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -31,6 +32,7 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.List;
 
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -65,7 +67,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         UserProfile userProfile = userProfileRepository.findByUser_UserId(user.getUserId())
                 .orElseThrow(()-> new UserNotFoundException("User not found with id: " + user.getUserId()));
 
-        String token = generateToken(userProfile.getFullName());
+        //lấy các role thuộc user đang đăng nhập để phân quyền
+        List<String> listRoleUser = userRepository.getUserRoleByUserId(user.getUserId());
+        String roleString =  String.join(" ", listRoleUser);
+        String token = generateToken(userProfile.getFullName(),roleString);
         return AuthenticationResponse.builder()
                 .token(token)
                 .authenticated(true)
@@ -97,7 +102,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     //hàm sinh token bằng HS512 và secret key
-    private String generateToken(String userName) throws JOSEException {
+    private String generateToken(String userName,String roleString) throws JOSEException {
         //thuật toán mã hóa header
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
         //set claim
@@ -109,7 +114,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         //set thời gian token hết hạn là 1 giờ sau đó
                         Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
                 ))
-                .claim("scope","custom")
+                .claim("scope",roleString)
                 .build();
 
         //set claim cho payload

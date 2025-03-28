@@ -79,4 +79,11 @@ public  class UserQueries {
                     "from users u " +
                     "join user_profiles up on up.user_id = u.user_id " +
                     "where u.account_status <> 'DELETED' ";
+
+    public static final String GET_ALL_USER_ROLE_BY_USERID =
+            "SELECT  r.role_name " +
+                    "FROM users u " +
+                    "INNER JOIN user_roles ur ON u.user_id = ur.user_id " +
+                    "INNER JOIN roles r ON ur.role_id = r.role_id " +
+                    "WHERE u.user_id = :idUser ;";
 }
