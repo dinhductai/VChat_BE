@@ -6,10 +6,7 @@ import com.website.loveconnect.service.PermissionService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -21,5 +18,15 @@ public class AdminPermissionController {
     @PostMapping(value = "/permission/create")
     public void createPermission(@RequestBody PermissionRequest permissionRequest) {
         permissionService.createPermission(permissionRequest);
+    }
+
+    @PutMapping(value = "/permission/update")
+    public void updatePermission(@RequestBody PermissionRequest permissionRequest) {
+        permissionService.updatePermission(permissionRequest);
+    }
+
+    @DeleteMapping(value = "/permission/del/{permissionName}")
+    public void deletePermission(@PathVariable("permissionName") String permissionName) {
+        permissionService.deletePermission(permissionName);
     }
 }
