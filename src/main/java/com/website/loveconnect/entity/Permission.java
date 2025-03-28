@@ -20,9 +20,8 @@ public class Permission {
     @Column(name = "permission_id")
     private Integer permissionId;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "permission_name",nullable = false,unique = true)
-    private RoleName permissionName;
+    private String permissionName;
 
     @Column(name = "description")
     private String description;
