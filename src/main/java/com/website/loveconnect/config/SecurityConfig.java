@@ -1,5 +1,6 @@
 package com.website.loveconnect.config;
 
+import com.website.loveconnect.enumpackage.RoleName;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +29,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST,"/api/auth/log-in","/api/admin/users/create")
                 .permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/admin/users/{userId}")
-                .hasAuthority("ROLE_ADMIN")
+                .hasRole(RoleName.ADMIN.name())
                 .anyRequest().authenticated());
 
         //bản thân là resource server nên dùng
