@@ -81,10 +81,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorDetail> handleDataAccessException(DataAccessException ex, WebRequest request) {
         ErrorDetail errorDetail = new ErrorDetail(
                 LocalDateTime.now(),
-                "Database error occurred",
+                "Database error occurred: " + ex.getMessage(),
                 request.getDescription(false)
         );
-        return new ResponseEntity<>(errorDetail, HttpStatus.INTERNAL_SERVER_ERROR);// trường hợp cho cả ko tìm thấy user
+        return new ResponseEntity<>(errorDetail, HttpStatus.INTERNAL_SERVER_ERROR);
+    // trường hợp cho cả ko tìm thấy user
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
@@ -194,5 +195,26 @@ public class GlobalExceptionHandler {
                 request.getDescription(false)
         );
         return new ResponseEntity<>(errorDetail, HttpStatus.UNAUTHORIZED);
+    }
+
+
+    @ExceptionHandler(PermissionAlreadyExistException.class)
+    public ResponseEntity<ErrorDetail> handlePermissionAlreadyExistException(PermissionAlreadyExistException ex, WebRequest request) {
+        ErrorDetail errorDetail = new ErrorDetail(
+                LocalDateTime.now(),
+                ex.getMessage(),
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetail, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(PermissionNotFoundException.class)
+    public ResponseEntity<ErrorDetail> handlePermissionNotFoundException(PermissionNotFoundException ex, WebRequest request) {
+        ErrorDetail errorDetail = new ErrorDetail(
+                LocalDateTime.now(),
+                "Permission does not exist", // Giữ lỗi cụ thể từ exception
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetail, HttpStatus.NOT_FOUND);
     }
 }

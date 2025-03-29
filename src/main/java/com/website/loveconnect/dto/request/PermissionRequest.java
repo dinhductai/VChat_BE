@@ -12,5 +12,4 @@ import java.sql.Timestamp;
 public class PermissionRequest {
     private String permissionName;
     private String description;
-    private Timestamp created;
 }

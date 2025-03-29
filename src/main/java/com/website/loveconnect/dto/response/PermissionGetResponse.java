@@ -1,6 +1,5 @@
 package com.website.loveconnect.dto.response;
 
-
 import lombok.*;
 
 import java.sql.Timestamp;
@@ -10,8 +9,9 @@ import java.sql.Timestamp;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PermissionResponse {
+public class PermissionGetResponse {
+    private Integer permissionId;
     private String permissionName;
     private String description;
-
+    private Timestamp created;
 }
