@@ -1,5 +1,6 @@
 package com.website.loveconnect.controller.admin;
 
+import com.website.loveconnect.dto.request.PermissionAttachRequest;
 import com.website.loveconnect.dto.request.PermissionRequest;
 import com.website.loveconnect.dto.request.PermissionUpdateRequest;
 import com.website.loveconnect.dto.response.ApiResponse;
@@ -47,6 +48,12 @@ public class AdminPermissionController {
         List<PermissionGetResponse> listPermission = permissionService.getPermissions();
         return ResponseEntity.ok(new ApiResponse<>(true,"Get list permission successful",listPermission));
 
+    }
+
+    @PostMapping(value = "/permission/attach")
+    public ResponseEntity<ApiResponse<String>> attachPermission(@RequestBody PermissionAttachRequest permissionAttachRequest) {
+        permissionService.attachPermission(permissionAttachRequest);
+        return ResponseEntity.ok(new ApiResponse<>(true,"Attach permission successful",null));
     }
 
 }
