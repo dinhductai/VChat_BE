@@ -11,6 +11,7 @@ import com.website.loveconnect.entity.RolePermission;
 import com.website.loveconnect.exception.PermissionAlreadyExistException;
 import com.website.loveconnect.exception.PermissionNotFoundException;
 import com.website.loveconnect.exception.ResourceEmptyException;
+import com.website.loveconnect.exception.RoleNotFoundException;
 import com.website.loveconnect.mapper.PermissionMapper;
 import com.website.loveconnect.repository.PermissionRepository;
 import com.website.loveconnect.repository.RolePermissionRepository;
@@ -104,10 +105,9 @@ public class PermissionServiceImpl implements PermissionService {
         }
 
         //yêu cầu trong database chỉ có 2 trường role duy nhất là ADMIN và USER
-        Role role = roleRepository.findByRoleName(permissionAttachRequest.getRoleName());
-        if(role == null){
-            throw new ResourceEmptyException("Role doesn't exist");
-        }
+        Role role = roleRepository.findByRoleName(permissionAttachRequest.getRoleName())
+                .orElseThrow(()-> new RoleNotFoundException("Role doesn't exist"));
+
         List<RolePermission> listRolePermission = new ArrayList<>();
         for(Permission permission : listPermission){
             RolePermission rolePermission = new RolePermission();

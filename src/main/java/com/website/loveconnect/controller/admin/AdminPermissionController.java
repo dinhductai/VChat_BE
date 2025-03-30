@@ -50,7 +50,7 @@ public class AdminPermissionController {
 
     }
 
-    @PostMapping(value = "/permission/attach")
+    @PostMapping(value = "/permissions/attach")
     public ResponseEntity<ApiResponse<String>> attachPermission(@RequestBody PermissionAttachRequest permissionAttachRequest) {
         permissionService.attachPermission(permissionAttachRequest);
         return ResponseEntity.ok(new ApiResponse<>(true,"Attach permission successful",null));

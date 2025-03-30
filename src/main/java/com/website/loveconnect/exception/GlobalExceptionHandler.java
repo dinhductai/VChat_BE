@@ -227,4 +227,14 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorDetail, HttpStatus.NO_CONTENT);
     }
+
+    @ExceptionHandler(RoleNotFoundException.class)
+    public ResponseEntity<ErrorDetail> handleRoleNotFoundException(RoleNotFoundException ex, WebRequest request) {
+        ErrorDetail errorDetail = new ErrorDetail(
+                LocalDateTime.now(),
+                ex.getMessage(), // Giữ lỗi cụ thể từ exception
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetail, HttpStatus.NOT_FOUND);
+    }
 }
