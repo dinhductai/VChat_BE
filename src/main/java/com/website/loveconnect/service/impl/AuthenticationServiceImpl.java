@@ -15,7 +15,6 @@ import com.website.loveconnect.exception.UserNotFoundException;
 import com.website.loveconnect.repository.UserProfileRepository;
 import com.website.loveconnect.repository.UserRepository;
 import com.website.loveconnect.service.AuthenticationService;
-import jakarta.persistence.Tuple;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

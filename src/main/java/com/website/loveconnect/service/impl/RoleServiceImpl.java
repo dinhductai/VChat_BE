@@ -28,4 +28,10 @@ public class RoleServiceImpl implements RoleService {
         List<Tuple> listRolePermission = roleRepository.getALlRoleAndPermission();
         return roleMapper.toRoleUserResponse(listRolePermission);
     }
+
+    @Override
+    public List<String> getAllPermissionByRoleName(String roleName) {
+        List<Tuple> listPermissionByRoleName = roleRepository.getPermissionByRoleName(roleName);
+        return roleMapper.toListPermissionByRoleName(listPermissionByRoleName);
+    }
 }

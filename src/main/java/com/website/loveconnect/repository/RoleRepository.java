@@ -15,4 +15,7 @@ public interface RoleRepository extends JpaRepository<Role, Integer> {
 
     @Query(value = RoleQueries.GET_ROLE_AND_PERMISSIONS,nativeQuery = true)
     List<Tuple> getALlRoleAndPermission();
+
+    @Query(value = RoleQueries.GET_PERMISSION_BY_ROLE_NAME,nativeQuery = true)
+    List<Tuple> getPermissionByRoleName(String roleName);
 }

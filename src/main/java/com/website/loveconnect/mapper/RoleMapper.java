@@ -9,6 +9,7 @@ import jakarta.persistence.Tuple;
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,6 +21,7 @@ public class RoleMapper {
     public List<RoleGetResponse> toRoleUserResponse(List<Tuple> listRoleUser) {
 
         List<RoleGetResponse> listRoleGetResponse = listRoleUser.stream()
+                //để đơn giản có thể dùng vòng for
                 .map(tuple -> {
                     //lấy dữ liệu JSON permissions từ Tuple, nếu null thì trả về "[]"
                     String permissionJson = tuple.get("permissions") != null ?
@@ -47,5 +49,13 @@ public class RoleMapper {
             e.printStackTrace();
             return Collections.emptyList(); // trả về danh sách rỗng nếu có lỗi
         }
+    }
+
+    public List<String> toListPermissionByRoleName(List<Tuple> listPermission) {
+        List<String> listPermissionName = listPermission.stream()
+                .map(tuple -> {
+                   return tuple.get("permissionName", String.class);
+                }).collect(Collectors.toList());
+        return listPermissionName;
     }
 }
