@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -15,6 +17,8 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtGra
 import org.springframework.security.web.SecurityFilterChain;
 
 import javax.crypto.spec.SecretKeySpec;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Configuration
@@ -46,12 +50,28 @@ public class SecurityConfig {
     @Bean
     public JwtAuthenticationConverter jwtConverter() {
         //set lại chuẩn autho
-        JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        grantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
+            List<GrantedAuthority> authorities = new ArrayList<>();
+            String scope = jwt.getClaimAsString("scope");
+            if (scope != null) {
+                String[] scopeItems = scope.split(" ");
+                for (String item : scopeItems) {
+                    if (item.equals("ADMIN")) {
+                        //nếu là ADMIN, thêm ROLE_ADMIN
+                        authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+                    } else if (item.equals("USER")) {
+                        //nếu là USER, thêm ROLE_USER
+                        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+                    } else {
+                        // nếu không phải role, coi là permission và giữ nguyên
+                        authorities.add(new SimpleGrantedAuthority(item));
+                    }
+                }
+            }
+            return authorities;
+        });
         return jwtAuthenticationConverter;
-
     }
 
 

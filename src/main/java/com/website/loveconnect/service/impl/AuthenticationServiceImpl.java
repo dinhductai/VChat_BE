@@ -12,6 +12,8 @@ import com.website.loveconnect.dto.response.IntrospectResponse;
 import com.website.loveconnect.entity.User;
 import com.website.loveconnect.entity.UserProfile;
 import com.website.loveconnect.exception.UserNotFoundException;
+import com.website.loveconnect.mapper.RoleMapper;
+import com.website.loveconnect.repository.RoleRepository;
 import com.website.loveconnect.repository.UserProfileRepository;
 import com.website.loveconnect.repository.UserRepository;
 import com.website.loveconnect.service.AuthenticationService;
@@ -31,7 +33,9 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -40,6 +44,8 @@ import java.util.List;
 public class AuthenticationServiceImpl implements AuthenticationService {
     UserProfileRepository userProfileRepository;
     UserRepository userRepository;
+    RoleRepository roleRepository;
+    RoleMapper roleMapper;
 
     @NonFinal
     @Value("${jwt.secret}")
@@ -68,8 +74,33 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         //lấy các role thuộc user đang đăng nhập để phân quyền
         List<String> listRoleUser = userRepository.getUserRoleByUserId(user.getUserId());
-        String roleString =  String.join(" ", listRoleUser);
-        String token = generateToken(userProfile.getFullName(),roleString);
+        StringBuilder scopeBuilder = new StringBuilder();
+        // Thêm role vào đầu tiên
+        for (String role : listRoleUser) {
+            if (scopeBuilder.length() > 0) {
+                scopeBuilder.append(" "); // Thêm dấu cách nếu không phải phần tử đầu
+            }
+            scopeBuilder.append(role);
+        }
+
+        // Tích lũy permission từ tất cả role, loại bỏ trùng lặp
+        Set<String> uniquePermissions = new HashSet<>(); // Set để loại bỏ trùng lặp
+        for (String role : listRoleUser) {
+            List<String> listPermissionByRole = roleMapper
+                    .toListPermissionByRoleName(roleRepository.getPermissionByRoleName(role));
+            uniquePermissions.addAll(listPermissionByRole); // Thêm tất cả permission, tự động loại trùng
+        }
+
+        // Thêm permission vào scope, tách permission riêng ra
+        for (String permission : uniquePermissions) {
+            if (scopeBuilder.length() > 0) {
+                scopeBuilder.append(" "); // Thêm dấu cách
+            }
+            scopeBuilder.append(permission);
+        }
+
+        String scope = scopeBuilder.toString();
+        String token = generateToken(userProfile.getFullName(),scope);
         return AuthenticationResponse.builder()
                 .token(token)
                 .authenticated(true)
