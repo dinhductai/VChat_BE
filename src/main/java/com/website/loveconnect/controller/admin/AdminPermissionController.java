@@ -2,12 +2,16 @@ package com.website.loveconnect.controller.admin;
 
 import com.website.loveconnect.dto.request.PermissionRequest;
 import com.website.loveconnect.dto.request.PermissionUpdateRequest;
+import com.website.loveconnect.dto.response.ApiResponse;
 import com.website.loveconnect.dto.response.PermissionGetResponse;
 import com.website.loveconnect.entity.Permission;
 import com.website.loveconnect.service.PermissionService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,23 +24,29 @@ public class AdminPermissionController {
     PermissionService permissionService;
 
     @PostMapping(value = "/permissions/create")
-    public void createPermission(@RequestBody PermissionRequest permissionRequest) {
+    public ResponseEntity<ApiResponse<String>> createPermission(@RequestBody PermissionRequest permissionRequest) {
         permissionService.createPermission(permissionRequest);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ApiResponse<>(true,"Create permission successful",null));
     }
 
     @PutMapping(value = "/permissions/update")
-    public void updatePermission(@RequestBody PermissionUpdateRequest permissionRequest) {
+    public ResponseEntity<ApiResponse<String>> updatePermission(@RequestBody PermissionUpdateRequest permissionRequest) {
         permissionService.updatePermission(permissionRequest);
+        return ResponseEntity.ok(new ApiResponse<>(true,"Update permission successful",null));
     }
 
     @DeleteMapping(value = "/permissions/del/{permissionName}")
-    public void deletePermission(@PathVariable("permissionName") String permissionName) {
+    public ResponseEntity<ApiResponse<String>> deletePermission(@PathVariable("permissionName") String permissionName) {
         permissionService.deletePermission(permissionName);
+        return ResponseEntity.ok(new ApiResponse<>(true,"Delete permission successful",null));
     }
 
     @GetMapping(value = "/permissions")
-    public List<PermissionGetResponse> getPermissions() {
-        return permissionService.getPermissions();
+    public ResponseEntity<ApiResponse<List<PermissionGetResponse>>> getPermissions() {
+        List<PermissionGetResponse> listPermission = permissionService.getPermissions();
+        return ResponseEntity.ok(new ApiResponse<>(true,"Get list permission successful",listPermission));
+
     }
 
 }

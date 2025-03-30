@@ -217,4 +217,14 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorDetail, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(ResourceEmptyException.class)
+    public ResponseEntity<ErrorDetail> handleResourceEmptyException(ResourceEmptyException ex, WebRequest request) {
+        ErrorDetail errorDetail = new ErrorDetail(
+                LocalDateTime.now(),
+                "Result is null", // Giữ lỗi cụ thể từ exception
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetail, HttpStatus.NO_CONTENT);
+    }
 }

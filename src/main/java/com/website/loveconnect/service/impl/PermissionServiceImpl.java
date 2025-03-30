@@ -7,6 +7,7 @@ import com.website.loveconnect.dto.response.PermissionResponse;
 import com.website.loveconnect.entity.Permission;
 import com.website.loveconnect.exception.PermissionAlreadyExistException;
 import com.website.loveconnect.exception.PermissionNotFoundException;
+import com.website.loveconnect.exception.ResourceEmptyException;
 import com.website.loveconnect.mapper.PermissionMapper;
 import com.website.loveconnect.repository.PermissionRepository;
 import com.website.loveconnect.service.PermissionService;
@@ -16,10 +17,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -77,6 +80,9 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     public List<PermissionGetResponse> getPermissions() {
         List<Permission> permissions = permissionRepository.findAll();
+        if(permissions.isEmpty()){
+            throw new ResourceEmptyException("List permission is null");
+        }
         //map dữ liệu từ list PermissionEntity qua list Dto
         return permissions.stream().map(permissionMapper::toPermissionResponse).toList();
     }
