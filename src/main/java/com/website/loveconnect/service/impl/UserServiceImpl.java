@@ -49,10 +49,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Timestamp;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 
 @Slf4j
@@ -72,7 +69,7 @@ public class UserServiceImpl implements UserService {
     UserRoleRepository userRoleRepository;
     RoleRepository roleRepository;
     InterestRepository interestRepository;
-
+    UserInterestRepository userInterestRepository;
 
     //hàm lấy tất cả thông tin người dùng
     @Override
@@ -294,7 +291,15 @@ public class UserServiceImpl implements UserService {
             newUserProfile.setLookingFor(Gender.FEMALE); //tạm thời set cứng
             newUserProfile.setUser(newUser);
 
-            //chưa set interest
+            List<Interest> listInterest = interestRepository.getByInterestNameIn(userRequest.getInterestName());
+            List<UserInterest> listUserInterest = new ArrayList<>();
+            for(Interest interest : listInterest){
+                UserInterest userInterest = UserInterest.builder()
+                        .interest(interest) //một trong những interest được truyền vào
+                        .user(newUser) // lưu thẳng user mới tạo vào
+                        .build();
+                listUserInterest.add(userInterest);
+            }
 
             Role roleUser = roleRepository.findByRoleName(RoleName.USER)
                     .orElseThrow(()-> new RoleNotFoundException("Not found role user"));
@@ -307,6 +312,7 @@ public class UserServiceImpl implements UserService {
                 userRepository.save(newUser);
                 userProfileRepository.save(newUserProfile);
                 userRoleRepository.save(userRole);
+                userInterestRepository.saveAll(listUserInterest);
                 log.info("Create user successful");
             } catch (DataAccessException dae) {
                 log.error("Database access error", dae.getMessage());
