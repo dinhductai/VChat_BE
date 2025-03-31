@@ -69,7 +69,6 @@ public class UserMapper {
                 .location(userUpdateRequest.getLocation())
                 .description(userUpdateRequest.getDescription())
                 .interestName(userUpdateRequest.getInterestName())
-                .photoUrl(userUpdateRequest.getPhotoUrl())
                 .phoneNumber(userUpdateRequest.getPhoneNumber())
                 .email(userUpdateRequest.getEmail())
                 .gender(userUpdateRequest.getGender())

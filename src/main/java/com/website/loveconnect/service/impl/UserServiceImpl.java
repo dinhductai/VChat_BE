@@ -12,7 +12,10 @@ import com.website.loveconnect.dto.response.UserViewResponse;
 import com.website.loveconnect.entity.*;
 import com.website.loveconnect.enumpackage.AccountStatus;
 import com.website.loveconnect.enumpackage.Gender;
+import com.website.loveconnect.enumpackage.RoleName;
 import com.website.loveconnect.exception.EmailAlreadyInUseException;
+import com.website.loveconnect.exception.PasswordIncorrectException;
+import com.website.loveconnect.exception.RoleNotFoundException;
 import com.website.loveconnect.exception.UserNotFoundException;
 import com.website.loveconnect.mapper.UserMapper;
 import com.website.loveconnect.repository.*;
@@ -59,12 +62,16 @@ import java.util.UUID;
 @Transactional
 public class UserServiceImpl implements UserService {
     @PersistenceContext
-    private EntityManager entityManager;
+    EntityManager entityManager;
+
     UserRepository userRepository;
     ModelMapper modelMapper;
     UserMapper userMapper;
     UserProfileRepository userProfileRepository;
     PhotoRepository photoRepository;
+    UserRoleRepository userRoleRepository;
+    RoleRepository roleRepository;
+    InterestRepository interestRepository;
 
 
     //hàm lấy tất cả thông tin người dùng
@@ -201,20 +208,21 @@ public class UserServiceImpl implements UserService {
             user.setAccountStatus(userRequest.getAccountStatus());
 
             Optional<UserProfile> userProfileOptional = userProfileRepository.findByUser_UserId(idUser);
-            UserProfile userProfile = userProfileOptional.orElseThrow(()->new RuntimeException("User with id "+ idUser + " not found"));
+            UserProfile userProfile = userProfileOptional
+                    .orElseThrow(()->new UserNotFoundException("User with id "+ idUser + " not found"));
             userProfile.setFullName(userRequest.getFullName());
             userProfile.setBirthDate(userRequest.getBirthDate());
             userProfile.setGender(userRequest.getGender());
             userProfile.setLocation(userRequest.getLocation());
             userProfile.setDescription(userRequest.getDescription());
 
-            Optional<Photo> photoOptional = photoRepository.findOneByUserId(idUser);
-            Photo photo = photoOptional.orElseThrow(()-> new RuntimeException("This user not have profile image"));
-            photo.setPhotoUrl(userRequest.getPhotoUrl());
+//            Optional<Photo> photoOptional = photoRepository.findOneByUserId(idUser);
+//            Photo photo = photoOptional.orElseThrow(()-> new RuntimeException("This user not have profile image"));
+//            photo.setPhotoUrl(userRequest.getPhotoUrl());
 
             userRepository.save(user);
             userProfileRepository.save(userProfile);
-            photoRepository.save(photo);
+//            photoRepository.save(photo);
             //chưa cập nhật dữ liệu ở interest
 
             //trả về dữ liệu mới cho giao diện
@@ -252,9 +260,9 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    //chưa hoàn thiện
     @Override
     public void createUser(UserCreateRequest userRequest) {
+        // kiểm tra xem email hoặc password có null không,vì là thuộc tính bắt buộc
         if (StringUtils.isBlank(userRequest.getEmail()) || StringUtils.isBlank(userRequest.getPassword())) {
             log.error("Email or Password is blank in create user request");
             throw new IllegalArgumentException("Email or Password cannot be blank");
@@ -262,15 +270,19 @@ public class UserServiceImpl implements UserService {
         //kiểm tra xem có trùng email ai không
         boolean existingUser = false;
         existingUser = userRepository.existsByEmail(userRequest.getEmail());
-        if(existingUser == false) {
+        if(!existingUser) {
             User newUser = new User();
             UserProfile newUserProfile = new UserProfile();
 
             newUser.setEmail(userRequest.getEmail());
             //tạo mã hóa với độ phức tạp 10
             PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-            String passwordEncoded = passwordEncoder.encode(userRequest.getPassword());
-            newUser.setPassword(passwordEncoded);
+            if(userRequest.getPassword().equals(userRequest.getPasswordConfirm())) {
+                String passwordEncoded = passwordEncoder.encode(userRequest.getPassword());
+                newUser.setPassword(passwordEncoded);
+            }else{
+                throw new PasswordIncorrectException("Password does not match");
+            }
             newUser.setPhoneNumber(userRequest.getPhoneNumber());
             newUser.setAccountStatus(AccountStatus.ACTIVE);
 
@@ -281,9 +293,20 @@ public class UserServiceImpl implements UserService {
             newUserProfile.setDescription(userRequest.getDescription());
             newUserProfile.setLookingFor(Gender.FEMALE); //tạm thời set cứng
             newUserProfile.setUser(newUser);
+
+            //chưa set interest
+
+            Role roleUser = roleRepository.findByRoleName(RoleName.USER)
+                    .orElseThrow(()-> new RoleNotFoundException("Not found role user"));
+            UserRole userRole = UserRole.builder()
+                    .user(newUser)
+                    .role(roleUser)
+                    .build();
+
             try {
                 userRepository.save(newUser);
                 userProfileRepository.save(newUserProfile);
+                userRoleRepository.save(userRole);
                 log.info("Create user successful");
             } catch (DataAccessException dae) {
                 log.error("Database access error", dae.getMessage());

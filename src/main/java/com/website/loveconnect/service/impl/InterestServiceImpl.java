@@ -40,7 +40,8 @@ public class InterestServiceImpl implements InterestService {
     @Override
     public void addInterest(int idUser, InterestDTO interestDTO) {
         try {
-            User user = userRepository.findById(idUser).orElseThrow(() -> new UserNotFoundException("User with id "+ idUser + " not found"));
+            User user = userRepository.findById(idUser)
+                    .orElseThrow(() -> new UserNotFoundException("User with id "+ idUser + " not found"));
 
             Interest interest = Interest.builder()
                     .interestName(interestDTO.getInterestName())
@@ -63,8 +64,10 @@ public class InterestServiceImpl implements InterestService {
 
     @Override
     public void deleterInterest(int idUser, int idInterest) {
-        User user = userRepository.findById(idUser).orElseThrow(() -> new UserNotFoundException("User with id "+ idUser + " not found"));
-        Interest interest = interestRepository.findById(idInterest).orElseThrow(() -> new UserNotFoundException("Interest with id "+ idInterest + " not found"));
+        User user = userRepository.findById(idUser)
+                .orElseThrow(() -> new UserNotFoundException("User with id "+ idUser + " not found"));
+        Interest interest = interestRepository.findById(idInterest)
+                .orElseThrow(() -> new UserNotFoundException("Interest with id "+ idInterest + " not found"));
         interestRepository.delete(interest);
 
         log.info("Xóa thành công sở thích có idInterest : {}" , idInterest);

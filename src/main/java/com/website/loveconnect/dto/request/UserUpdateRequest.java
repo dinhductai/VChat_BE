@@ -18,7 +18,6 @@ public class UserUpdateRequest {
     private String location;
     private String description;
     private List<String> interestName;
-    private String photoUrl;
     private String phoneNumber;
     private String email;
     private Gender gender;
