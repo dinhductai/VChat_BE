@@ -40,10 +40,11 @@ public class AdminUserController {
     public ResponseEntity<ApiResponse<Page<ListUserResponse>>> getAllUser(@RequestParam(defaultValue = "0") int page,
                                                                           @RequestParam(defaultValue = "10") int size) {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
-        log.info(authentication.getName());;
+        log.info(authentication.getName());
         authentication.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
 
-        return  ResponseEntity.ok(new ApiResponse<>(true,"get list user successful",userService.getAllUser(page,size)));
+        return  ResponseEntity.ok(new ApiResponse<>(true,"get list user successful",
+                userService.getAllUser(page,size)));
     }
 
     //lấy thông tin chi tiết người dùng
@@ -115,11 +116,13 @@ public class AdminUserController {
     public ResponseEntity<ApiResponse<Page<ListUserResponse>>> getAllUserByFilters(
             @RequestParam(name = "status",required = false) String status,
             @RequestParam(name = "gender",required = false) String gender,
+            //key sort: newest, oldest, name_asc, name_desc
             @RequestParam(name = "sort", required = false) String sort,
             @RequestParam(name = "keyword", required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size){
-        return ResponseEntity.ok(new ApiResponse<>(true,"Get list user by filters successful", userService.getAllUserByFilters(status,gender,sort,keyword,page,size)));
+        return ResponseEntity.ok(new ApiResponse<>(true,"Get list user by filters successful",
+                userService.getAllUserByFilters(status,gender,sort,keyword,page,size)));
     }
 
 

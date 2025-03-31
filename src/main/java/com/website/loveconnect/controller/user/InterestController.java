@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/user/interest")
+@RequestMapping(value = "/api")
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
@@ -26,7 +26,7 @@ public class InterestController {
     InterestService interestService;
 
     // Request Get all Interest
-    @GetMapping("/{idUser}")
+    @GetMapping("/user/interest/{idUser}")
     public ResponseEntity<ApiResponse<?>> getAllInterest(@PathVariable Integer idUser) {
         try {
             log.info("Request lấy danh sách sở thích của user có ID : {}" , idUser);
@@ -39,7 +39,7 @@ public class InterestController {
     }
 
     // Request Add one Interest
-    @PostMapping("/add/{idUser}")
+    @PostMapping("/user/interest/add/{idUser}")
     public ResponseEntity<ApiResponse<?>> addInterest(@RequestBody InterestDTO interestDTO , @PathVariable Integer idUser) {
         try {
             log.info("Request THÊM sở thích vào danh sách của user có ID : {}" , idUser);
@@ -52,7 +52,7 @@ public class InterestController {
     }
 
     // Request Update one Interest
-    @PutMapping("/update/{idUser}/{idInterest}")
+    @PutMapping("/user/interest/update/{idUser}/{idInterest}")
     public ResponseEntity<ApiResponse<?>> updateInterest(@RequestBody InterestDTO interestDTO
             , @PathVariable Integer idUser
             , @PathVariable Integer idInterest) {
@@ -67,7 +67,7 @@ public class InterestController {
     }
 
     // Request Delete one Interest
-    @DeleteMapping("/delete/{idUser}/{idInterest}")
+    @DeleteMapping("/user/interest/delete/{idUser}/{idInterest}")
     public ResponseEntity<ApiResponse<?>> deleteInterest(@PathVariable Integer idUser , @PathVariable Integer idInterest) {
         try {
             log.info("Request SỬA sở thích vào danh sách của user có ID : {}" , idUser);

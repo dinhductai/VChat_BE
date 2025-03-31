@@ -31,9 +31,9 @@ public class SecurityConfig {
     private String secretKey;
 
     private static final String ADMIN_API_PREFIX = "/api/admin";
-    private static final String USER_API_PREFIX = "";
+    private static final String USER_API_PREFIX = "/api";
     private static final String AUTH_API_PREFIX = "/api/auth";
-
+//    private static final
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(registry -> configureAuthorization(registry))
@@ -53,38 +53,72 @@ public class SecurityConfig {
         //endpoint công khai cho tất cả role và chưa đăng nhập
         String[] publicPostEndpoint = {
                 AUTH_API_PREFIX+"/log-in",
-                ADMIN_API_PREFIX+"/users/create"
         };
 
         //endpoint mà admin và user dùng chung
         String[] generalPostEndpoint = {
-                ADMIN_API_PREFIX+"/users/profile-image/create"
+                AUTH_API_PREFIX+"/introspect"
         };
 
         String[] adminGetEndpoint = {
                 ADMIN_API_PREFIX+"/users",
                 ADMIN_API_PREFIX+"/users/{userId}",
-                ADMIN_API_PREFIX,"/users/{userId}/update",
-                ADMIN_API_PREFIX,"/users/search"
+                ADMIN_API_PREFIX+"/users/{userId}/update",
+                ADMIN_API_PREFIX+"/users/search",
+                ADMIN_API_PREFIX+"/roles",
+                ADMIN_API_PREFIX+"/roles/permissions",
+                ADMIN_API_PREFIX+"/permissions",
+                ADMIN_API_PREFIX+"/matches/{userId}"
         };
 
-        String[] adminPostEndpoint = {};
+        String[] adminPostEndpoint = {
+                ADMIN_API_PREFIX+"/users/create",
+                ADMIN_API_PREFIX+"/users/profile-image/create",
+                ADMIN_API_PREFIX+"/permissions/create",
+                ADMIN_API_PREFIX+"/permissions/attach",
+                ADMIN_API_PREFIX+"/matches/create"
+        };
         String[] adminPutEndpoint = {
                 ADMIN_API_PREFIX+"/users/{userId}/block",
                 ADMIN_API_PREFIX+"/users/{userId}/unblock",
-                ADMIN_API_PREFIX,"/users/{userId}/update"
+                ADMIN_API_PREFIX+"/users/{userId}/update",
+                ADMIN_API_PREFIX+"/permissions/update",
+                ADMIN_API_PREFIX+"/matches/{matchId}/status"
         };
         String[] adminDeleteEndpoint = {
-                ADMIN_API_PREFIX+"/users/{userId}/delete"
+                ADMIN_API_PREFIX+"/users/{userId}/delete",
+                ADMIN_API_PREFIX+"/permissions/del/{permissionName}"
+        };
+        String[] userGetEndpoint = {
+                USER_API_PREFIX+"/user/interest/{idUser}"
+        };
+        String[] userPostEndpoint = {
+                USER_API_PREFIX+"/sign-up",
+                USER_API_PREFIX+"/profile-image/upload",
+                USER_API_PREFIX+"/user/interest/add/{idUser}"
+        };
+        String[] userPutEndpoint = {
+                USER_API_PREFIX+"/user/interest/update/{idUser}/{idInterest}"
+        };
+        String[] userDeleteEndpoint = {
+                USER_API_PREFIX+"/user/interest/delete/{idUser}/{idInterest}"
         };
 
+        //api không cần đăng nhập
         registry.requestMatchers(HttpMethod.POST, publicPostEndpoint).permitAll();
+        //api các role dùng chung
         registry.requestMatchers(HttpMethod.POST, generalPostEndpoint)
                 .hasAnyRole(RoleName.ADMIN.name(), RoleName.USER.name());
+        //api thuộc admin
         registry.requestMatchers(HttpMethod.GET, adminGetEndpoint).hasRole(RoleName.ADMIN.name());
         registry.requestMatchers(HttpMethod.POST, adminPostEndpoint).hasRole(RoleName.ADMIN.name());
         registry.requestMatchers(HttpMethod.POST, adminPutEndpoint).hasRole(RoleName.ADMIN.name());
         registry.requestMatchers(HttpMethod.DELETE,adminDeleteEndpoint).hasRole(RoleName.ADMIN.name());
+        //api thuộc user
+        registry.requestMatchers(HttpMethod.GET, userGetEndpoint).hasRole(RoleName.USER.name());
+        registry.requestMatchers(HttpMethod.POST, userPostEndpoint).hasRole(RoleName.USER.name());
+        registry.requestMatchers(HttpMethod.POST, userPutEndpoint).hasRole(RoleName.USER.name());
+        registry.requestMatchers(HttpMethod.DELETE, userDeleteEndpoint).hasRole(RoleName.USER.name());
 
         registry.anyRequest().authenticated();
     }

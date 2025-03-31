@@ -43,8 +43,7 @@ public class AuthenticationController {
     }
 
     @PostMapping(value = "/introspect")
-    public ResponseEntity<ApiResponse<IntrospectResponse>> authenticate(
-            @RequestBody IntrospectRequest introspectRequest) {
+    public ResponseEntity<ApiResponse<IntrospectResponse>> authenticate(@RequestBody IntrospectRequest introspectRequest) {
         try {
             IntrospectResponse introspectResponse = authenticationService.introspect(introspectRequest);
             return ResponseEntity.ok(ApiResponse.<IntrospectResponse>builder()
