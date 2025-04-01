@@ -24,6 +24,9 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
+//    test với url này,chỉ amount có thể thay đổi
+//    http://localhost:8080/api/v1/payment/vn-pay?amount=10000&bankCode=NCB
+
     @GetMapping(value = "/vn-pay")
     public ResponseEntity<ApiResponse<PaymentResponse>> createPay(HttpServletRequest request) {
         PaymentResponse response = paymentService.createVnPayPayment(request);
