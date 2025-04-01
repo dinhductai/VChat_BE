@@ -26,9 +26,12 @@ public class PaymentServiceImpl implements PaymentService {
     VnpayConfig vnPayConfig;
     @Override
     public PaymentResponse createVnPayPayment(HttpServletRequest request) {
-        long amount = Integer.parseInt(request.getParameter("amount")) * 100L; // Chuyển sang đơn vị VNPay (VND * 100)
+        // chuyển sang đơn vị VNPay (VND * 100), mặc định phải *100
+        long amount = Integer.parseInt(request.getParameter("amount")) * 100L;
         String bankCode = request.getParameter("bankCode");
 
+        // nối chuỗi để tạo ra url thanh toán với các thành phần param bắt buộc để thanh toán
+        //các yêu cầu bắt buộc có ở doc mail của vnpay gửi
         Map<String, String> vnpParamsMap = vnPayConfig.getVNPayConfig();
         vnpParamsMap.put("vnp_Amount", String.valueOf(amount));
         if (bankCode != null && !bankCode.isEmpty()) {

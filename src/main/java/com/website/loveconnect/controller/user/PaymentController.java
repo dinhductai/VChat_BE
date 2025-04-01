@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("${spring.application.api-prefix}/payment")
+@RequestMapping("${spring.application.api-prefix}/payment") //  /api/v1/payment , chưa sửa
 @RequiredArgsConstructor
 public class PaymentController {
 
