@@ -1,0 +1,2 @@
+Custom package is for reference only
+The code here uses hand-built annotations, logic, and services
