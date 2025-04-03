@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -68,7 +69,10 @@ public class InterestServiceImpl implements InterestService {
                 .orElseThrow(() -> new UserNotFoundException("User with id "+ idUser + " not found"));
         Interest interest = interestRepository.findById(idInterest)
                 .orElseThrow(() -> new UserNotFoundException("Interest with id "+ idInterest + " not found"));
-        interestRepository.delete(interest);
+
+        // Delete record has idUser and idInterest
+        UserInterest userInterest = userInterestRepository.findUserInterestWithIdUserAndIdInterest(idInterest , idUser);
+        userInterestRepository.delete(userInterest);
 
         log.info("Xóa thành công sở thích có idInterest : {}" , idInterest);
     }

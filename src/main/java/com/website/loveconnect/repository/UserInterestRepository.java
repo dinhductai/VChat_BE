@@ -12,5 +12,5 @@ import java.util.Optional;
 public interface UserInterestRepository extends JpaRepository<UserInterest, Integer> {
     // Find interest has idInterest and idUser need find
     @Query(value = "SELECT ui.* FROM user_interests ui WHERE ui.user_id = :idUser AND ui.interest_id = :idInterest", nativeQuery = true)
-    Optional<UserInterest> findUserInterestWithIdUserAndIdInterest(@Param("idInterest") int idInterest, @Param("idUser") int idUser);
+    UserInterest findUserInterestWithIdUserAndIdInterest(@Param("idInterest") int idInterest, @Param("idUser") int idUser);
 }
