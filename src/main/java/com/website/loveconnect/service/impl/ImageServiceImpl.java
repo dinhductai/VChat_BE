@@ -17,6 +17,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.util.StringUtils;
@@ -39,6 +40,8 @@ public class ImageServiceImpl implements ImageService {
     UserRepository userRepository;
     PhotoRepository photoRepository;
 
+
+    @PreAuthorize("hasAuthority('ADMIN_UPLOAD_PHOTO')")
     //hàm lưu ảnh profile khi tạo người dùng mới và chưa được duyệt
     @Override
     public String saveImageProfile(MultipartFile file, String userEmail) throws IOException {

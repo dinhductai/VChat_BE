@@ -82,7 +82,8 @@ public class InterestServiceImpl implements InterestService {
         try {
             User user = userRepository.findById(idUser).orElseThrow(() -> new UserNotFoundException("User with id "+ idUser + " not found"));
             // Xác định xem User có ID idUser có sở thích có ID idInterest không
-            UserInterest ui = userInterestRepository.findUserInterestWithIdUserAndIdInterest(idInterest , idUser).orElseThrow(() -> new UserNotFoundException("Not found UserInterest need find !!! "));;
+            UserInterest ui = userInterestRepository.findUserInterestWithIdUserAndIdInterest(idInterest , idUser);
+//                    .orElseThrow(() -> new UserNotFoundException("Not found UserInterest need find !!! "));;
             Interest interest = interestRepository.findById(idInterest).orElseThrow(() -> new UserNotFoundException("Interest with id "+ idInterest + " not found"));
             interest.setInterestName(interestDTO.getInterestName());
             interest.setCategory(interestDTO.getCategory());
