@@ -41,7 +41,7 @@ public class ImageServiceImpl implements ImageService {
     PhotoRepository photoRepository;
 
 
-    @PreAuthorize("hasAuthority('ADMIN_UPLOAD_PHOTO')")
+//    @PreAuthorize("hasAuthority('ADMIN_UPLOAD_PHOTO')")
     //hàm lưu ảnh profile khi tạo người dùng mới và chưa được duyệt
     @Override
     public String saveImageProfile(MultipartFile file, String userEmail) throws IOException {
