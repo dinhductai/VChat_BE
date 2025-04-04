@@ -6,8 +6,12 @@ import javax.crypto.spec.SecretKeySpec;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
+
+//lớp này chứa các hàm hỗ trợ cho việc tích hợp VNPay
 public class VNPayUtil {
+//    tạo mã hash bảo mật bằng thuật toán HMAC-SHA512.
     public static String hmacSHA512(final String key, final String data) {
         try {
             if (key == null || data == null) {
@@ -28,7 +32,7 @@ public class VNPayUtil {
             return "";
         }
     }
-
+//lấy địa chỉ IP của client từ request
     public static String getIpAddress(HttpServletRequest request) {
         String ipAddress;
         try {
@@ -41,7 +45,19 @@ public class VNPayUtil {
         }
         return ipAddress;
     }
+//tạo một chuỗi số ngẫu nhiên với độ dài len
+    public static String getRandomNumber(int len) {
+        Random rnd = new Random();
+        String chars = "0123456789";
+        StringBuilder sb = new StringBuilder(len);
+        for (int i = 0; i < len; i++) {
+            sb.append(chars.charAt(rnd.nextInt(chars.length())));
+        }
+        return sb.toString();
+    }
 
+
+    //tạo chuỗi query từ Map tham số
     public static String getPaymentURL(Map<String, String> paramsMap, boolean encodeKey) {
         return paramsMap.entrySet().stream()
                 .filter(entry -> entry.getValue() != null && !entry.getValue().isEmpty())

@@ -48,6 +48,7 @@ public class VnpayConfig {
     @Value("${payment.vnpay.orderType}")
     private String orderType;
 
+    //tạo các tham số cơ bản cho yêu cầu thanh toán
     public Map<String, String> getVNPayConfig() {
         Map<String, String> vnpParamsMap = new HashMap<>();
         vnpParamsMap.put("vnp_Version", vnpVersion);

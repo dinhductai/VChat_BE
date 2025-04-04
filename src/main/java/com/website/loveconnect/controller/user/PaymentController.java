@@ -28,6 +28,9 @@ public class PaymentController {
 //    http://localhost:8080/api/v1/payment/vn-pay?amount=10000&bankCode=NCB
 
     @GetMapping(value = "/vn-pay")
+    //không dùng requestparam vì cần lấy cả IP address người dùng
+//    VNPay yêu cầu tham số vnp_IpAddr trong yêu cầu thanh toán để ghi nhận địa chỉ IP của client,
+//    nhằm mục đích bảo mật và theo dõi giao dịch
     public ResponseEntity<ApiResponse<PaymentResponse>> createPay(HttpServletRequest request) {
         PaymentResponse response = paymentService.createVnPayPayment(request);
         return ResponseEntity.ok(new ApiResponse<>(true,"Create payment successful",response));
