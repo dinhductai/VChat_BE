@@ -247,4 +247,14 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorDetail, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(InterestNotFoundException.class)
+    public ResponseEntity<ErrorDetail> handleInterestNotFoundException(InterestNotFoundException ex, WebRequest request) {
+        ErrorDetail errorDetail = new ErrorDetail(
+                LocalDateTime.now(),
+                ex.getMessage(), // Giữ lỗi cụ thể từ exception
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetail, HttpStatus.NOT_FOUND);
+    }
 }

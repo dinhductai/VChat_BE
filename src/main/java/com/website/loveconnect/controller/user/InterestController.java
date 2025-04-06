@@ -1,5 +1,6 @@
 package com.website.loveconnect.controller.user;
 
+
 import com.website.loveconnect.dto.request.InterestDTO;
 import com.website.loveconnect.dto.response.ApiResponse;
 import com.website.loveconnect.entity.Interest;
@@ -77,5 +78,11 @@ public class InterestController {
             log.error("--->>> Không thể xóa được sở thích vì : {}" , ex.getMessage() , ex.getCause());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @GetMapping(value = "/interest-name")
+    public ResponseEntity<ApiResponse<List<String>>> getInterestName() {
+        return ResponseEntity.ok(new ApiResponse<>(true,"Get list interest name successful",
+                interestService.findAllInterestName()));
     }
 }

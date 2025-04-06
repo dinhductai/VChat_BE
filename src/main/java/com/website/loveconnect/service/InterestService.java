@@ -11,4 +11,5 @@ public interface InterestService {
     void deleterInterest(int idUser ,int idInterest);
     void updateInterest(int  idInterest ,int idUser , InterestDTO interestDTO);
     List<Interest> getAllInterest(int idUser);
+    List<String> findAllInterestName();
 }

@@ -4,6 +4,7 @@ import com.website.loveconnect.dto.request.InterestDTO;
 import com.website.loveconnect.entity.Interest;
 import com.website.loveconnect.entity.User;
 import com.website.loveconnect.entity.UserInterest;
+import com.website.loveconnect.exception.InterestNotFoundException;
 import com.website.loveconnect.exception.UserNotFoundException;
 import com.website.loveconnect.mapper.UserMapper;
 import com.website.loveconnect.repository.InterestRepository;
@@ -65,10 +66,10 @@ public class InterestServiceImpl implements InterestService {
 
     @Override
     public void deleterInterest(int idUser, int idInterest) {
-        User user = userRepository.findById(idUser)
+        userRepository.findById(idUser)
                 .orElseThrow(() -> new UserNotFoundException("User with id "+ idUser + " not found"));
-        Interest interest = interestRepository.findById(idInterest)
-                .orElseThrow(() -> new UserNotFoundException("Interest with id "+ idInterest + " not found"));
+        interestRepository.findById(idInterest)
+                .orElseThrow(() -> new InterestNotFoundException("Interest with id "+ idInterest + " not found"));
 
         // Delete record has idUser and idInterest
         UserInterest userInterest = userInterestRepository.findUserInterestWithIdUserAndIdInterest(idInterest , idUser);
@@ -80,7 +81,7 @@ public class InterestServiceImpl implements InterestService {
     @Override
     public void updateInterest(int idInterest, int idUser, InterestDTO interestDTO) {
         try {
-            User user = userRepository.findById(idUser).orElseThrow(() -> new UserNotFoundException("User with id "+ idUser + " not found"));
+            userRepository.findById(idUser).orElseThrow(() -> new UserNotFoundException("User with id "+ idUser + " not found"));
             // Xác định xem User có ID idUser có sở thích có ID idInterest không
             UserInterest ui = userInterestRepository.findUserInterestWithIdUserAndIdInterest(idInterest , idUser);
 //                    .orElseThrow(() -> new UserNotFoundException("Not found UserInterest need find !!! "));;
@@ -103,6 +104,16 @@ public class InterestServiceImpl implements InterestService {
         }
         log.info("Danh sách sở thích đã được lấy thành công");
         return interestList;
+    }
+
+    @Override
+    public List<String> findAllInterestName() {
+        try {
+            return interestRepository.findAllInterestName();
+
+        }catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR , e.getMessage() , e.getCause());
+        }
     }
 
     private void validateUserId(int idUser) {
