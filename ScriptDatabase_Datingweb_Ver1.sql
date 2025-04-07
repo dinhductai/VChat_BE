@@ -278,3 +278,9 @@ VALUES
 (13, 'Mia Robinson', '1993-07-08', 'MALE', 'MALE', 'Painter and artist.', 163, 52, 'San Diego', 'Artist', 'GalleryX', 'Yale', FALSE),
 (14, 'Nathan Green', '1996-05-20', 'MALE', 'FEMALE', 'Nature lover.', 180, 76, 'Nashville', 'Environmental Scientist', 'NGO', 'Berkeley', TRUE),
 (15, 'Olivia Carter', '1992-03-17', 'MALE', 'FEMALE', 'Yoga instructor.', 166, 56, 'Atlanta', 'Yoga Teacher', 'Wellness Studio', 'Duke', TRUE);
+
+create table invalidated_token (
+	token_id INT AUTO_INCREMENT PRIMARY KEY,
+    token text,
+    expiry_time date
+);
