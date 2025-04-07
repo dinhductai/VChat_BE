@@ -84,4 +84,17 @@ public class ImageServiceImpl implements ImageService {
             return photoUrl;
 
     }
+
+    @Override
+    public String getProfileImage(Integer idUser) {
+        User user = userRepository.findById(idUser).orElseThrow(()->new UserNotFoundException("User not found"));
+        String photoUrl = null;
+        if(user!=null){
+            Photo photoProfile = photoRepository
+                    .findFirstByOwnedPhotoAndIsApprovedAndIsProfilePicture(user,true,true)
+                    .orElseThrow(()->new UserNotFoundException("Photo not found"));
+            photoUrl= photoProfile.getPhotoUrl();
+        }
+        return photoUrl;
+    }
 }

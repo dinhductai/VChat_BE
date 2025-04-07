@@ -7,4 +7,5 @@ import java.io.IOException;
 
 public interface ImageService {
     String saveImageProfile(MultipartFile file, String userEmail) throws IOException;
+    String getProfileImage(Integer idUser);
 }

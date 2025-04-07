@@ -41,5 +41,10 @@ public class UserProfileController {
                 .body(new ApiResponse<>(true,"Save profile image successful", urlImage));
     }
 
+    @GetMapping(value = "/profile-image")
+    public ResponseEntity<ApiResponse<String>> getProfileImage(@RequestParam("userid") Integer userid){
+        return ResponseEntity.ok(new ApiResponse<>(true,"Get profile image successful",
+                imageService.getProfileImage(userid)));
+    }
 
 }
