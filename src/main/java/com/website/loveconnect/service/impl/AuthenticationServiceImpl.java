@@ -115,11 +115,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public IntrospectResponse introspect(IntrospectRequest introspectRequest) throws AuthenticationException {
         String token = introspectRequest.getToken();
+        boolean isInvalid = true;
+        try {
             verifyToken(token);
-            return IntrospectResponse.builder()
-                    //check token sau tg hiện tại và đc xác thực
-                    .valid(true)
-                    .build();
+        }catch (ExpiredJwtException e) {
+            //nếu gặp trường hợp token đã bị logout thì chỉ cần đổi thành false là đc,ko cần trả exception
+            isInvalid = false;
+        }
+        return IntrospectResponse.builder()
+                //check token sau tg hiện tại và đc xác thực
+                .valid(isInvalid)
+                .build();
     }
 
     @Override
@@ -145,9 +151,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
             if (!checkVerified && expiryTime.after(new Date())) {
                 throw new ExpiredJwtException("Token expired");
-            }else {
-                return signedJWT;
-            }
+            }else if (invalidatedTokenRepository.existsByToken(signedJWT.getJWTClaimsSet().getJWTID())){
+                throw new ExpiredJwtException("Token expired");
+            }else return signedJWT;
+
         } catch (JOSEException e) {
             throw new RuntimeException(e);
         } catch (ParseException e) {
