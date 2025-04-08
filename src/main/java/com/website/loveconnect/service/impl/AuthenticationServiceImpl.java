@@ -7,12 +7,16 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.website.loveconnect.dto.request.AuthenticationRequest;
 import com.website.loveconnect.dto.request.IntrospectRequest;
+import com.website.loveconnect.dto.request.LogoutRequest;
 import com.website.loveconnect.dto.response.AuthenticationResponse;
 import com.website.loveconnect.dto.response.IntrospectResponse;
+import com.website.loveconnect.entity.InvalidatedToken;
 import com.website.loveconnect.entity.User;
 import com.website.loveconnect.entity.UserProfile;
+import com.website.loveconnect.exception.ExpiredJwtException;
 import com.website.loveconnect.exception.UserNotFoundException;
 import com.website.loveconnect.mapper.RoleMapper;
+import com.website.loveconnect.repository.InvalidatedTokenRepository;
 import com.website.loveconnect.repository.RoleRepository;
 import com.website.loveconnect.repository.UserProfileRepository;
 import com.website.loveconnect.repository.UserRepository;
@@ -43,6 +47,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     UserRepository userRepository;
     RoleRepository roleRepository;
     RoleMapper roleMapper;
+    InvalidatedTokenRepository invalidatedTokenRepository;
+
 
     @NonFinal
     @Value("${jwt.secret}")
@@ -75,20 +81,20 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         // Thêm role vào đầu tiên
         for (String role : listRoleUser) {
             if (scopeBuilder.length() > 0) {
-                scopeBuilder.append(" "); // Thêm dấu cách nếu không phải phần tử đầu
+                scopeBuilder.append(" "); // thêm dấu cách nếu không phải phần tử đầu
             }
             scopeBuilder.append(role);
         }
 
-        // Tích lũy permission từ tất cả role, loại bỏ trùng lặp
-        Set<String> uniquePermissions = new HashSet<>(); // Set để loại bỏ trùng lặp
+        //gộp permission từ tất cả role, loại bỏ trùng lặp
+        Set<String> uniquePermissions = new HashSet<>(); //set để loại bỏ trùng lặp
         for (String role : listRoleUser) {
             List<String> listPermissionByRole = roleMapper
                     .toListPermissionByRoleName(roleRepository.getPermissionByRoleName(role));
-            uniquePermissions.addAll(listPermissionByRole); // Thêm tất cả permission, tự động loại trùng
+            uniquePermissions.addAll(listPermissionByRole); //thêm tất cả permission, tự động loại trùng
         }
 
-        // Thêm permission vào scope, tách permission riêng ra
+        //thêm permission vào scope, tách permission riêng ra
         for (String permission : uniquePermissions) {
             if (scopeBuilder.length() > 0) {
                 scopeBuilder.append(" "); // Thêm dấu cách
@@ -109,6 +115,27 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public IntrospectResponse introspect(IntrospectRequest introspectRequest) throws AuthenticationException {
         String token = introspectRequest.getToken();
+            verifyToken(token);
+            return IntrospectResponse.builder()
+                    //check token sau tg hiện tại và đc xác thực
+                    .valid(true)
+                    .build();
+    }
+
+    @Override
+    public void logout(LogoutRequest logoutRequest) throws ParseException {
+        SignedJWT signedJWT = verifyToken(logoutRequest.getToken());
+        //lấy claim set ra
+        String jwtTokenId = signedJWT.getJWTClaimsSet().getJWTID();
+        Date expirationTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+        InvalidatedToken invalidatedToken = InvalidatedToken.builder()
+                .token(jwtTokenId)
+                .expiryTime(expirationTime)
+                .build();
+        invalidatedTokenRepository.save(invalidatedToken);
+    }
+
+    private SignedJWT verifyToken(String token) {
         try {
             JWSVerifier verifier = new MACVerifier(SIGNED_KEY.getBytes());
             SignedJWT signedJWT = SignedJWT.parse(token);
@@ -116,10 +143,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             boolean checkVerified = signedJWT.verify(verifier);
             //lấy thời gian hết hạn
             Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
-            return IntrospectResponse.builder()
-                    //check token sau tg hiện tại và đc xác thực
-                    .valid(checkVerified && expiryTime.after(new Date()))
-                    .build();
+            if (!checkVerified && expiryTime.after(new Date())) {
+                throw new ExpiredJwtException("Token expired");
+            }else {
+                return signedJWT;
+            }
         } catch (JOSEException e) {
             throw new RuntimeException(e);
         } catch (ParseException e) {

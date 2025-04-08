@@ -4,6 +4,7 @@ import com.cloudinary.Api;
 import com.nimbusds.jose.JOSEException;
 import com.website.loveconnect.dto.request.AuthenticationRequest;
 import com.website.loveconnect.dto.request.IntrospectRequest;
+import com.website.loveconnect.dto.request.LogoutRequest;
 import com.website.loveconnect.dto.response.ApiResponse;
 import com.website.loveconnect.dto.response.AuthenticationResponse;
 import com.website.loveconnect.dto.response.IntrospectResponse;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.naming.AuthenticationException;
+import java.text.ParseException;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -54,6 +56,18 @@ public class AuthenticationController {
         } catch (AuthenticationException e) {
             throw new RuntimeException(e);
         } catch (JOSEException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @PostMapping(value = "/logout")
+    public ResponseEntity<ApiResponse<String>> logout(@RequestBody LogoutRequest logoutRequest) {
+        try {
+            authenticationService.logout(logoutRequest);
+            return ResponseEntity.ok(new ApiResponse<>(true,"Logout successful", null));
+        } catch (AuthenticationException e) {
+            throw new RuntimeException(e);
+        } catch (ParseException e) {
             throw new RuntimeException(e);
         }
     }

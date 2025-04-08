@@ -55,6 +55,7 @@ public class SecurityConfig {
         //endpoint công khai cho tất cả role và chưa đăng nhập
         String[] publicPostEndpoint = {
                 AUTH_API_PREFIX+"/log-in",
+                AUTH_API_PREFIX+"/logout"
         };
 
         //endpoint mà admin và user dùng chung
