@@ -1,7 +1,7 @@
 package com.website.loveconnect.repository.custom.impl;
 
 import com.website.loveconnect.repository.custom.UserRepositoryCustom;
-import com.website.loveconnect.repository.custom.query.UserQueries;
+import com.website.loveconnect.repository.query.UserQueries;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;

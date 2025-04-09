@@ -2,9 +2,7 @@ package com.website.loveconnect.repository;
 
 import com.website.loveconnect.entity.User;
 import com.website.loveconnect.repository.custom.UserRepositoryCustom;
-import com.website.loveconnect.repository.custom.query.UserQueries;
-import jakarta.persistence.Tuple;
-import jakarta.validation.Valid;
+import com.website.loveconnect.repository.query.UserQueries;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

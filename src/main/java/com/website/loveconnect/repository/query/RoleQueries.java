@@ -1,4 +1,4 @@
-package com.website.loveconnect.repository.custom.query;
+package com.website.loveconnect.repository.query;
 
 public class RoleQueries {
     public static final String GET_ROLE_AND_PERMISSIONS =

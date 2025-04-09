@@ -1,4 +1,4 @@
-package com.website.loveconnect.repository.custom.query;
+package com.website.loveconnect.repository.query;
 
 public  class UserQueries {
     public static final String GET_USER_BY_ID = "SELECT \n" +

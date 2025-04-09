@@ -1,7 +1,7 @@
 package com.website.loveconnect.repository;
 
 import com.website.loveconnect.entity.Interest;
-import com.website.loveconnect.repository.custom.query.InterestQueries;
+import com.website.loveconnect.repository.query.InterestQueries;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

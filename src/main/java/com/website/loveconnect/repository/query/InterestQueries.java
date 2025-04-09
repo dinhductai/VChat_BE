@@ -1,4 +1,4 @@
-package com.website.loveconnect.repository.custom.query;
+package com.website.loveconnect.repository.query;
 
 public class InterestQueries {
     public static final String FIND_ALL_INTEREST_NAME =

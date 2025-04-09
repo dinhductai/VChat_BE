@@ -2,7 +2,7 @@ package com.website.loveconnect.repository;
 
 import com.website.loveconnect.entity.Role;
 import com.website.loveconnect.enumpackage.RoleName;
-import com.website.loveconnect.repository.custom.query.RoleQueries;
+import com.website.loveconnect.repository.query.RoleQueries;
 import jakarta.persistence.Tuple;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
