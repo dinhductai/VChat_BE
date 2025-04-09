@@ -1,6 +1,7 @@
 package com.website.loveconnect.config;
 
 import com.website.loveconnect.enumpackage.RoleName;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,8 +30,10 @@ import java.util.List;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
-    @Value(value = "${jwt.secret}")
-    private String secretKey;
+
+
+    @Autowired
+    private CustomJWTDecoder customJWTDecoder;
 
     private static final String ADMIN_API_PREFIX = "/api/admin";
     private static final String USER_API_PREFIX = "/api";
@@ -41,7 +44,7 @@ public class SecurityConfig {
         httpSecurity.authorizeHttpRequests(registry -> configureAuthorization(registry))
         //bản thân là resource server nên dùng
         .oauth2ResourceServer(httpSecurityOAuth2ResourceServerConfigurer -> httpSecurityOAuth2ResourceServerConfigurer
-                .jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
+                .jwt(jwtConfigurer -> jwtConfigurer.decoder(customJWTDecoder)
                         .jwtAuthenticationConverter(jwtConverter())));
 
         //tắt csrf
@@ -155,12 +158,12 @@ public class SecurityConfig {
     }
 
 
-    @Bean
-    public JwtDecoder jwtDecoder() {
-        SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getBytes(), "HS512");
-        return NimbusJwtDecoder
-                .withSecretKey(secretKeySpec)
-                .macAlgorithm(MacAlgorithm.HS512)
-                .build();
-    }
+//    @Bean
+//    public JwtDecoder jwtDecoder() {
+//        SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getBytes(), "HS512");
+//        return NimbusJwtDecoder
+//                .withSecretKey(secretKeySpec)
+//                .macAlgorithm(MacAlgorithm.HS512)
+//                .build();
+//    }
 }
