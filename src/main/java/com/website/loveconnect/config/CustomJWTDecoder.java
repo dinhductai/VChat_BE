@@ -1,6 +1,7 @@
 package com.website.loveconnect.config;
 
 import com.website.loveconnect.dto.request.IntrospectRequest;
+import com.website.loveconnect.exception.TokenInvalid;
 import com.website.loveconnect.service.impl.AuthenticationServiceImpl;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +40,7 @@ public class CustomJWTDecoder implements JwtDecoder {
                     .token(token)
                     .build());
             if(!checkToken.isValid()){
-                throw new JwtException("Invalid token");
+                throw new TokenInvalid("Token invalid");
             }
 
         } catch (AuthenticationException e) {

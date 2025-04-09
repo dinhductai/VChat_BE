@@ -257,4 +257,14 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorDetail, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(TokenInvalid.class)
+    public ResponseEntity<ErrorDetail> handleTokenInvalid(TokenInvalid ex, WebRequest request) {
+        ErrorDetail errorDetail = new ErrorDetail(
+                LocalDateTime.now(),
+                "Token invalid",
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetail, HttpStatus.UNAUTHORIZED);
+    }
 }
