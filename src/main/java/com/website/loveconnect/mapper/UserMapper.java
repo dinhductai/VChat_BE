@@ -21,6 +21,9 @@ import java.util.Date;
 
 @Component
 public class UserMapper {
+    // mã hóa password với độ phức tạp 10
+    PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+
     //map dữ liệu cho hàm lấy thông tin chi tiết 1 người dùng bằng id  getUserById
     public UserViewResponse toUserViewResponse(Tuple tuple) {
         String interests = tuple.get("interests", String.class);
@@ -95,9 +98,8 @@ public class UserMapper {
     public User toCreateNewUser(UserCreateRequest userCreateRequest) {
         User newUser = new User();
         newUser.setEmail(userCreateRequest.getEmail());
-        //tạo mã hóa với độ phức tạp 10
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         if(userCreateRequest.getPassword().equals(userCreateRequest.getPasswordConfirm())) {
+            //mã hóa mật khẩu
             String passwordEncoded = passwordEncoder.encode(userCreateRequest.getPassword());
             newUser.setPassword(passwordEncoded);
         }else{

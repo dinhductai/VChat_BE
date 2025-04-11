@@ -199,6 +199,7 @@ public class UserServiceImpl implements UserService {
     }
 
     //hàm cập nhật thông tin người dùng
+    //CHƯA HOÀN THIỆN
     @Override
     public UserUpdateResponse updateUser(Integer idUser,UserUpdateRequest userRequest) {
         try{
@@ -218,14 +219,9 @@ public class UserServiceImpl implements UserService {
             userProfile.setLocation(userRequest.getLocation());
             userProfile.setDescription(userRequest.getDescription());
 
-//            Optional<Photo> photoOptional = photoRepository.findOneByUserId(idUser);
-//            Photo photo = photoOptional.orElseThrow(()-> new RuntimeException("This user not have profile image"));
-//            photo.setPhotoUrl(userRequest.getPhotoUrl());
-
             userRepository.save(user);
             userProfileRepository.save(userProfile);
-//            photoRepository.save(photo);
-            //chưa cập nhật dữ liệu ở interest
+
 
             //trả về dữ liệu mới cho giao diện
             //sử dụng mapper
@@ -272,6 +268,7 @@ public class UserServiceImpl implements UserService {
         //kiểm tra xem có trùng email ai không
         boolean existingUser = false;
         existingUser = userRepository.existsByEmail(userRequest.getEmail());
+        //đảm bảo email chưa tồn tại thì cho tạo tài khoản mới
         if(!existingUser) {
             try{
             //lưu user mới
