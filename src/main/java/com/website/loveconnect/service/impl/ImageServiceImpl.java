@@ -105,8 +105,8 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public String getOwnedPhoto(Integer idUser, Integer index) {
-        User user = userRepository.findById(idUser).orElseThrow(()->new UserNotFoundException("User not found"));
-        if(user!=null){
+        boolean existingUser = userRepository.existsByUserId(idUser);
+        if(existingUser){
             Pageable pageable = PageRequest.of(index,1);
             Page<String> photosUrl = photoRepository.findAllOwnedPhoto(idUser,pageable);
             if(!photosUrl.isEmpty()){

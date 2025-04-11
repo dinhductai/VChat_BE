@@ -20,7 +20,7 @@ public interface UserRepository extends JpaRepository<User, Integer>, UserReposi
         Page<Object[]> getAllUser (Pageable pageable);
 
         Optional<User> getUserByEmail(String email);
-
+        boolean existsByUserId(Integer userId);
         boolean existsByEmail(String email);
 
         @Query(value = UserQueries.EXIST_USER_BY_ROLE_ADMIN_AND_STATUS_ACTIVE,nativeQuery = true)
