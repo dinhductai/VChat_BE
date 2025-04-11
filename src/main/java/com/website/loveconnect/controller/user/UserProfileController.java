@@ -47,4 +47,12 @@ public class UserProfileController {
                 imageService.getProfileImage(userid)));
     }
 
+    @GetMapping(value = "/photo-all")
+    public ResponseEntity<ApiResponse<String>> getPhotoAll(@RequestParam("idUser") Integer idUser,
+                                                           @RequestParam("index") Integer index){
+        return ResponseEntity.ok(new ApiResponse<>(true,"Get all photo successful",
+                imageService.getOwnedPhoto(idUser,index)));
+
+    }
+
 }

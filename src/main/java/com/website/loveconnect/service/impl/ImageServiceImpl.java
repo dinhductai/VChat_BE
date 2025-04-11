@@ -17,10 +17,15 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.util.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+
 
 import java.awt.*;
 import java.io.IOException;
@@ -96,5 +101,18 @@ public class ImageServiceImpl implements ImageService {
             photoUrl= photoProfile.getPhotoUrl();
         }
         return photoUrl;
+    }
+
+    @Override
+    public String getOwnedPhoto(Integer idUser, Integer index) {
+        User user = userRepository.findById(idUser).orElseThrow(()->new UserNotFoundException("User not found"));
+        if(user!=null){
+            Pageable pageable = PageRequest.of(index,1);
+            Page<String> photosUrl = photoRepository.findAllOwnedPhoto(idUser,pageable);
+            if(!photosUrl.isEmpty()){
+                return photosUrl.getContent().get(0);
+            }else return null;
+        }
+        else return null;
     }
 }
