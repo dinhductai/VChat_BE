@@ -315,7 +315,6 @@ public class UserServiceImpl implements UserService {
                 userInterestRepository.saveAll(listUserInterest);
                 log.info("Create user successful");
             } catch (DataAccessException dae) {
-                log.error("Database access error", dae.getMessage());
                 throw new DataAccessException("Failed to save new user", dae) {
                 };
             }

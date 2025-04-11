@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -48,11 +49,9 @@ public class UserProfileController {
     }
 
     @GetMapping(value = "/photo-all")
-    public ResponseEntity<ApiResponse<String>> getPhotoAll(@RequestParam("idUser") Integer idUser,
-                                                           @RequestParam("index") Integer index){
-        return ResponseEntity.ok(new ApiResponse<>(true,"Get all photo successful",
-                imageService.getOwnedPhoto(idUser,index)));
-
+    public ResponseEntity<ApiResponse<List<String>>> getPhotoAll(@RequestParam("idUser") Integer idUser){
+        List<String> urlPhotos = imageService.getOwnedPhotos(idUser);
+        return ResponseEntity.ok(new ApiResponse<>(true,"Get photos successful",urlPhotos));
     }
 
 }

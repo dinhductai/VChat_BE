@@ -2,7 +2,6 @@ package com.website.loveconnect.service.impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
-import com.fasterxml.jackson.databind.DatabindException;
 import com.website.loveconnect.entity.Photo;
 import com.website.loveconnect.entity.User;
 import com.website.loveconnect.exception.UserNotFoundException;
@@ -16,21 +15,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.util.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-
-
-import java.awt.*;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Map;
 
 
@@ -104,15 +98,19 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public String getOwnedPhoto(Integer idUser, Integer index) {
+    public List<String> getOwnedPhotos(Integer idUser) {
         boolean existingUser = userRepository.existsByUserId(idUser);
         if(existingUser){
-            Pageable pageable = PageRequest.of(index,1);
-            Page<String> photosUrl = photoRepository.findAllOwnedPhoto(idUser,pageable);
+            List<String> photosUrl = photoRepository.findAllOwnedPhoto(idUser);
             if(!photosUrl.isEmpty()){
-                return photosUrl.getContent().get(0);
-            }else return null;
+                return photosUrl;
+            }else
+                return null;
         }
-        else return null;
+        else{
+            throw new UserNotFoundException("User not found");
+        }
     }
+
+
 }

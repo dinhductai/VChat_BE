@@ -2,11 +2,12 @@ package com.website.loveconnect.service;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.*;
+
 import java.io.IOException;
+import java.util.List;
 
 public interface ImageService {
     String saveImageProfile(MultipartFile file, String userEmail) throws IOException;
     String getProfileImage(Integer idUser);
-    String getOwnedPhoto(Integer idUser,Integer index);
+    List<String> getOwnedPhotos(Integer idUser);
 }
