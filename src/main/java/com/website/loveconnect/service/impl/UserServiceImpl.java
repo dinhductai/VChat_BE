@@ -17,7 +17,10 @@ import com.website.loveconnect.exception.EmailAlreadyInUseException;
 import com.website.loveconnect.exception.PasswordIncorrectException;
 import com.website.loveconnect.exception.RoleNotFoundException;
 import com.website.loveconnect.exception.UserNotFoundException;
+import com.website.loveconnect.mapper.UserInterestMapper;
 import com.website.loveconnect.mapper.UserMapper;
+import com.website.loveconnect.mapper.UserProfileMapper;
+import com.website.loveconnect.mapper.UserRoleMapper;
 import com.website.loveconnect.repository.*;
 import com.website.loveconnect.service.UserService;
 import jakarta.persistence.EntityManager;
@@ -60,7 +63,7 @@ import java.util.*;
 public class UserServiceImpl implements UserService {
     @PersistenceContext
     EntityManager entityManager;
-
+    UserProfileMapper userProfileMapper;
     UserRepository userRepository;
     ModelMapper modelMapper;
     UserMapper userMapper;
@@ -70,6 +73,8 @@ public class UserServiceImpl implements UserService {
     RoleRepository roleRepository;
     InterestRepository interestRepository;
     UserInterestRepository userInterestRepository;
+    UserInterestMapper userInterestMapper;
+    UserRoleMapper userRoleMapper;
 
     //hàm lấy tất cả thông tin người dùng
     @Override
@@ -268,52 +273,20 @@ public class UserServiceImpl implements UserService {
         boolean existingUser = false;
         existingUser = userRepository.existsByEmail(userRequest.getEmail());
         if(!existingUser) {
-            User newUser = new User();
-            UserProfile newUserProfile = new UserProfile();
-
-            newUser.setEmail(userRequest.getEmail());
-            //tạo mã hóa với độ phức tạp 10
-            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-            if(userRequest.getPassword().equals(userRequest.getPasswordConfirm())) {
-                String passwordEncoded = passwordEncoder.encode(userRequest.getPassword());
-                newUser.setPassword(passwordEncoded);
-            }else{
-                throw new PasswordIncorrectException("Password does not match");
-            }
-            newUser.setPhoneNumber(userRequest.getPhoneNumber());
-            newUser.setAccountStatus(AccountStatus.ACTIVE);
-
-            newUserProfile.setFullName(userRequest.getFullName());
-            newUserProfile.setBirthDate(userRequest.getBirthDate());
-            newUserProfile.setGender(userRequest.getGender());
-            newUserProfile.setLocation(userRequest.getLocation());
-            newUserProfile.setDescription(userRequest.getDescription());
-            newUserProfile.setLookingFor(Gender.FEMALE); //tạm thời set cứng
-            newUserProfile.setUser(newUser);
-
+            try{
+            //lưu user mới
+            User newUser = userRepository.save(userMapper.toCreateNewUser(userRequest));
+                //lưu thông tin user profile
+            userProfileRepository.save(userProfileMapper.toCreateNewUserProfile(userRequest,newUser));
+            //lấy danh sách các interest được chọn
             List<Interest> listInterest = interestRepository.getByInterestNameIn(userRequest.getInterestName());
-            List<UserInterest> listUserInterest = new ArrayList<>();
-            for(Interest interest : listInterest){
-                UserInterest userInterest = UserInterest.builder()
-                        .interest(interest) //một trong những interest được truyền vào
-                        .user(newUser) // lưu thẳng user mới tạo vào
-                        .build();
-                listUserInterest.add(userInterest);
-            }
-
-            Role roleUser = roleRepository.findByRoleName(RoleName.USER)
+            //lưu các interest vào user mới
+            userInterestRepository.saveAll(userInterestMapper.toAttachUserInterest(listInterest,newUser));
+            //lấy role USER trong database
+            Role role = roleRepository.findByRoleName(RoleName.USER)
                     .orElseThrow(()-> new RoleNotFoundException("Not found role user"));
-            UserRole userRole = UserRole.builder()
-                    .user(newUser)
-                    .role(roleUser)
-                    .build();
-
-            try {
-                userRepository.save(newUser);
-                userProfileRepository.save(newUserProfile);
-                userRoleRepository.save(userRole);
-                userInterestRepository.saveAll(listUserInterest);
-                log.info("Create user successful");
+            //set role USER cho user mới
+            userRoleRepository.save(userRoleMapper.toAttachUserRole(newUser,role));
             } catch (DataAccessException dae) {
                 throw new DataAccessException("Failed to save new user", dae) {
                 };

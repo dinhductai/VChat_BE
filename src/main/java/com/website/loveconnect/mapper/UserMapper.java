@@ -1,5 +1,6 @@
 package com.website.loveconnect.mapper;
 
+import com.website.loveconnect.dto.request.UserCreateRequest;
 import com.website.loveconnect.dto.request.UserUpdateRequest;
 import com.website.loveconnect.dto.response.ListUserResponse;
 import com.website.loveconnect.dto.response.UserUpdateResponse;
@@ -7,7 +8,10 @@ import com.website.loveconnect.dto.response.UserViewResponse;
 import com.website.loveconnect.entity.User;
 import com.website.loveconnect.enumpackage.AccountStatus;
 import com.website.loveconnect.enumpackage.Gender;
+import com.website.loveconnect.exception.PasswordIncorrectException;
 import jakarta.persistence.Tuple;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.security.Timestamp;
@@ -86,5 +90,21 @@ public class UserMapper {
                 .accountStatus(tuple.get("accountStatus", String.class) != null ?
                         AccountStatus.valueOf(tuple.get("accountStatus", String.class)) : null)
                 .build();
+    }
+
+    public User toCreateNewUser(UserCreateRequest userCreateRequest) {
+        User newUser = new User();
+        newUser.setEmail(userCreateRequest.getEmail());
+        //tạo mã hóa với độ phức tạp 10
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        if(userCreateRequest.getPassword().equals(userCreateRequest.getPasswordConfirm())) {
+            String passwordEncoded = passwordEncoder.encode(userCreateRequest.getPassword());
+            newUser.setPassword(passwordEncoded);
+        }else{
+            throw new PasswordIncorrectException("Password does not match");
+        }
+        newUser.setPhoneNumber(userCreateRequest.getPhoneNumber());
+        newUser.setAccountStatus(AccountStatus.ACTIVE);
+        return newUser;
     }
 }

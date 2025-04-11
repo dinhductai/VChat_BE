@@ -4,6 +4,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.website.loveconnect.dto.response.PermissionResponse;
 import com.website.loveconnect.dto.response.RoleGetResponse;
+import com.website.loveconnect.entity.Role;
+import com.website.loveconnect.entity.User;
+import com.website.loveconnect.entity.UserRole;
 import com.website.loveconnect.enumpackage.RoleName;
 import jakarta.persistence.Tuple;
 import org.springframework.stereotype.Component;
@@ -58,4 +61,6 @@ public class RoleMapper {
                 }).collect(Collectors.toList());
         return listPermissionName;
     }
+
+
 }
