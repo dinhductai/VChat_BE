@@ -10,4 +10,5 @@ public interface ImageService {
     String saveImageProfile(MultipartFile file, String userEmail) throws IOException;
     String getProfileImage(Integer idUser);
     List<String> getOwnedPhotos(Integer idUser);
+    void deleteImageProfile(Integer idUser,String urlImage);
 }

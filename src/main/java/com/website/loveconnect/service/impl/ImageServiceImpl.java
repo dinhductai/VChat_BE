@@ -39,6 +39,7 @@ public class ImageServiceImpl implements ImageService {
     UserRepository userRepository;
     PhotoRepository photoRepository;
 
+    private static final String CLOUDINARY_BASE_URL = "http://res.cloudinary.com/dvgxke1mp/image/upload/";
 
 //    @PreAuthorize("hasAuthority('ADMIN_UPLOAD_PHOTO')")
     //hàm lưu ảnh profile khi tạo người dùng mới và chưa được duyệt
@@ -110,6 +111,45 @@ public class ImageServiceImpl implements ImageService {
         else{
             throw new UserNotFoundException("User not found");
         }
+    }
+
+    @Override
+    public void deleteImageProfile(Integer idUser, String urlImage) {
+        try{
+            boolean userExisting = userRepository.existsByUserId(idUser);
+            Photo photo = photoRepository.findByPhotoUrl(urlImage)
+                    .orElseThrow(()->new NoResultException("Photo not found"));
+            if(userExisting) {
+                String publicId = extractPublicId(photo.getPhotoUrl());
+                //xóa ảnh bằng publicId
+                Map deleteResult = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+                if(deleteResult.get("result").equals("ok")){
+                    //cloud trả về ok thì xóa ở db
+                    photoRepository.delete(photo);
+                }
+            }
+        }catch (com.website.loveconnect.exception.DataAccessException da){
+            log.error(da.getMessage());
+            throw new com.website.loveconnect.exception.DataAccessException("Cannot access database");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String extractPublicId(String url) {
+        if(url != null){
+            //xóa loại ảnh ví dụ .png
+            Integer lastDotIndex = url.lastIndexOf(".");
+            if(lastDotIndex != -1){
+                url = url.substring(0, lastDotIndex);
+            }
+            //loại bỏ phần trước,chỉ giữ lại public id
+            Integer firstSlastIndex = url.lastIndexOf("/");
+            if(firstSlastIndex != -1){
+                url = url.substring(firstSlastIndex+1);
+            }
+            return url;
+        }else return null;
     }
 
 
