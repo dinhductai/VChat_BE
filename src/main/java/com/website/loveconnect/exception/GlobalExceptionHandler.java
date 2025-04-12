@@ -2,7 +2,6 @@ package com.website.loveconnect.exception;
 
 import com.nimbusds.jose.JOSEException;
 import com.website.loveconnect.exception.exceptionmodel.ErrorDetail;
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -77,7 +76,7 @@ public class GlobalExceptionHandler {
     }
 
     // Xử lý lỗi truy cập dữ liệu
-    @ExceptionHandler(DataAccessException.class)
+    @ExceptionHandler(com.website.loveconnect.exception.DataAccessException.class)
     public ResponseEntity<ErrorDetail> handleDataAccessException(DataAccessException ex, WebRequest request) {
         ErrorDetail errorDetail = new ErrorDetail(
                 LocalDateTime.now(),

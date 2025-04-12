@@ -2,8 +2,13 @@ package com.website.loveconnect.controller.user;
 
 import com.website.loveconnect.dto.request.UserCreateRequest;
 import com.website.loveconnect.dto.response.ApiResponse;
+import com.website.loveconnect.dto.response.ProfileDetailResponse;
+import com.website.loveconnect.entity.User;
+import com.website.loveconnect.repository.UserProfileRepository;
 import com.website.loveconnect.service.ImageService;
+import com.website.loveconnect.service.UserProfileService;
 import com.website.loveconnect.service.UserService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -23,7 +28,7 @@ import java.util.List;
 public class UserProfileController {
     UserService userService;
     ImageService imageService;
-
+    UserProfileService userProfileService;
     //tạo tài khoản người dùng
     @PostMapping(value = "/sign-up")
     public ResponseEntity<ApiResponse<String>> signUpAccount(@RequestBody UserCreateRequest userCreateRequest){
@@ -52,6 +57,13 @@ public class UserProfileController {
     public ResponseEntity<ApiResponse<List<String>>> getPhotoAll(@RequestParam("idUser") Integer idUser){
         List<String> urlPhotos = imageService.getOwnedPhotos(idUser);
         return ResponseEntity.ok(new ApiResponse<>(true,"Get photos successful",urlPhotos));
+    }
+
+    @GetMapping(value = "/user-profile/{userId}")
+    public ResponseEntity<ApiResponse<ProfileDetailResponse>> getUserProfile(
+            @PathVariable("userId") Integer userId){
+        return ResponseEntity.ok(new ApiResponse<>(true,"Get user profile successful",
+                userProfileService.getProfileDetail(userId)));
     }
 
 }
