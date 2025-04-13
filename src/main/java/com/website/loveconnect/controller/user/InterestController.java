@@ -80,6 +80,7 @@ public class InterestController {
         }
     }
 
+    //lấy danh sách đầy đủ sở thích
     @GetMapping(value = "/interest-name")
     public ResponseEntity<ApiResponse<List<String>>> getInterestName() {
         return ResponseEntity.ok(new ApiResponse<>(true,"Get list interest name successful",

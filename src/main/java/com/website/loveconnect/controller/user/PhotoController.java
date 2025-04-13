@@ -19,6 +19,7 @@ public class PhotoController {
 
     ImageService imageService;
 
+    //xóa ảnh
     @DeleteMapping(value = "/photo-delete")
     public ResponseEntity<ApiResponse<String>> deletePhoto(@RequestParam("userId") Integer userId,
                                                            @RequestParam("photoUrl") String photoUrl) {
