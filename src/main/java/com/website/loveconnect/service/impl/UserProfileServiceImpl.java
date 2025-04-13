@@ -1,12 +1,16 @@
 package com.website.loveconnect.service.impl;
 
+import com.website.loveconnect.dto.request.ProfileDetailRequest;
 import com.website.loveconnect.dto.response.ProfileDetailResponse;
 import com.website.loveconnect.entity.Interest;
 import com.website.loveconnect.entity.User;
 import com.website.loveconnect.entity.UserProfile;
 import com.website.loveconnect.exception.UserNotFoundException;
+import com.website.loveconnect.mapper.UserInterestMapper;
+import com.website.loveconnect.mapper.UserMapper;
 import com.website.loveconnect.mapper.UserProfileMapper;
 import com.website.loveconnect.repository.InterestRepository;
+import com.website.loveconnect.repository.UserInterestRepository;
 import com.website.loveconnect.repository.UserProfileRepository;
 import com.website.loveconnect.repository.UserRepository;
 import com.website.loveconnect.service.UserProfileService;
@@ -30,6 +34,10 @@ public class UserProfileServiceImpl implements UserProfileService {
     UserProfileRepository userProfileRepository;
     InterestRepository interestRepository;
     UserProfileMapper userProfileMapper;
+    UserMapper userMapper;
+    UserInterestMapper userInterestMapper;
+    UserInterestRepository userInterestRepository;
+
     @Override
     public ProfileDetailResponse getProfileDetail(Integer idUser) {
         try {
@@ -46,5 +54,25 @@ public class UserProfileServiceImpl implements UserProfileService {
         catch (DataAccessException da){
             throw new com.website.loveconnect.exception.DataAccessException("Cannot access data");
         }
+    }
+
+    @Override
+    public void updateProfileDetail(Integer idUser, ProfileDetailRequest profileDetailRequest) {
+        try {
+        User user = userRepository.findById(idUser)
+                .orElseThrow(() -> new UserNotFoundException("User Not Found"));
+
+        UserProfile userProfile = userProfileRepository.findByUser_UserId(user.getUserId())
+                .orElseThrow(() -> new UserNotFoundException("User Not Found"));
+
+        List<Interest> listInterest = interestRepository.getByInterestNameIn(profileDetailRequest.getInterestName());
+
+        userRepository.save(userMapper.toUpdateUserEmailAndPhoneNumber(user,profileDetailRequest));
+        userProfileRepository.save(userProfileMapper.toUpdateUserProfile(userProfile,profileDetailRequest));
+        userInterestRepository.saveAll(userInterestMapper.toAttachUserInterest(listInterest,user));
+        }
+    catch (DataAccessException da){
+        throw new com.website.loveconnect.exception.DataAccessException("Cannot access data");
+    }
     }
 }

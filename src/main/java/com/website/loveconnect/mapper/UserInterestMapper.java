@@ -11,12 +11,12 @@ import java.util.List;
 public class UserInterestMapper {
 
     //hàm set các interest vào cho một user
-    public List<UserInterest> toAttachUserInterest(List<Interest> listInterest, User newUser) {
+    public List<UserInterest> toAttachUserInterest(List<Interest> listInterest, User user) {
         List<UserInterest> listUserInterest = new ArrayList<>();
         for(Interest interest : listInterest){
             UserInterest userInterest = UserInterest.builder()
                     .interest(interest) //một trong những interest được truyền vào
-                    .user(newUser) // lưu thẳng user mới tạo vào
+                    .user(user) // lưu thẳng user mới tạo vào
                     .build();
             listUserInterest.add(userInterest);
         }

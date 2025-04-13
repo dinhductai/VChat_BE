@@ -1,6 +1,8 @@
 package com.website.loveconnect.controller.user;
 
+import com.website.loveconnect.dto.request.ProfileDetailRequest;
 import com.website.loveconnect.dto.request.UserCreateRequest;
+import com.website.loveconnect.dto.request.UserUpdateRequest;
 import com.website.loveconnect.dto.response.ApiResponse;
 import com.website.loveconnect.dto.response.ProfileDetailResponse;
 import com.website.loveconnect.entity.User;
@@ -65,5 +67,14 @@ public class UserProfileController {
         return ResponseEntity.ok(new ApiResponse<>(true,"Get user profile successful",
                 userProfileService.getProfileDetail(userId)));
     }
+
+    @PutMapping(value = "/user-profile/{userId}/update")
+    public ResponseEntity<ApiResponse<String>> updateUserProfile(
+            @PathVariable("userId") Integer userId,
+            @RequestBody ProfileDetailRequest profileDetailRequest){
+        userProfileService.updateProfileDetail(userId,profileDetailRequest);
+        return ResponseEntity.ok(new ApiResponse<>(true,"Update user profile successful",null));
+    }
+
 
 }

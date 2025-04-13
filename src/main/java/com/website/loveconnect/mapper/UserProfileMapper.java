@@ -1,6 +1,8 @@
 package com.website.loveconnect.mapper;
 
+import com.website.loveconnect.dto.request.ProfileDetailRequest;
 import com.website.loveconnect.dto.request.UserCreateRequest;
+import com.website.loveconnect.dto.request.UserUpdateRequest;
 import com.website.loveconnect.dto.response.ProfileDetailResponse;
 import com.website.loveconnect.entity.Interest;
 import com.website.loveconnect.entity.User;
@@ -47,5 +49,43 @@ public class UserProfileMapper {
                 .interestName(listInterests.stream().map(Interest::getInterestName).collect(Collectors.toList()))
                 .build();
         return profileDetailResponse;
+    }
+
+    //map dữ liệu cho profile detail
+    public ProfileDetailResponse toUpdateProfileDetailResponse(User user, UserProfile userProfile, List<Interest> listInterests, ProfileDetailRequest profileDetailRequest) {
+        ProfileDetailResponse profileDetailResponse = ProfileDetailResponse.builder()
+                .email(user.getEmail())
+                .phoneNumber(user.getPhoneNumber())
+                .fullName(userProfile.getFullName())
+                .birthDate(userProfile.getBirthDate())
+                .gender(userProfile.getGender())
+                .lookingFor(userProfile.getLookingFor())
+                .bio(userProfile.getBio())
+                .height(userProfile.getHeight())
+                .weight(userProfile.getWeight())
+                .location(userProfile.getLocation())
+                .jobTitle(userProfile.getJobTitle())
+                .company(userProfile.getCompany())
+                .education(userProfile.getEducation())
+                .description(userProfile.getDescription())
+                .interestName(listInterests.stream().map(Interest::getInterestName).collect(Collectors.toList()))
+                .build();
+        return profileDetailResponse;
+    }
+
+    public UserProfile toUpdateUserProfile(UserProfile userProfile, ProfileDetailRequest profileDetailRequest) {
+            userProfile.setFullName(profileDetailRequest.getFullName());
+            userProfile.setBirthDate(profileDetailRequest.getBirthDate());
+            userProfile.setGender(profileDetailRequest.getGender());
+            userProfile.setLookingFor(profileDetailRequest.getLookingFor());
+            userProfile.setBio(profileDetailRequest.getBio());
+            userProfile.setHeight(profileDetailRequest.getHeight());
+            userProfile.setWeight(profileDetailRequest.getWeight());
+            userProfile.setLocation(profileDetailRequest.getLocation());
+            userProfile.setJobTitle(profileDetailRequest.getJobTitle());
+            userProfile.setCompany(profileDetailRequest.getCompany());
+            userProfile.setEducation(profileDetailRequest.getEducation());
+            userProfile.setDescription(profileDetailRequest.getDescription());
+        return userProfile;
     }
 }

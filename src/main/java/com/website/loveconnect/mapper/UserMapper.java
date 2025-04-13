@@ -1,5 +1,6 @@
 package com.website.loveconnect.mapper;
 
+import com.website.loveconnect.dto.request.ProfileDetailRequest;
 import com.website.loveconnect.dto.request.UserCreateRequest;
 import com.website.loveconnect.dto.request.UserUpdateRequest;
 import com.website.loveconnect.dto.response.ListUserResponse;
@@ -108,5 +109,11 @@ public class UserMapper {
         newUser.setPhoneNumber(userCreateRequest.getPhoneNumber());
         newUser.setAccountStatus(AccountStatus.ACTIVE);
         return newUser;
+    }
+
+    public User toUpdateUserEmailAndPhoneNumber(User user, ProfileDetailRequest profileDetailRequest) {
+        user.setEmail(profileDetailRequest.getEmail());
+        user.setPhoneNumber(profileDetailRequest.getPhoneNumber());
+        return user;
     }
 }

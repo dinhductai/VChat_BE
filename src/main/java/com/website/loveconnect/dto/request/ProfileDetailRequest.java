@@ -1,4 +1,4 @@
-package com.website.loveconnect.dto.response;
+package com.website.loveconnect.dto.request;
 
 import com.website.loveconnect.enumpackage.Gender;
 import lombok.*;
@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProfileDetailResponse {
+public class ProfileDetailRequest {
     private String email;
     private String phoneNumber;
     private String fullName;
