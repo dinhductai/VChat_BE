@@ -73,6 +73,7 @@ public class AdminUserController {
         return ResponseEntity.ok(new ApiResponse<>(true,"User unblocked successfully", null));
     }
 
+    //lấy thông tin người dùng cần sửa
     @GetMapping(value = "/users/{userId}/update")
     public ResponseEntity<ApiResponse<UserUpdateResponse>> getUserUpdateById(@PathVariable int userId) {
         UserUpdateResponse user = userService.getUserUpdateById(userId);
@@ -80,6 +81,7 @@ public class AdminUserController {
     }
 
 
+    //cập nhật người dùng
     @PutMapping(value = "/users/{userId}/update")
     public ResponseEntity<ApiResponse<UserUpdateResponse>> updateUserById(@PathVariable int userId,
                                                                           @RequestBody UserUpdateRequest userUpdateRequest) {
@@ -87,13 +89,14 @@ public class AdminUserController {
         return ResponseEntity.ok(new ApiResponse<>(true,"Get user successful",user));
     }
 
+    //xóa người dùng
     @DeleteMapping(value = "/users/{userId}/delete")
     public ResponseEntity<Void> deleteUser(@PathVariable int userId) {
         userService.deleteUser(userId);
         return ResponseEntity.noContent().build();
     }
 
-
+    //tạo người dùng
     @PostMapping(value = "/users/create")
     public ResponseEntity<ApiResponse<String>> createUser(@RequestBody UserCreateRequest userCreateRequest){
         userService.createUser(userCreateRequest);

@@ -44,6 +44,7 @@ public class AuthenticationController {
                 .build());
     }
 
+    //xác thực token
     @PostMapping(value = "/introspect")
     public ResponseEntity<ApiResponse<IntrospectResponse>> authenticate(@RequestBody IntrospectRequest introspectRequest) {
         try {
@@ -60,6 +61,7 @@ public class AuthenticationController {
         }
     }
 
+    //logout token
     @PostMapping(value = "/logout")
     public ResponseEntity<ApiResponse<String>> logout(@RequestBody LogoutRequest logoutRequest) {
         try {

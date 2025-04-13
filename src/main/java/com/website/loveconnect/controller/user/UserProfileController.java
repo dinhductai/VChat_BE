@@ -2,15 +2,11 @@ package com.website.loveconnect.controller.user;
 
 import com.website.loveconnect.dto.request.ProfileDetailRequest;
 import com.website.loveconnect.dto.request.UserCreateRequest;
-import com.website.loveconnect.dto.request.UserUpdateRequest;
 import com.website.loveconnect.dto.response.ApiResponse;
 import com.website.loveconnect.dto.response.ProfileDetailResponse;
-import com.website.loveconnect.entity.User;
-import com.website.loveconnect.repository.UserProfileRepository;
 import com.website.loveconnect.service.ImageService;
 import com.website.loveconnect.service.UserProfileService;
 import com.website.loveconnect.service.UserService;
-import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -49,18 +45,21 @@ public class UserProfileController {
                 .body(new ApiResponse<>(true,"Save profile image successful", urlImage));
     }
 
+    //lấy ảnh profile của user
     @GetMapping(value = "/profile-image")
     public ResponseEntity<ApiResponse<String>> getProfileImage(@RequestParam("userid") Integer userid){
         return ResponseEntity.ok(new ApiResponse<>(true,"Get profile image successful",
                 imageService.getProfileImage(userid)));
     }
 
+    //lấy toàn bộ ảnh của người dùng
     @GetMapping(value = "/photo-all")
     public ResponseEntity<ApiResponse<List<String>>> getPhotoAll(@RequestParam("idUser") Integer idUser){
         List<String> urlPhotos = imageService.getOwnedPhotos(idUser);
         return ResponseEntity.ok(new ApiResponse<>(true,"Get photos successful",urlPhotos));
     }
 
+    //lấy thông tin chi tiết người dùng
     @GetMapping(value = "/user-profile/{userId}")
     public ResponseEntity<ApiResponse<ProfileDetailResponse>> getUserProfile(
             @PathVariable("userId") Integer userId){
@@ -68,6 +67,7 @@ public class UserProfileController {
                 userProfileService.getProfileDetail(userId)));
     }
 
+    //cập nhật thông tin chi tiết người dùng
     @PutMapping(value = "/user-profile/{userId}/update")
     public ResponseEntity<ApiResponse<String>> updateUserProfile(
             @PathVariable("userId") Integer userId,
