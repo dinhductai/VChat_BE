@@ -35,29 +35,7 @@ public class UserProfileController {
                 .body(new ApiResponse<>(true,"Create account successful", null));
     }
 
-    //api dùng kèm với /sign-up
-    //tạo ảnh profile với 1 file và user email
-    @PostMapping(value = "/profile-image/upload",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<String>> upLoadProfileImage(@RequestParam("file") MultipartFile file,
-                                                                  @RequestParam("userEmail") String userEmail) throws IOException {
-        String urlImage = imageService.saveImageProfile(file,userEmail);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ApiResponse<>(true,"Save profile image successful", urlImage));
-    }
 
-    //lấy ảnh profile của user
-    @GetMapping(value = "/profile-image")
-    public ResponseEntity<ApiResponse<String>> getProfileImage(@RequestParam("userid") Integer userid){
-        return ResponseEntity.ok(new ApiResponse<>(true,"Get profile image successful",
-                imageService.getProfileImage(userid)));
-    }
-
-    //lấy toàn bộ ảnh của người dùng
-    @GetMapping(value = "/photo-all")
-    public ResponseEntity<ApiResponse<List<String>>> getPhotoAll(@RequestParam("idUser") Integer idUser){
-        List<String> urlPhotos = imageService.getOwnedPhotos(idUser);
-        return ResponseEntity.ok(new ApiResponse<>(true,"Get photos successful",urlPhotos));
-    }
 
     //lấy thông tin chi tiết người dùng
     @GetMapping(value = "/user-profile/{userId}")
