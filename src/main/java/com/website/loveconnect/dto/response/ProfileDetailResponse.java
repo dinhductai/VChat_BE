@@ -12,6 +12,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProfileDetailResponse {
+    private String email;
+    private String phoneNumber;
     private String fullName;
     private Date birthDate;
     private Gender gender;

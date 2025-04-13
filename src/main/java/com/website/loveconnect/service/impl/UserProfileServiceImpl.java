@@ -41,7 +41,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 
             List<Interest> listInterest = interestRepository.getAllInterest(user.getUserId());
 
-            return userProfileMapper.toProfileDetailResponse(userProfile, listInterest);
+            return userProfileMapper.toProfileDetailResponse(user,userProfile, listInterest);
         }
         catch (DataAccessException da){
             throw new com.website.loveconnect.exception.DataAccessException("Cannot access data");

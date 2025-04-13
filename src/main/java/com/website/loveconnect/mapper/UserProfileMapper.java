@@ -28,8 +28,10 @@ public class UserProfileMapper {
         return newUserProfile;
     }
     //map dữ liệu cho profile detail
-    public ProfileDetailResponse toProfileDetailResponse(UserProfile userProfile, List<Interest> listInterests) {
+    public ProfileDetailResponse toProfileDetailResponse(User user,UserProfile userProfile, List<Interest> listInterests) {
         ProfileDetailResponse profileDetailResponse = ProfileDetailResponse.builder()
+                .email(user.getEmail())
+                .phoneNumber(user.getPhoneNumber())
                 .fullName(userProfile.getFullName())
                 .birthDate(userProfile.getBirthDate())
                 .gender(userProfile.getGender())
