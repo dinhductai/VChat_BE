@@ -56,9 +56,9 @@ public class UserProfileController {
 
     //xóa người dùng
     @DeleteMapping(value = "/user-profile/{userId}/delete")
-    public ResponseEntity<Void> deleteUser(@PathVariable int userId) {
+    public ResponseEntity<ApiResponse<String>> deleteUser(@PathVariable int userId) {
         userService.deleteUser(userId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(new ApiResponse<>(true,"Delete account successful",null));
     }
 
 }

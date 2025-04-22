@@ -38,25 +38,5 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
         return (Tuple) nativeQuery.getSingleResult();
     }
 
-    @Override
-    public Page<Tuple> getAllUserByFilters(String status, String gender, String sort,
-                                           String keyword, Pageable pageable) {
-        Query nativeQuery = entityManager.createNativeQuery(
-                UserQueries.GET_USER_BY_FILTERS, Tuple.class);
-        //thiết lập tham số
-        nativeQuery.setParameter("status", status);
-        nativeQuery.setParameter("gender", gender);
-        nativeQuery.setParameter("sort", sort);
-        nativeQuery.setParameter("keyword", keyword);
 
-        //phân trang
-        //xác định vị trí bắt đầu của kết quả trả về , lấy số lượng bản ghi cần hiển thị trên một trang.
-        nativeQuery.setFirstResult((int) pageable.getOffset());
-        nativeQuery.setMaxResults(pageable.getPageSize());//đảm bảo query không lấy nhiều hơn số bản ghi cần thiết
-
-        //lấy kết quả query
-        List<Tuple> resultList = nativeQuery.getResultList();
-
-        return new PageImpl<>(resultList, pageable, resultList.size());
-    }
 }
