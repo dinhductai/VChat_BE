@@ -37,4 +37,7 @@ public interface UserRepository extends JpaRepository<User, Integer>, UserReposi
         Page<Tuple> getAllUserByFilters(@Param("status") String status, @Param("gender") String gender ,
                                          @Param("sort") String sort, @Param("keyword") String keyword,
                                          Pageable pageable);
+
+        @Query(value = UserQueries.GET_ALL_USER_BY_KEYWORD,nativeQuery = true)
+        Page<Tuple> getAllUserByKeyword(@Param("keyword") String keyword,Pageable pageable);
 }

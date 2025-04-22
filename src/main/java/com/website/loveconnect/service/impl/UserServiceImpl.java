@@ -7,6 +7,7 @@ import com.website.loveconnect.dto.request.InterestDTO;
 import com.website.loveconnect.dto.request.UserCreateRequest;
 import com.website.loveconnect.dto.request.UserUpdateRequest;
 import com.website.loveconnect.dto.response.ListUserResponse;
+import com.website.loveconnect.dto.response.UserSearchResponse;
 import com.website.loveconnect.dto.response.UserUpdateResponse;
 import com.website.loveconnect.dto.response.UserViewResponse;
 import com.website.loveconnect.entity.*;
@@ -314,6 +315,16 @@ public class UserServiceImpl implements UserService {
             log.error("Lỗi không xác định: {}", e.getMessage(), e);
             throw new RuntimeException("Đã xảy ra lỗi không xác định: " + e.getMessage());
         }
+    }
+
+    @Override
+    public Page<UserSearchResponse> getAllUserByKeyword(String keyword, int page,int size) {
+//        if (keyword == null || keyword.trim().isEmpty()) {
+//            throw new IllegalArgumentException("Keyword cannot be empty or null");
+//        }
+        Pageable pageable = PageRequest.of(page,size);
+        return userRepository.getAllUserByKeyword(keyword, pageable)
+                .map(userMapper::toProfileDetailResponse);
     }
 
     private void validateUserId(int idUser)  {

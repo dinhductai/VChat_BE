@@ -4,6 +4,7 @@ import com.website.loveconnect.dto.request.ProfileDetailRequest;
 import com.website.loveconnect.dto.request.UserCreateRequest;
 import com.website.loveconnect.dto.request.UserUpdateRequest;
 import com.website.loveconnect.dto.response.ListUserResponse;
+import com.website.loveconnect.dto.response.UserSearchResponse;
 import com.website.loveconnect.dto.response.UserUpdateResponse;
 import com.website.loveconnect.dto.response.UserViewResponse;
 import com.website.loveconnect.entity.User;
@@ -115,5 +116,31 @@ public class UserMapper {
         user.setEmail(profileDetailRequest.getEmail());
         user.setPhoneNumber(profileDetailRequest.getPhoneNumber());
         return user;
+    }
+
+    public UserSearchResponse toProfileDetailResponse(Tuple tuple) {
+        return UserSearchResponse.builder()
+                .email(tuple.get("email", String.class))
+                .phoneNumber(tuple.get("phoneNumber", String.class))
+                .fullName(tuple.get("fullName", String.class))
+                .birthDate(tuple.get("birthDate", Date.class))
+                .gender(tuple.get("gender", String.class) != null
+                        ? Gender.valueOf(tuple.get("gender", String.class).toUpperCase())
+                        : null)
+                .lookingFor(tuple.get("lookingFor", String.class) != null
+                        ? Gender.valueOf(tuple.get("lookingFor", String.class).toUpperCase())
+                        : null)
+                .bio(tuple.get("bio", String.class))
+                .height(tuple.get("height", Integer.class))
+                .weight(tuple.get("weight", Integer.class))
+                .location(tuple.get("location", String.class))
+                .jobTitle(tuple.get("jobTitle", String.class))
+                .company(tuple.get("company", String.class))
+                .education(tuple.get("education", String.class))
+                .description(tuple.get("description", String.class))
+                .interestName(tuple.get("interestName", String.class) != null
+                        ? Arrays.asList(tuple.get("interestName", String.class).split(","))
+                        : Collections.emptyList())
+                .build();
     }
 }

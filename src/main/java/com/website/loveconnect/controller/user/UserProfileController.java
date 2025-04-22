@@ -4,12 +4,14 @@ import com.website.loveconnect.dto.request.ProfileDetailRequest;
 import com.website.loveconnect.dto.request.UserCreateRequest;
 import com.website.loveconnect.dto.response.ApiResponse;
 import com.website.loveconnect.dto.response.ProfileDetailResponse;
+import com.website.loveconnect.dto.response.UserSearchResponse;
 import com.website.loveconnect.service.ImageService;
 import com.website.loveconnect.service.UserProfileService;
 import com.website.loveconnect.service.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -61,4 +63,12 @@ public class UserProfileController {
         return ResponseEntity.ok(new ApiResponse<>(true,"Delete account successful",null));
     }
 
+    @GetMapping(value = "/search")
+    public ResponseEntity<ApiResponse<Page<UserSearchResponse>>> searchUserByKeyword(
+            @RequestParam(name = "keyword") String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size){
+        return ResponseEntity.ok(new ApiResponse<>(true,"Search users successful",
+                userService.getAllUserByKeyword(keyword,page,size)));
+    }
 }

@@ -86,4 +86,56 @@ public  class UserQueries {
                     "INNER JOIN user_roles ur ON u.user_id = ur.user_id " +
                     "INNER JOIN roles r ON ur.role_id = r.role_id " +
                     "WHERE u.user_id = :idUser ;";
+
+    public static final String GET_ALL_USER_BY_KEYWORD =
+            "SELECT DISTINCT\n" +
+                    "    u.user_id AS userId,\n" +
+                    "    u.email AS email,\n" +
+                    "    u.phone_number AS phoneNumber,\n" +
+                    "    up.full_name AS fullName,\n" +
+                    "    up.birthdate AS birthDate,\n" +
+                    "    up.gender AS gender,\n" +
+                    "    up.looking_for AS lookingFor,\n" +
+                    "    up.bio AS bio,\n" +
+                    "    up.height AS height,\n" +
+                    "    up.weight AS weight,\n" +
+                    "    up.location AS location,\n" +
+                    "    up.job_title AS jobTitle,\n" +
+                    "    up.company AS company,\n" +
+                    "    up.education AS education,\n" +
+                    "    up.bio AS description,\n" +
+                    "    GROUP_CONCAT(DISTINCT i.interest_name) AS interestName\n" +
+                    "FROM \n" +
+                    "    users u\n" +
+                    "    INNER JOIN user_profiles up ON u.user_id = up.user_id\n" +
+                    "    LEFT JOIN user_interests ui ON u.user_id = ui.user_id\n" +
+                    "    LEFT JOIN interests i ON ui.interest_id = i.interest_id\n" +
+                    "WHERE \n" +
+                    "    u.email LIKE CONCAT('%', :keyword, '%')\n" +
+                    "    OR u.phone_number LIKE CONCAT('%', :keyword, '%')\n" +
+                    "    OR up.full_name LIKE CONCAT('%', :keyword, '%')\n" +
+                    "    OR up.bio LIKE CONCAT('%', :keyword, '%')\n" +
+                    "    OR up.location LIKE CONCAT('%', :keyword, '%')\n" +
+                    "    OR up.job_title LIKE CONCAT('%', :keyword, '%')\n" +
+                    "    OR up.company LIKE CONCAT('%', :keyword, '%')\n" +
+                    "    OR up.education LIKE CONCAT('%', :keyword, '%')\n" +
+                    "    OR i.interest_name LIKE CONCAT('%', :keyword, '%')\n" +
+                    "GROUP BY \n" +
+                    "    u.user_id,\n" +
+                    "    u.email,\n" +
+                    "    u.phone_number,\n" +
+                    "    up.full_name,\n" +
+                    "    up.birthdate,\n" +
+                    "    up.gender,\n" +
+                    "    up.looking_for,\n" +
+                    "    up.bio,\n" +
+                    "    up.height,\n" +
+                    "    up.weight,\n" +
+                    "    up.location,\n" +
+                    "    up.job_title,\n" +
+                    "    up.company,\n" +
+                    "    up.education\n" +
+                    "ORDER BY \n" +
+                    "    u.user_id ;";
+
 }
