@@ -54,5 +54,11 @@ public class UserProfileController {
         return ResponseEntity.ok(new ApiResponse<>(true,"Update user profile successful",null));
     }
 
+    //xóa người dùng
+    @DeleteMapping(value = "/user-profile/{userId}/delete")
+    public ResponseEntity<Void> deleteUser(@PathVariable int userId) {
+        userService.deleteUser(userId);
+        return ResponseEntity.noContent().build();
+    }
 
 }
