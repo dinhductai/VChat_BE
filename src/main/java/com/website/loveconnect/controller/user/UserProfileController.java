@@ -80,4 +80,11 @@ public class UserProfileController {
         likeService.likeUserById(senderId,receivedId);
         return ResponseEntity.ok(new ApiResponse<>(true,"Like user successful",null));
     }
+
+    @PostMapping(value = "/user-profile/{senderId}/dislike/{receivedId}")
+    public ResponseEntity<ApiResponse<String>> dislikeUser(@PathVariable int senderId,
+                                                        @PathVariable int receivedId){
+        likeService.dislikeUserById(senderId,receivedId);
+        return ResponseEntity.ok(new ApiResponse<>(true,"Dislike user successful",null));
+    }
 }

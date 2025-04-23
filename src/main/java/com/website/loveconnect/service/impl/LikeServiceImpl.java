@@ -29,6 +29,15 @@ public class LikeServiceImpl implements LikeService {
 
     @Override
     public void likeUserById(Integer senderId, Integer receiverId) {
+        doLikeOrDislike(senderId,receiverId,LikeStatus.ACTIVE);
+    }
+
+    @Override
+    public void dislikeUserById(Integer senderId, Integer receiverId) {
+        doLikeOrDislike(senderId,receiverId,LikeStatus.INACTIVE);
+    }
+
+    public void doLikeOrDislike(Integer senderId, Integer receiverId,LikeStatus status) {
         if(senderId == null || receiverId == null) {
             throw new IllegalArgumentException("Sender and Receiver id cannot be null");
         }
@@ -37,22 +46,37 @@ public class LikeServiceImpl implements LikeService {
                     .orElseThrow(() -> new UserNotFoundException("Sender not found"));
             User receiver = userRepository.findById(receiverId)
                     .orElseThrow(() -> new UserNotFoundException("Receiver not found"));
+            checkExistAndStatusToSave(sender,receiver,status);
+        }catch (DataAccessException e) {
+            log.error("Lỗi truy vấn cơ sở dữ liệu: {}", e.getMessage());
+            throw new RuntimeException("Lỗi truy vấn cơ sở dữ liệu");
+        }
+    }
 
+    public void checkExistAndStatusToSave(User sender, User receiver, LikeStatus status) {
+        if(status == LikeStatus.ACTIVE) {
             boolean likeExisted = likeRepository.existsBySenderAndReceiver(sender,receiver);
             if(!likeExisted) {
                 Like like = Like.builder()
                         .sender(sender)
                         .receiver(receiver)
                         .likeDate(new Timestamp(System.currentTimeMillis()))
-                        .likeStatus(LikeStatus.ACTIVE)
+                        .likeStatus(status)
                         .build();
                 likeRepository.save(like);
             }else {
                 throw new LikeDuplicatedException("Like already exists");
             }
-        }catch (DataAccessException e) {
-            log.error("Lỗi truy vấn cơ sở dữ liệu: {}", e.getMessage());
-            throw new RuntimeException("Lỗi truy vấn cơ sở dữ liệu");
+        }else if(status == LikeStatus.INACTIVE) {
+            boolean likeExisted = likeRepository.existsBySenderAndReceiver(sender,receiver);
+            if(likeExisted) {
+                Like like = likeRepository.findBySenderAndReceiver(sender,receiver);
+                like.setLikeStatus(status);
+                likeRepository.save(like);
+            }else {
+                throw new LikeDuplicatedException("UnLike already do");
+            }
         }
     }
+
 }

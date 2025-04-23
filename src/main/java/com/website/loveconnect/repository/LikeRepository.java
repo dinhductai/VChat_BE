@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface LikeRepository extends JpaRepository<Like, Integer> {
     boolean existsBySenderAndReceiver(User sender, User receiver);
+    Like findBySenderAndReceiver(User sender, User receiver);
 }
