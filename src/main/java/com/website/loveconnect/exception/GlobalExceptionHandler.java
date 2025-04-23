@@ -266,4 +266,14 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorDetail, HttpStatus.UNAUTHORIZED);
     }
+
+    @ExceptionHandler(LikeDuplicatedException.class)
+    public ResponseEntity<ErrorDetail> handleLikeDuplicatedException(LikeDuplicatedException ex, WebRequest request) {
+        ErrorDetail errorDetail = new ErrorDetail(
+                LocalDateTime.now(),
+                "Like already exists",
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetail, HttpStatus.CONFLICT);
+    }
 }

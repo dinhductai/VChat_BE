@@ -6,6 +6,7 @@ import com.website.loveconnect.dto.response.ApiResponse;
 import com.website.loveconnect.dto.response.ProfileDetailResponse;
 import com.website.loveconnect.dto.response.UserSearchResponse;
 import com.website.loveconnect.service.ImageService;
+import com.website.loveconnect.service.LikeService;
 import com.website.loveconnect.service.UserProfileService;
 import com.website.loveconnect.service.UserService;
 import lombok.AccessLevel;
@@ -29,6 +30,7 @@ public class UserProfileController {
     UserService userService;
     ImageService imageService;
     UserProfileService userProfileService;
+    LikeService likeService;
     //tạo tài khoản người dùng
     @PostMapping(value = "/sign-up")
     public ResponseEntity<ApiResponse<String>> signUpAccount(@RequestBody UserCreateRequest userCreateRequest){
@@ -63,12 +65,19 @@ public class UserProfileController {
         return ResponseEntity.ok(new ApiResponse<>(true,"Delete account successful",null));
     }
 
-    @GetMapping(value = "/search")
+    @GetMapping(value = "/user-profile/search")
     public ResponseEntity<ApiResponse<Page<UserSearchResponse>>> searchUserByKeyword(
             @RequestParam(name = "keyword") String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size){
         return ResponseEntity.ok(new ApiResponse<>(true,"Search users successful",
                 userService.getAllUserByKeyword(keyword,page,size)));
+    }
+
+    @PostMapping(value = "/user-profile/{senderId}/like/{receivedId}")
+    public ResponseEntity<ApiResponse<String>> likeUser(@PathVariable int senderId,
+                                                        @PathVariable int receivedId){
+        likeService.likeUserById(senderId,receivedId);
+        return ResponseEntity.ok(new ApiResponse<>(true,"Like user successful",null));
     }
 }

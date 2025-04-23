@@ -2,10 +2,7 @@ package com.website.loveconnect.entity;
 
 import com.website.loveconnect.enumpackage.LikeStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.sql.Timestamp;
 
@@ -13,6 +10,7 @@ import java.sql.Timestamp;
 @Entity
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Like {
@@ -25,6 +23,7 @@ public class Like {
     private Timestamp likeDate = new Timestamp(System.currentTimeMillis());
 
     @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     private LikeStatus likeStatus;
 
     @ManyToOne
