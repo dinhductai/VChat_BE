@@ -3,7 +3,10 @@ package com.website.loveconnect.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.website.loveconnect.enumpackage.MatchStatus;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.ArrayList;
@@ -12,7 +15,10 @@ import java.util.List;
 
 @Data
 @Entity
+@Builder
 @Table(name = "matches")
+@AllArgsConstructor
+@NoArgsConstructor
 public class Match {
 
     @Id

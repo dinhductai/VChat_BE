@@ -10,4 +10,5 @@ public interface MatchService {
     MatchResponse createMatch(MatchRequestDTO matchRequestDTO);
     List<MatchResponse> getMatchesByUser(Integer userId);
     MatchResponse updateMatchStatus(Integer matchId, MatchStatus status);
+    void createMatchByLike(int userId1, int userId2);
 }

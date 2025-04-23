@@ -6,6 +6,7 @@ import com.website.loveconnect.entity.Match;
 import com.website.loveconnect.entity.User;
 import com.website.loveconnect.enumpackage.MatchStatus;
 import com.website.loveconnect.exception.UserNotFoundException;
+import com.website.loveconnect.repository.LikeRepository;
 import com.website.loveconnect.repository.MatchRepository;
 import com.website.loveconnect.repository.UserRepository;
 import com.website.loveconnect.service.MatchService;
@@ -16,6 +17,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,7 +29,7 @@ import java.util.stream.Collectors;
 public class MatchServiceImpl implements MatchService {
     MatchRepository matchRepository;
     UserRepository userRepository;
-
+    LikeRepository likeRepository;
 
     @Override
     public MatchResponse createMatch(MatchRequestDTO matchRequestDTO) {
@@ -56,5 +58,26 @@ public class MatchServiceImpl implements MatchService {
         match.setStatus(status);
         Match updatedMatch = matchRepository.save(match);
         return new MatchResponse(updatedMatch);
+    }
+
+    @Override
+    public void createMatchByLike(int userId1, int userId2) {
+        User user1 = userRepository.findById(userId1)
+                .orElseThrow(() -> new UserNotFoundException("Sender not found"));
+        User user2 = userRepository.findById(userId2)
+                .orElseThrow(() -> new UserNotFoundException("Receiver not found"));
+        boolean checkUser1LikedUser2 = likeRepository.existsBySenderAndReceiver(user1,user2);
+        boolean checkUser2LikedUser1 = likeRepository.existsBySenderAndReceiver(user2,user1);
+        if (checkUser1LikedUser2 && checkUser2LikedUser1) {
+            Match match = Match.builder()
+                    .sender(user1)
+                    .receiver(user2)
+                    .matchDate(new Date())
+                    .status(MatchStatus.MATCHED)
+                    .build();
+            matchRepository.save(match);
+        }
+        else throw new RuntimeException();
+
     }
 }
