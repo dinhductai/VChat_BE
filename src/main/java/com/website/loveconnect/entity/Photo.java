@@ -13,8 +13,7 @@ import java.sql.Timestamp;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Photo implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class Photo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -18,8 +18,7 @@ import java.util.Map;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class User implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class User  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -104,6 +103,12 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<UserSubscription> listSubOfUser = new ArrayList<>();
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "sender",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    private List<Like> likesOfSender = new ArrayList<>();
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "receiver",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    private List<Like> likesOfReceiver = new ArrayList<>();
 
 }

@@ -13,8 +13,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserInterest implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class UserInterest  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_interests_id")

@@ -15,8 +15,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Interest implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class Interest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
