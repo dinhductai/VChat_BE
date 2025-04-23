@@ -284,3 +284,15 @@ create table invalidated_token (
     token text,
     expiry_time date
 );
+
+
+CREATE TABLE likes (
+    like_id INT AUTO_INCREMENT PRIMARY KEY,
+    sender_id INT NOT NULL, -- Người gửi like
+    receiver_id INT NOT NULL, -- Người nhận like
+    like_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    status ENUM('ACTIVE', 'INACTIVE') DEFAULT 'ACTIVE', -- Trạng thái like (active: đang like, inactive: đã dislike)
+    FOREIGN KEY (sender_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (receiver_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    UNIQUE KEY unique_like (sender_id, receiver_id) -- Đảm bảo mỗi cặp sender-receiver chỉ có một bản ghi
+);
