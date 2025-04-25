@@ -131,10 +131,9 @@ CREATE TABLE matches (
     sender_id INT NOT NULL, -- người gửi request match
     receiver_id INT NOT NULL, -- người nhận request,có thể xác nhận match hoặc reject
     match_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    status ENUM('pending', 'matched', 'rejected') DEFAULT 'pending',
+    status ENUM('PENDING', 'MATCHED', 'REJECTED') DEFAULT 'PENDING',
     FOREIGN KEY (sender_id) REFERENCES users(user_id) ON DELETE CASCADE,
     FOREIGN KEY (receiver_id) REFERENCES users(user_id) ON DELETE CASCADE
---     UNIQUE KEY unique_match (sender_id, receiver_id)  vl vậy bị từ chối là đ có cơ hội match lần thứ 2 à? ác vl ác
 );
 
 -- ====================================
