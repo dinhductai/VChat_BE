@@ -47,17 +47,16 @@ public class ReportTypeServiceImpl implements ReportTypeService {
     @Override
     public void updateReport(int idReportType,ReportTypeRequest reportTypeUpdate) {
         try {
-//            boolean existingReportName = reportTypeRepository.existsByTypeName(reportTypeUpdate.getTypeName());
-//            if (existingReportName) {
+            if (idReportType>0) {
                 ReportType reportType = reportTypeRepository.findById(idReportType)
                         .orElseThrow(()-> new ReportTypeNotFoundException("Report type not found"));
                 reportType.setTypeName(reportTypeUpdate.getTypeName());
                 reportType.setDescription(reportTypeUpdate.getDescription());
                 reportTypeRepository.save(reportType);
-//            }
-//            else{
-//                throw new ReportTypeNotFoundException("Report type not found");
-//            }
+            }
+            else{
+                throw new IllegalArgumentException("Id report type can not < 0");
+            }
         }catch (DataAccessException de){
             throw new DataAccessException("Cannot access to database");
         }
@@ -65,6 +64,17 @@ public class ReportTypeServiceImpl implements ReportTypeService {
 
     @Override
     public void deleteReport(int idReportType) {
+        try{
+            if (idReportType>0) {
+                ReportType reportType = reportTypeRepository.findById(idReportType)
+                        .orElseThrow(()-> new ReportTypeNotFoundException("Report type not found"));
+                reportTypeRepository.delete(reportType);
+            }else{
+                throw new IllegalArgumentException("Id report type can not < 0");
+            }
+        }catch (DataAccessException de){
+            throw new DataAccessException("Cannot access to database");
+        }
 
     }
 

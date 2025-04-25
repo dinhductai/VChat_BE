@@ -4,6 +4,7 @@ import com.website.loveconnect.dto.request.ReportTypeRequest;
 import com.website.loveconnect.dto.response.ApiResponse;
 import com.website.loveconnect.entity.ReportType;
 import com.website.loveconnect.service.ReportTypeService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -27,6 +28,7 @@ public class AdminReportTypeController {
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(true,
                 "Create new report type successfull",null));
     }
+
     @PutMapping(value = "/update-reporttype/{idReportType}")
     public ResponseEntity<ApiResponse<String>> updateReportType(
             @PathVariable int idReportType,
@@ -35,4 +37,9 @@ public class AdminReportTypeController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Update report type successfull",null));
     }
 
+    @DeleteMapping(value = "/delete-reporttype/{idReportType}")
+    public ResponseEntity<ApiResponse<String>> deleteReportType(@PathVariable int idReportType) {
+        reportTypeService.deleteReport(idReportType);
+        return ResponseEntity.noContent().build();
+    }
 }
