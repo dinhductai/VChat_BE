@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ReportTypeService {
     void createReport(ReportTypeRequest newReportType);
-    void updateReport(ReportTypeRequest reportTypeUpdate);
+    void updateReport(int idReportType,ReportTypeRequest reportTypeUpdate);
     void deleteReport(int idReportType);
     List<ReportTypeResponse> getAllReportType();
 }

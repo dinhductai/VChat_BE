@@ -5,6 +5,7 @@ import com.website.loveconnect.dto.response.ReportTypeResponse;
 import com.website.loveconnect.entity.ReportType;
 import com.website.loveconnect.exception.DataAccessException;
 import com.website.loveconnect.exception.ReportTypeDuplicatedException;
+import com.website.loveconnect.exception.ReportTypeNotFoundException;
 import com.website.loveconnect.repository.ReportTypeRepository;
 import com.website.loveconnect.service.ReportTypeService;
 import jakarta.transaction.Transactional;
@@ -44,8 +45,22 @@ public class ReportTypeServiceImpl implements ReportTypeService {
     }
 
     @Override
-    public void updateReport(ReportTypeRequest reportTypeUpdate) {
-        
+    public void updateReport(int idReportType,ReportTypeRequest reportTypeUpdate) {
+        try {
+//            boolean existingReportName = reportTypeRepository.existsByTypeName(reportTypeUpdate.getTypeName());
+//            if (existingReportName) {
+                ReportType reportType = reportTypeRepository.findById(idReportType)
+                        .orElseThrow(()-> new ReportTypeNotFoundException("Report type not found"));
+                reportType.setTypeName(reportTypeUpdate.getTypeName());
+                reportType.setDescription(reportTypeUpdate.getDescription());
+                reportTypeRepository.save(reportType);
+//            }
+//            else{
+//                throw new ReportTypeNotFoundException("Report type not found");
+//            }
+        }catch (DataAccessException de){
+            throw new DataAccessException("Cannot access to database");
+        }
     }
 
     @Override

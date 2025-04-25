@@ -286,5 +286,14 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorDetail, HttpStatus.CONFLICT);
     }
+    @ExceptionHandler(ReportTypeNotFoundException.class)
+    public ResponseEntity<ErrorDetail> handleReportTypeNotFoundException(ReportTypeNotFoundException ex, WebRequest request) {
+        ErrorDetail errorDetail = new ErrorDetail(
+                LocalDateTime.now(),
+                "Report type not found",
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetail, HttpStatus.NOT_FOUND);
+    }
 
 }

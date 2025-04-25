@@ -10,10 +10,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -29,6 +26,13 @@ public class AdminReportTypeController {
         reportTypeService.createReport(newReportType);
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(true,
                 "Create new report type successfull",null));
+    }
+    @PutMapping(value = "/update-reporttype/{idReportType}")
+    public ResponseEntity<ApiResponse<String>> updateReportType(
+            @PathVariable int idReportType,
+            @RequestBody ReportTypeRequest reportTypeUpdate) {
+        reportTypeService.updateReport(idReportType,reportTypeUpdate);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Update report type successfull",null));
     }
 
 }

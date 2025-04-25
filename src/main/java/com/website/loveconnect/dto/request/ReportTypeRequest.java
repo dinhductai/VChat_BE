@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReportTypeRequest {
-
+//    private Integer reportTypeId;
     private String typeName;
     private String description;
 
