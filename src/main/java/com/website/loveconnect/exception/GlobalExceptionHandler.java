@@ -276,4 +276,15 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorDetail, HttpStatus.CONFLICT);
     }
+
+    @ExceptionHandler(ReportTypeDuplicatedException.class)
+    public ResponseEntity<ErrorDetail> handleReportTypeDuplicatedException(ReportTypeDuplicatedException ex, WebRequest request) {
+        ErrorDetail errorDetail = new ErrorDetail(
+                LocalDateTime.now(),
+                "Report type already exists",
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetail, HttpStatus.CONFLICT);
+    }
+
 }
