@@ -1,15 +1,19 @@
 package com.website.loveconnect.service.impl;
 
 import com.website.loveconnect.dto.request.MatchRequestDTO;
+import com.website.loveconnect.dto.response.MatchBySenderResponse;
 import com.website.loveconnect.dto.response.MatchResponse;
 import com.website.loveconnect.entity.Match;
 import com.website.loveconnect.entity.User;
 import com.website.loveconnect.enumpackage.MatchStatus;
+import com.website.loveconnect.exception.DataAccessException;
 import com.website.loveconnect.exception.UserNotFoundException;
+import com.website.loveconnect.mapper.MatchMapper;
 import com.website.loveconnect.repository.LikeRepository;
 import com.website.loveconnect.repository.MatchRepository;
 import com.website.loveconnect.repository.UserRepository;
 import com.website.loveconnect.service.MatchService;
+import jakarta.persistence.Tuple;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +34,7 @@ public class MatchServiceImpl implements MatchService {
     MatchRepository matchRepository;
     UserRepository userRepository;
     LikeRepository likeRepository;
+    MatchMapper matchMapper;
 
     @Override
     public MatchResponse createMatch(MatchRequestDTO matchRequestDTO) {
@@ -79,5 +84,17 @@ public class MatchServiceImpl implements MatchService {
         }
         else throw new RuntimeException();
 
+    }
+
+    @Override
+    public List<MatchBySenderResponse> getAllMatchBySenderId(int senderId) {
+        try{
+            List<Tuple> allMatchBySenderId = matchRepository.getMatchesBySenderId(senderId);
+            List<MatchBySenderResponse> matchBySenderResponses =  allMatchBySenderId.stream()
+                    .map(matchMapper::toMatchBySenderIdResponse).toList();
+            return matchBySenderResponses;
+        }catch (DataAccessException de){
+            throw new DataAccessException("Can not access database");
+        }
     }
 }

@@ -2,13 +2,21 @@ package com.website.loveconnect.repository;
 
 import com.website.loveconnect.entity.Match;
 import com.website.loveconnect.enumpackage.MatchStatus;
+import com.website.loveconnect.repository.query.MatchQueries;
+import jakarta.persistence.Tuple;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
 public interface MatchRepository extends JpaRepository<Match, Integer> {
-    List<Match> findBySenderUserIdOrReceiverUserId(Integer senderId, Integer receiverId);
+    List<Match> findBySenderUserIdOrReceiverUserId(int senderId, int receiverId);
     List<Match> findByStatus(MatchStatus status);
+    List<Match> findBySenderUserId(int userId);
+
+    @Query(value = MatchQueries.GET_ALL_MATCH_BY_SENDER_ID,nativeQuery = true)
+    List<Tuple> getMatchesBySenderId(@Param("senderId") int senderId);
 }
