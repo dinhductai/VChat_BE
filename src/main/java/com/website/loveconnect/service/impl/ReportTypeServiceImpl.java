@@ -6,6 +6,7 @@ import com.website.loveconnect.entity.ReportType;
 import com.website.loveconnect.exception.DataAccessException;
 import com.website.loveconnect.exception.ReportTypeDuplicatedException;
 import com.website.loveconnect.exception.ReportTypeNotFoundException;
+import com.website.loveconnect.mapper.ReportTypeMapper;
 import com.website.loveconnect.repository.ReportTypeRepository;
 import com.website.loveconnect.service.ReportTypeService;
 import jakarta.transaction.Transactional;
@@ -23,7 +24,7 @@ import java.util.List;
 @Transactional
 public class ReportTypeServiceImpl implements ReportTypeService {
     ReportTypeRepository reportTypeRepository;
-
+    ReportTypeMapper reportTypeMapper;
     @Override
     public void createReport(ReportTypeRequest newReportType) {
         try {
@@ -80,6 +81,12 @@ public class ReportTypeServiceImpl implements ReportTypeService {
 
     @Override
     public List<ReportTypeResponse> getAllReportType() {
-        return List.of();
+        try{
+            return reportTypeRepository.findAll()
+                    .stream().map(reportTypeMapper::toReportTypeResponse).toList();
+
+        }catch (DataAccessException de){
+            throw new DataAccessException("Cannot access to database");
+        }
     }
 }

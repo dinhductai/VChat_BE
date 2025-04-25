@@ -2,6 +2,7 @@ package com.website.loveconnect.controller.admin;
 
 import com.website.loveconnect.dto.request.ReportTypeRequest;
 import com.website.loveconnect.dto.response.ApiResponse;
+import com.website.loveconnect.dto.response.ReportTypeResponse;
 import com.website.loveconnect.entity.ReportType;
 import com.website.loveconnect.service.ReportTypeService;
 import jakarta.validation.Valid;
@@ -12,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -38,8 +41,14 @@ public class AdminReportTypeController {
     }
 
     @DeleteMapping(value = "/delete-reporttype/{idReportType}")
-    public ResponseEntity<ApiResponse<String>> deleteReportType(@PathVariable int idReportType) {
+    public ResponseEntity<Void> deleteReportType(@PathVariable int idReportType) {
         reportTypeService.deleteReport(idReportType);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping(value = "/report-types")
+    public ResponseEntity<ApiResponse<List<ReportTypeResponse>>> getAllReportTypes() {
+        return ResponseEntity.ok(new ApiResponse<>(true,"Get all report types",
+                reportTypeService.getAllReportType()));
     }
 }
