@@ -66,24 +66,22 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Override
-    public void createMatchByLike(int userId1, int userId2) {
-        User user1 = userRepository.findById(userId1)
-                .orElseThrow(() -> new UserNotFoundException("Sender not found"));
-        User user2 = userRepository.findById(userId2)
-                .orElseThrow(() -> new UserNotFoundException("Receiver not found"));
-        boolean checkUser1LikedUser2 = likeRepository.existsBySenderAndReceiver(user1,user2);
-        boolean checkUser2LikedUser1 = likeRepository.existsBySenderAndReceiver(user2,user1);
-        if (checkUser1LikedUser2 && checkUser2LikedUser1) {
-            Match match = Match.builder()
-                    .sender(user1)
-                    .receiver(user2)
-                    .matchDate(new Date())
-                    .status(MatchStatus.MATCHED)
-                    .build();
-            matchRepository.save(match);
+    public void createMatchByLike(User sender, User receiver) {
+        try {
+            boolean checkUser1LikedUser2 = likeRepository.existsBySenderAndReceiver(sender, receiver);
+            boolean checkUser2LikedUser1 = likeRepository.existsBySenderAndReceiver(receiver, sender);
+            if (checkUser1LikedUser2 && checkUser2LikedUser1) {
+                Match match = Match.builder()
+                        .sender(sender) // set người thứ 2 like lại người thứ 1,sẽ dc coi là người tạo match (sender)
+                        .receiver(receiver)
+                        .matchDate(new Date())
+                        .status(MatchStatus.MATCHED)
+                        .build();
+                matchRepository.save(match);
+            }
+        }catch (DataAccessException da){
+            throw new DataAccessException("Can not access database");
         }
-        else throw new RuntimeException();
-
     }
 
     @Override

@@ -8,6 +8,7 @@ import com.website.loveconnect.exception.UserNotFoundException;
 import com.website.loveconnect.repository.LikeRepository;
 import com.website.loveconnect.repository.UserRepository;
 import com.website.loveconnect.service.LikeService;
+import com.website.loveconnect.service.MatchService;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ import java.sql.Timestamp;
 public class LikeServiceImpl implements LikeService {
     LikeRepository likeRepository;
     UserRepository userRepository;
+    MatchService matchService;
 
     @Override
     public void likeUserById(Integer senderId, Integer receiverId) {
@@ -64,6 +66,9 @@ public class LikeServiceImpl implements LikeService {
                         .likeStatus(status)
                         .build();
                 likeRepository.save(like);
+                matchService.createMatchByLike(sender,receiver);
+
+
             }else {
                 throw new LikeDuplicatedException("Like already exists");
             }

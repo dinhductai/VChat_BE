@@ -24,15 +24,6 @@ public class MatchController {
 
     MatchService matchService;
 
-    @PostMapping(value = "/match/create/{userId1}/{userId2}")
-    public ResponseEntity<ApiResponse<String>> createMatch(
-            @PathVariable int userId1,
-            @PathVariable int userId2) {
-        matchService.createMatchByLike(userId1, userId2);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ApiResponse<>(true,"Create match successful",null));
-    }
-
     @GetMapping(value = "/matches")
     public ResponseEntity<ApiResponse<List<MatchBySenderResponse>>> getMatches(
             @RequestParam(name = "senderId") int senderId) {
