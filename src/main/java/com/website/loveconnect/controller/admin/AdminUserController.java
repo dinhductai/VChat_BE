@@ -39,10 +39,6 @@ public class AdminUserController {
     @GetMapping(value = "/users")
     public ResponseEntity<ApiResponse<Page<ListUserResponse>>> getAllUser(@RequestParam(defaultValue = "0") int page,
                                                                           @RequestParam(defaultValue = "10") int size) {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        log.info(authentication.getName());
-        authentication.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
-
         return  ResponseEntity.ok(new ApiResponse<>(true,"get list user successful",
                 userService.getAllUser(page,size)));
     }

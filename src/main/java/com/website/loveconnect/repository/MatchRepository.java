@@ -9,7 +9,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface MatchRepository extends JpaRepository<Match, Integer> {
@@ -18,5 +20,8 @@ public interface MatchRepository extends JpaRepository<Match, Integer> {
     List<Match> findBySenderUserId(int userId);
 
     @Query(value = MatchQueries.GET_ALL_MATCH_BY_SENDER_ID,nativeQuery = true)
-    List<Tuple> getMatchesBySenderId(@Param("senderId") int senderId);
+    List<Tuple> getMatchesBySenderId(@Param("senderId") int senderId, Pageable pageable);
+
+    @Query(value = MatchQueries.GET_MATCH_BY_MATCH_ID,nativeQuery = true)
+    Optional<Tuple> getMatchByMatchId(@Param("matchId") int matchId);
 }
