@@ -277,8 +277,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorDetail, HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(ReportTypeDuplicatedException.class)
-    public ResponseEntity<ErrorDetail> handleReportTypeDuplicatedException(ReportTypeDuplicatedException ex, WebRequest request) {
+    @ExceptionHandler(ReportTypeConflictedException.class)
+    public ResponseEntity<ErrorDetail> handleReportTypeDuplicatedException(ReportTypeConflictedException ex, WebRequest request) {
         ErrorDetail errorDetail = new ErrorDetail(
                 LocalDateTime.now(),
                 "Report type already exists",
@@ -296,4 +296,23 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorDetail, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(ReportConflictedException.class)
+    public ResponseEntity<ErrorDetail> handleReportConflictException(ReportConflictedException ex, WebRequest request) {
+        ErrorDetail errorDetail = new ErrorDetail(
+                LocalDateTime.now(),
+                "Report already exists",
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetail, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(ReportNotFoundException.class)
+    public ResponseEntity<ErrorDetail> handleReportNotFoundException(ReportNotFoundException ex, WebRequest request) {
+        ErrorDetail errorDetail = new ErrorDetail(
+                LocalDateTime.now(),
+                "Report not found",
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetail, HttpStatus.NOT_FOUND);
+    }
 }
