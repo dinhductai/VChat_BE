@@ -4,10 +4,7 @@ package com.website.loveconnect.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.website.loveconnect.enumpackage.StatusReport;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -16,6 +13,7 @@ import java.sql.Timestamp;
 @Entity
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Report {

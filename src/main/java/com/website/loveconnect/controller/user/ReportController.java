@@ -1,16 +1,31 @@
 package com.website.loveconnect.controller.user;
 
+import com.website.loveconnect.dto.request.ReportRequest;
+import com.website.loveconnect.dto.response.ApiResponse;
+import com.website.loveconnect.dto.response.ReportTypeResponse;
+import com.website.loveconnect.entity.Report;
+import com.website.loveconnect.service.ReportService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequestMapping(value = "/api")
 public class ReportController {
+    ReportService reportService;
 
+    @PostMapping(value = "/report")
+    public ResponseEntity<ApiResponse<String>> report(
+            @RequestParam(value = "typeName") String typeName,
+            @RequestBody ReportRequest reportRequest) {
+        reportService.createReport(typeName, reportRequest);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ApiResponse<>(true,"Create report successful",null));
+    }
 
 }
