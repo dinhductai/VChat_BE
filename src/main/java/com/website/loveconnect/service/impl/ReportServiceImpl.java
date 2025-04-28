@@ -2,13 +2,12 @@ package com.website.loveconnect.service.impl;
 
 import com.website.loveconnect.dto.request.ReportRequest;
 import com.website.loveconnect.dto.request.ReportTypeRequest;
+import com.website.loveconnect.dto.request.ReportUpdateStatusRequest;
 import com.website.loveconnect.entity.Report;
 import com.website.loveconnect.entity.ReportType;
 import com.website.loveconnect.entity.User;
 import com.website.loveconnect.enumpackage.StatusReport;
-import com.website.loveconnect.exception.DataAccessException;
-import com.website.loveconnect.exception.ReportTypeNotFoundException;
-import com.website.loveconnect.exception.UserNotFoundException;
+import com.website.loveconnect.exception.*;
 import com.website.loveconnect.repository.ReportRepository;
 import com.website.loveconnect.repository.ReportTypeRepository;
 import com.website.loveconnect.repository.UserRepository;
@@ -43,7 +42,7 @@ public class ReportServiceImpl implements ReportService {
                     .existsByReporterAndReportedAndStatusReport(reporter,reported,StatusReport.PENDING);
             boolean checkReportTypeExisted = reportTypeRepository.existsByTypeName(typeName);
             if(checkReportExisted ){
-                throw new ReportTypeNotFoundException("Report already exists, wait admin review");
+                throw new ReportConflictedException("Report already exists, wait admin review");
             }else if(!checkReportTypeExisted ){
                 throw new ReportTypeNotFoundException("Report type not exists, wait admin review");
             }else {
@@ -59,6 +58,18 @@ public class ReportServiceImpl implements ReportService {
                 reportRepository.save(report);
             }
         }catch (DataAccessException de){
+            throw new DataAccessException("Can not access database");
+        }
+    }
+
+    @Override
+    public void updateStatusReport(ReportUpdateStatusRequest reportUpdateStatusRequest) {
+        try {
+            Report report = reportRepository.findById(reportUpdateStatusRequest.getReportId())
+                    .orElseThrow(()-> new ReportNotFoundException("Report not found"));
+            report.setStatusReport(reportUpdateStatusRequest.getStatusReport());
+            reportRepository.save(report);
+        }catch (DataAccessException da){
             throw new DataAccessException("Can not access database");
         }
     }

@@ -4,7 +4,7 @@ import com.website.loveconnect.dto.request.ReportTypeRequest;
 import com.website.loveconnect.dto.response.ReportTypeResponse;
 import com.website.loveconnect.entity.ReportType;
 import com.website.loveconnect.exception.DataAccessException;
-import com.website.loveconnect.exception.ReportTypeDuplicatedException;
+import com.website.loveconnect.exception.ReportTypeConflictedException;
 import com.website.loveconnect.exception.ReportTypeNotFoundException;
 import com.website.loveconnect.mapper.ReportTypeMapper;
 import com.website.loveconnect.repository.ReportTypeRepository;
@@ -38,7 +38,7 @@ public class ReportTypeServiceImpl implements ReportTypeService {
                 reportTypeRepository.save(reportType);
             }
             else{
-                throw new ReportTypeDuplicatedException("Report type already exists");
+                throw new ReportTypeConflictedException("Report type already exists");
             }
         }catch (DataAccessException de){
             throw new DataAccessException("Cannot access to database");
