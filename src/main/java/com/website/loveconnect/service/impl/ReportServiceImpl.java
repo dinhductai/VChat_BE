@@ -3,11 +3,13 @@ package com.website.loveconnect.service.impl;
 import com.website.loveconnect.dto.request.ReportRequest;
 import com.website.loveconnect.dto.request.ReportTypeRequest;
 import com.website.loveconnect.dto.request.ReportUpdateStatusRequest;
+import com.website.loveconnect.dto.response.ReportResponse;
 import com.website.loveconnect.entity.Report;
 import com.website.loveconnect.entity.ReportType;
 import com.website.loveconnect.entity.User;
 import com.website.loveconnect.enumpackage.StatusReport;
 import com.website.loveconnect.exception.*;
+import com.website.loveconnect.mapper.ReportMapper;
 import com.website.loveconnect.repository.ReportRepository;
 import com.website.loveconnect.repository.ReportTypeRepository;
 import com.website.loveconnect.repository.UserRepository;
@@ -20,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -30,6 +33,7 @@ public class ReportServiceImpl implements ReportService {
     ReportRepository reportRepository;
     UserRepository userRepository;
     ReportTypeRepository reportTypeRepository;
+    ReportMapper reportMapper;
 
     @Override
     public void createReport(String typeName, ReportRequest reportRequest) {
@@ -69,6 +73,16 @@ public class ReportServiceImpl implements ReportService {
                     .orElseThrow(()-> new ReportNotFoundException("Report not found"));
             report.setStatusReport(reportUpdateStatusRequest.getStatusReport());
             reportRepository.save(report);
+        }catch (DataAccessException da){
+            throw new DataAccessException("Can not access database");
+        }
+    }
+
+    @Override
+    public List<ReportResponse> getAllReports() {
+        try{
+            return reportRepository.findAllReport()
+                    .stream().map(reportMapper::toReportResponse).toList();
         }catch (DataAccessException da){
             throw new DataAccessException("Can not access database");
         }
