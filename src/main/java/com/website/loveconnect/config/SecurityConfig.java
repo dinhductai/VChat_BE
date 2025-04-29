@@ -110,6 +110,12 @@ public class SecurityConfig {
                 USER_API_PREFIX+"/user/interest/delete/{idUser}/{idInterest}"
         };
 
+        String[] apiDocumentEndpoint = {
+                "/swagger-ui/**",
+                "/api-docs/**"
+        };
+        registry.requestMatchers(apiDocumentEndpoint).permitAll();
+
         //api không cần đăng nhập
         registry.requestMatchers(HttpMethod.POST, publicPostEndpoint).permitAll();
         //api các role dùng chung
