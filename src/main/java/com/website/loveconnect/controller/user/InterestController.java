@@ -38,14 +38,8 @@ public class InterestController {
     @PostMapping("/{idUser}/interests/add")
     public ResponseEntity<ApiResponse<?>> addInterest(@Valid  @RequestBody InterestDTO interestDTO ,
                                                       @PathVariable Integer idUser) {
-        try {
-            log.info("Request THÊM sở thích vào danh sách của user có ID : {}" , idUser);
             interestService.addInterest(idUser , interestDTO);
             return ResponseEntity.ok(new ApiResponse<>(true,"Added interest successful", null));
-        }catch (Exception ex) {
-            log.error("--->>> Không thể thêm sở thích vì : {}" , ex.getMessage() , ex.getCause());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
     }
 
     // Request Update one Interest
@@ -53,14 +47,9 @@ public class InterestController {
     public ResponseEntity<ApiResponse<?>> updateInterest(@Valid @RequestBody InterestDTO interestDTO
             , @PathVariable Integer idUser
             , @PathVariable Integer idInterest) {
-        try {
-            log.info("Request SỬA sở thích vào danh sách của user có ID : {}" , idUser);
             interestService.updateInterest(idInterest, idUser, interestDTO);
             return ResponseEntity.ok(new ApiResponse<>(true,"Updated interest successful", null));
-        }catch (Exception ex) {
-            log.error("--->>> Không thể sửa được sở thích vì : {}" , ex.getMessage() , ex.getCause());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+
     }
 
     // Request Delete one Interest
