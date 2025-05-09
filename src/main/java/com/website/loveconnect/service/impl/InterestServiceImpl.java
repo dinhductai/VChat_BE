@@ -45,10 +45,8 @@ public class InterestServiceImpl implements InterestService {
             User user = userRepository.findById(idUser)
                     .orElseThrow(() -> new UserNotFoundException("User with id "+ idUser + " not found"));
 
-            Interest interest = Interest.builder()
-                    .interestName(interestDTO.getInterestName())
-                    .category(interestDTO.getCategory())
-                    .build();
+            Interest interest = interestRepository.findByInterestName(interestDTO.getInterestName())
+                    .orElseThrow(()->new InterestNotFoundException("Interest not found"));
 
             UserInterest ui = UserInterest.builder()
                     .user(user)
@@ -85,7 +83,8 @@ public class InterestServiceImpl implements InterestService {
             // Xác định xem User có ID idUser có sở thích có ID idInterest không
             UserInterest ui = userInterestRepository.findUserInterestWithIdUserAndIdInterest(idInterest , idUser);
 //                    .orElseThrow(() -> new UserNotFoundException("Not found UserInterest need find !!! "));;
-            Interest interest = interestRepository.findById(idInterest).orElseThrow(() -> new UserNotFoundException("Interest with id "+ idInterest + " not found"));
+            Interest interest = interestRepository.findById(idInterest)
+                    .orElseThrow(() -> new UserNotFoundException("Interest with id "+ idInterest + " not found"));
             interest.setInterestName(interestDTO.getInterestName());
             interest.setCategory(interestDTO.getCategory());
 
@@ -98,11 +97,11 @@ public class InterestServiceImpl implements InterestService {
 
     @Override
     public List<Interest> getAllInterest(int idUser) {
-        List<Interest> interestList = interestRepository.getAllInterest(idUser);
-        if (interestList.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Người dùng chưa có sở thích nào.");
+        if( idUser <= 0) {
+            throw new UserNotFoundException("User with id "+ idUser + " not found");
         }
-        log.info("Danh sách sở thích đã được lấy thành công");
+        List<Interest> interestList = interestRepository.getAllInterest(idUser);
+
         return interestList;
     }
 

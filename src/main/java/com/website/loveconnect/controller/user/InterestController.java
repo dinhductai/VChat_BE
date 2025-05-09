@@ -6,6 +6,7 @@ import com.website.loveconnect.dto.response.ApiResponse;
 import com.website.loveconnect.entity.Interest;
 import com.website.loveconnect.service.InterestService;
 import com.website.loveconnect.service.UserService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -27,21 +28,16 @@ public class InterestController {
     InterestService interestService;
 
     // Request Get all Interest
-    @GetMapping("/user/interest/{idUser}")
+    @GetMapping("/{idUser}/interests")
     public ResponseEntity<ApiResponse<?>> getAllInterest(@PathVariable Integer idUser) {
-        try {
-            log.info("Request lấy danh sách sở thích của user có ID : {}" , idUser);
-            List<Interest> Interests = interestService.getAllInterest(idUser);
-            return ResponseEntity.ok(new ApiResponse<>(true,"Get interests successful", Interests));
-        }catch (Exception ex) {
-            log.error("--->>> Không thể lấy được danh sách sở thích vì : {}" , ex.getMessage() , ex.getCause());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+            List<Interest> interests = interestService.getAllInterest(idUser);
+            return ResponseEntity.ok(new ApiResponse<>(true,"Get interests successful", interests));
     }
 
     // Request Add one Interest
-    @PostMapping("/user/interest/add/{idUser}")
-    public ResponseEntity<ApiResponse<?>> addInterest(@RequestBody InterestDTO interestDTO , @PathVariable Integer idUser) {
+    @PostMapping("/{idUser}/interests/add")
+    public ResponseEntity<ApiResponse<?>> addInterest(@Valid  @RequestBody InterestDTO interestDTO ,
+                                                      @PathVariable Integer idUser) {
         try {
             log.info("Request THÊM sở thích vào danh sách của user có ID : {}" , idUser);
             interestService.addInterest(idUser , interestDTO);
@@ -53,8 +49,8 @@ public class InterestController {
     }
 
     // Request Update one Interest
-    @PutMapping("/user/interest/update/{idUser}/{idInterest}")
-    public ResponseEntity<ApiResponse<?>> updateInterest(@RequestBody InterestDTO interestDTO
+    @PutMapping("/{idUser}/interests/update/{idInterest}")
+    public ResponseEntity<ApiResponse<?>> updateInterest(@Valid @RequestBody InterestDTO interestDTO
             , @PathVariable Integer idUser
             , @PathVariable Integer idInterest) {
         try {
@@ -68,8 +64,9 @@ public class InterestController {
     }
 
     // Request Delete one Interest
-    @DeleteMapping("/user/interest/delete/{idUser}/{idInterest}")
-    public ResponseEntity<ApiResponse<?>> deleteInterest(@PathVariable Integer idUser , @PathVariable Integer idInterest) {
+    @DeleteMapping("/{idUser}/interests/delete/{idInterest}")
+    public ResponseEntity<ApiResponse<?>> deleteInterest(@PathVariable Integer idUser ,
+                                                         @PathVariable Integer idInterest) {
         try {
             log.info("Request SỬA sở thích vào danh sách của user có ID : {}" , idUser);
             interestService.deleterInterest(idUser , idInterest);
@@ -81,7 +78,7 @@ public class InterestController {
     }
 
     //lấy danh sách đầy đủ sở thích
-    @GetMapping(value = "/interest-name")
+    @GetMapping(value = "/{idUser}/interests-name")
     public ResponseEntity<ApiResponse<List<String>>> getInterestName() {
         return ResponseEntity.ok(new ApiResponse<>(true,"Get list interest name successful",
                 interestService.findAllInterestName()));
