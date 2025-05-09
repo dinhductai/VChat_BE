@@ -65,15 +65,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorDetail, HttpStatus.NOT_FOUND);
     }
 
-    //bat loi validation khi du lieu request body khong hop le
-    @ExceptionHandler(MethodArgumentNotValidException.class)  // .bind
-    public ResponseEntity<Map<String,String>> handleValidationExceptions(MethodArgumentNotValidException ex){
-        Map<String,String> errors = new HashMap<>();
-        for(FieldError error : ex.getBindingResult().getFieldErrors()){
-            errors.put(error.getField(),error.getDefaultMessage());
-        }
-        return new ResponseEntity<>(errors,HttpStatus.BAD_REQUEST);
-    }
+
 
     // Xử lý lỗi truy cập dữ liệu
     @ExceptionHandler(com.website.loveconnect.exception.DataAccessException.class)
@@ -314,5 +306,14 @@ public class GlobalExceptionHandler {
                 request.getDescription(false)
         );
         return new ResponseEntity<>(errorDetail, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String,String>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex, WebRequest request) {
+        Map<String, String> errors = new HashMap<>();
+        for(FieldError error : ex.getBindingResult().getFieldErrors()){
+            errors.put(error.getField(), error.getDefaultMessage());
+        }
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 }

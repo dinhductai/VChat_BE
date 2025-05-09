@@ -9,6 +9,7 @@ import com.website.loveconnect.dto.response.ApiResponse;
 import com.website.loveconnect.dto.response.AuthenticationResponse;
 import com.website.loveconnect.dto.response.IntrospectResponse;
 import com.website.loveconnect.service.AuthenticationService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -28,7 +29,7 @@ public class AuthenticationController {
     //đăng nhập với email và password
     @PostMapping(value = "/log-in")
     public ResponseEntity<ApiResponse<AuthenticationResponse>> authenticate(
-            @RequestBody AuthenticationRequest authenticationRequest) {
+            @Valid @RequestBody AuthenticationRequest authenticationRequest) {
         AuthenticationResponse checkAuthenticate = null;
         try {
             checkAuthenticate = authenticationService.authenticate(authenticationRequest);
