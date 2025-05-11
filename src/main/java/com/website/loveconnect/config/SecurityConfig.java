@@ -41,7 +41,9 @@ public class SecurityConfig {
 //    private static final
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.authorizeHttpRequests(registry -> configureAuthorization(registry))
+        httpSecurity
+                .cors(cors -> cors.configure(httpSecurity))
+                .authorizeHttpRequests(registry -> configureAuthorization(registry))
         //bản thân là resource server nên dùng
         .oauth2ResourceServer(httpSecurityOAuth2ResourceServerConfigurer -> httpSecurityOAuth2ResourceServerConfigurer
                 .jwt(jwtConfigurer -> jwtConfigurer.decoder(customJWTDecoder)
