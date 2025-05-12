@@ -6,10 +6,7 @@ import com.cloudinary.utils.ObjectUtils;
 import com.website.loveconnect.dto.request.InterestDTO;
 import com.website.loveconnect.dto.request.UserCreateRequest;
 import com.website.loveconnect.dto.request.UserUpdateRequest;
-import com.website.loveconnect.dto.response.ListUserResponse;
-import com.website.loveconnect.dto.response.UserSearchResponse;
-import com.website.loveconnect.dto.response.UserUpdateResponse;
-import com.website.loveconnect.dto.response.UserViewResponse;
+import com.website.loveconnect.dto.response.*;
 import com.website.loveconnect.entity.*;
 import com.website.loveconnect.enumpackage.AccountStatus;
 import com.website.loveconnect.enumpackage.Gender;
@@ -325,6 +322,28 @@ public class UserServiceImpl implements UserService {
         Pageable pageable = PageRequest.of(page,size);
         return userRepository.getAllUserByKeyword(keyword, pageable)
                 .map(userMapper::toProfileDetailResponse);
+    }
+
+    @Override
+    public Page<UserAndPhotosResponse> getAllUsersAndPhotos( int page, int size, int userId) {
+        try {
+
+
+            User user =  userRepository.findById(userId)
+                    .orElseThrow(()-> new UserNotFoundException("User with id "+ userId + " not found"));
+            UserProfile userProfile = userProfileRepository.findByUser_UserId(userId)
+                    .orElseThrow(()-> new UserNotFoundException("User with id "+ userId + " not found"));
+            if(user != null) {
+                Pageable pageable = PageRequest.of(page,size);
+                Page<Tuple> listUserAndPhotos = userRepository.getAllUserAndPhotos(String.valueOf(userProfile.getLookingFor()),pageable);
+                return listUserAndPhotos.map(userMapper::toUserAndPhotosResponse);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+
+        }
+        return null;
     }
 
     private void validateUserId(int idUser)  {

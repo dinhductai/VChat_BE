@@ -103,7 +103,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         String scope = scopeBuilder.toString();
-        String token = generateToken(userProfile.getFullName(),scope);
+        String token = generateToken(user.getUserId(),scope);
         return AuthenticationResponse.builder()
                 .token(token)
                 .authenticated(true)
@@ -164,12 +164,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     //hàm sinh token bằng HS512 và secret key
-    private String generateToken(String userName,String roleString) throws JOSEException {
+    private String generateToken(Integer userId,String roleString) throws JOSEException {
         //thuật toán mã hóa header
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
         //set claim
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(userName)//đại diện cho user đăng nhập
+                .subject(String.valueOf(userId))//đại diện cho user đăng nhập
                 .issuer("website.com")//xác định token issue từ đâu ra, xác định nguồn gốc của token
                 .issueTime(new Date()) //thời gian tạo
                 .expirationTime(new Date(

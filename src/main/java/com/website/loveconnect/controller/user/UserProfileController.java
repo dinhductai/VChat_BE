@@ -4,11 +4,13 @@ import com.website.loveconnect.dto.request.ProfileDetailRequest;
 import com.website.loveconnect.dto.request.UserCreateRequest;
 import com.website.loveconnect.dto.response.ApiResponse;
 import com.website.loveconnect.dto.response.ProfileDetailResponse;
+import com.website.loveconnect.dto.response.UserAndPhotosResponse;
 import com.website.loveconnect.dto.response.UserSearchResponse;
 import com.website.loveconnect.service.ImageService;
 import com.website.loveconnect.service.LikeService;
 import com.website.loveconnect.service.UserProfileService;
 import com.website.loveconnect.service.UserService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -87,4 +89,13 @@ public class UserProfileController {
         likeService.dislikeUserById(senderId,receivedId);
         return ResponseEntity.ok(new ApiResponse<>(true,"Dislike user successful",null));
     }
+
+    @GetMapping(value = "/random-user-photos/{userId}")
+    public ResponseEntity<ApiResponse<Page<UserAndPhotosResponse>>> getUserAndPhotos(@PathVariable("userId") Integer userId,
+                                                                                     @RequestParam(defaultValue = "0") int page,
+                                                                                     @RequestParam(defaultValue = "10") int size){
+        return ResponseEntity.ok(new ApiResponse<>(true,"Get page user and photos successful",
+                userService.getAllUsersAndPhotos(page,size,userId)));
+    }
+
 }

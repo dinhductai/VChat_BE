@@ -46,11 +46,6 @@ public class AdminUserController {
     //lấy thông tin chi tiết người dùng
     @GetMapping(value = "/users/{userId}")
     public ResponseEntity<ApiResponse<UserViewResponse>> getUserById(@PathVariable int userId) {
-
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        log.info(authentication.getName());;
-        authentication.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
-
         UserViewResponse user = userService.getUserById(userId);
         return ResponseEntity.ok(new ApiResponse<>(true, "Get user successful", user));
     }
@@ -119,7 +114,7 @@ public class AdminUserController {
             @RequestParam(name = "sort", required = false) String sort,
             @RequestParam(name = "keyword", required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size){
+            @RequestParam(defaultValue = "5") int size){
         return ResponseEntity.ok(new ApiResponse<>(true,"Get list user by filters successful",
                 userService.getAllUserByFilters(status,gender,sort,keyword,page,size)));
     }

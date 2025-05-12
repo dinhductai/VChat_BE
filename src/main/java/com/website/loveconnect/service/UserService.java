@@ -3,10 +3,7 @@ package com.website.loveconnect.service;
 import com.website.loveconnect.dto.request.InterestDTO;
 import com.website.loveconnect.dto.request.UserCreateRequest;
 import com.website.loveconnect.dto.request.UserUpdateRequest;
-import com.website.loveconnect.dto.response.ListUserResponse;
-import com.website.loveconnect.dto.response.UserSearchResponse;
-import com.website.loveconnect.dto.response.UserUpdateResponse;
-import com.website.loveconnect.dto.response.UserViewResponse;
+import com.website.loveconnect.dto.response.*;
 import com.website.loveconnect.entity.Interest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,4 +20,5 @@ public interface UserService {
     void createUser(UserCreateRequest userRequest);
     Page<ListUserResponse> getAllUserByFilters(String status, String gender, String sortType, String keyword, int page, int size);
     Page<UserSearchResponse> getAllUserByKeyword(String keyword,int page,int size);
+    Page<UserAndPhotosResponse> getAllUsersAndPhotos(int page,int size,int userId);
 }

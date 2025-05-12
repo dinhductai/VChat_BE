@@ -5,5 +5,6 @@ public class InterestQueries {
             "select i.interest_name as interestName " +
                     "from interests i ";
 
+    public static final String FIND = "";
 
 }

@@ -1,9 +1,11 @@
 package com.website.loveconnect.repository;
 
 import com.website.loveconnect.entity.User;
+import com.website.loveconnect.enumpackage.Gender;
 import com.website.loveconnect.repository.custom.UserRepositoryCustom;
 import com.website.loveconnect.repository.query.UserQueries;
 import jakarta.persistence.Tuple;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -40,4 +42,7 @@ public interface UserRepository extends JpaRepository<User, Integer>, UserReposi
 
         @Query(value = UserQueries.GET_ALL_USER_BY_KEYWORD,nativeQuery = true)
         Page<Tuple> getAllUserByKeyword(@Param("keyword") String keyword,Pageable pageable);
+
+        @Query(value = UserQueries.GET_USER_AND_PHOTO_HOME_PAGE,nativeQuery = true)
+        Page<Tuple> getAllUserAndPhotos(@Param("lookingFor") String lookingFor, Pageable pageable);
 }

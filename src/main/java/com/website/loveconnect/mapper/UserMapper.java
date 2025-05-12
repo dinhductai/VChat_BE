@@ -3,10 +3,7 @@ package com.website.loveconnect.mapper;
 import com.website.loveconnect.dto.request.ProfileDetailRequest;
 import com.website.loveconnect.dto.request.UserCreateRequest;
 import com.website.loveconnect.dto.request.UserUpdateRequest;
-import com.website.loveconnect.dto.response.ListUserResponse;
-import com.website.loveconnect.dto.response.UserSearchResponse;
-import com.website.loveconnect.dto.response.UserUpdateResponse;
-import com.website.loveconnect.dto.response.UserViewResponse;
+import com.website.loveconnect.dto.response.*;
 import com.website.loveconnect.entity.User;
 import com.website.loveconnect.enumpackage.AccountStatus;
 import com.website.loveconnect.enumpackage.Gender;
@@ -141,6 +138,17 @@ public class UserMapper {
                 .interestName(tuple.get("interestName", String.class) != null
                         ? Arrays.asList(tuple.get("interestName", String.class).split(","))
                         : Collections.emptyList())
+                .build();
+    }
+
+    public UserAndPhotosResponse toUserAndPhotosResponse(Tuple tuple) {
+        return UserAndPhotosResponse.builder()
+                .userId(tuple.get("userId",Integer.class))
+                .fullName(tuple.get("fullName", String.class))
+                .location(tuple.get("location", String.class))
+                .listPhotoUrl(tuple.get("photos",String.class) != null ?
+                    Arrays.asList(tuple.get("photos",String.class).split(","))
+                    : Collections.emptyList())
                 .build();
     }
 }

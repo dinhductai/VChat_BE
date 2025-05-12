@@ -138,4 +138,18 @@ public  class UserQueries {
                     "ORDER BY \n" +
                     "    u.user_id ;";
 
+    public static final String GET_USER_AND_PHOTO_HOME_PAGE =
+            "SELECT \n" +
+                    "u.user_id AS userId,\n" +
+                    "up.full_name AS fullName,\n" +
+                    "up.location AS location,\n" +
+                    "up.gender AS gender,\n" +
+                    "GROUP_CONCAT(p.photo_url) AS photos\n" +
+                    "FROM users u\n" +
+                    "LEFT JOIN user_profiles up ON u.user_id = up.user_id\n" +
+                    "LEFT JOIN photos p ON u.user_id = p.user_id\n" +
+                    "WHERE \n" +
+                    "    u.account_status = 'ACTIVE'\n" +
+                    "    AND up.gender = :lookingFor \n" +
+                    "GROUP BY u.user_id, up.full_name, up.location, up.gender ";
 }
