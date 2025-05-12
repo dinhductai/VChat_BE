@@ -11,10 +11,7 @@ import com.website.loveconnect.entity.*;
 import com.website.loveconnect.enumpackage.AccountStatus;
 import com.website.loveconnect.enumpackage.Gender;
 import com.website.loveconnect.enumpackage.RoleName;
-import com.website.loveconnect.exception.EmailAlreadyInUseException;
-import com.website.loveconnect.exception.PasswordIncorrectException;
-import com.website.loveconnect.exception.RoleNotFoundException;
-import com.website.loveconnect.exception.UserNotFoundException;
+import com.website.loveconnect.exception.*;
 import com.website.loveconnect.mapper.UserInterestMapper;
 import com.website.loveconnect.mapper.UserMapper;
 import com.website.loveconnect.mapper.UserProfileMapper;
@@ -31,7 +28,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -283,8 +279,7 @@ public class UserServiceImpl implements UserService {
             //set role USER cho user mới
             userRoleRepository.save(userRoleMapper.toAttachUserRole(newUser,role));
             } catch (DataAccessException dae) {
-                throw new DataAccessException("Failed to save new user", dae) {
-                };
+                throw new DataAccessException("Failed to save new user");
             }
         }else throw new EmailAlreadyInUseException("Email was already in use");
     }
@@ -327,8 +322,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public Page<UserAndPhotosResponse> getAllUsersAndPhotos( int page, int size, int userId) {
         try {
-
-
             User user =  userRepository.findById(userId)
                     .orElseThrow(()-> new UserNotFoundException("User with id "+ userId + " not found"));
             UserProfile userProfile = userProfileRepository.findByUser_UserId(userId)
@@ -339,8 +332,9 @@ public class UserServiceImpl implements UserService {
                 return listUserAndPhotos.map(userMapper::toUserAndPhotosResponse);
             }
 
-        }catch (Exception e){
-            e.printStackTrace();
+        }catch (DataAccessException da){
+            da.getMessage();
+            throw new DataAccessException("Cannot access database");
 
         }
         return null;

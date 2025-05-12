@@ -114,7 +114,7 @@ public class AdminUserController {
             @RequestParam(name = "sort", required = false) String sort,
             @RequestParam(name = "keyword", required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size){
+            @RequestParam(defaultValue = "10") int size){
         return ResponseEntity.ok(new ApiResponse<>(true,"Get list user by filters successful",
                 userService.getAllUserByFilters(status,gender,sort,keyword,page,size)));
     }
