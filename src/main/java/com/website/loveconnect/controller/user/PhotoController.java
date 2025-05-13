@@ -23,11 +23,20 @@ public class PhotoController {
     ImageService imageService;
 
     //api dùng kèm với /sign-up
-    //tạo ảnh profile với 1 file và user email
-    @PostMapping(value = "/profile-photo/upload",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    //tạo ảnh với 1 file và user email
+    //api upload ảnh bình thường
+    @PostMapping(value = "/photo/upload",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<String>> upLoadImage(@RequestParam("file") MultipartFile file,
+                                                                  @RequestParam("userEmail") String userEmail) throws IOException {
+        String urlImage = imageService.uploadImage(file,userEmail);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ApiResponse<>(true,"Save profile image successful", urlImage));
+    }
+    //api upload ảnh profile
+    @PostMapping(value = "/prifile-photo/upload",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<String>> upLoadProfileImage(@RequestParam("file") MultipartFile file,
                                                                   @RequestParam("userEmail") String userEmail) throws IOException {
-        String urlImage = imageService.saveImageProfile(file,userEmail);
+        String urlImage = imageService.uploadImageProfile(file,userEmail);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiResponse<>(true,"Save profile image successful", urlImage));
     }

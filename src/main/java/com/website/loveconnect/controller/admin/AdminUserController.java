@@ -100,7 +100,7 @@ public class AdminUserController {
     @PostMapping(value = "/users/profile-image/create",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<String>> createProfileImage(@RequestParam("file")MultipartFile file,
                                                    @RequestParam("userEmail") String userEmail) throws IOException {
-        String urlImage = imageService.saveImageProfile(file,userEmail);
+        String urlImage = imageService.uploadImageProfile(file,userEmail);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiResponse<>(true,"Save profile image successful", urlImage));
     }
