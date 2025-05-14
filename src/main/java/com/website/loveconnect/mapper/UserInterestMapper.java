@@ -22,4 +22,11 @@ public class UserInterestMapper {
         }
         return listUserInterest;
     }
+    public UserInterest toAttachOneUserInterest(Interest interest, User user) {
+            UserInterest userInterest = UserInterest.builder()
+                    .interest(interest) //một trong những interest được truyền vào
+                    .user(user) // lưu thẳng user mới tạo vào
+                    .build();
+        return userInterest;
+    }
 }

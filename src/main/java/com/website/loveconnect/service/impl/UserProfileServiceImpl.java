@@ -16,6 +16,8 @@ import com.website.loveconnect.repository.UserInterestRepository;
 import com.website.loveconnect.repository.UserProfileRepository;
 import com.website.loveconnect.repository.UserRepository;
 import com.website.loveconnect.service.UserProfileService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,8 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Transactional
 public class UserProfileServiceImpl implements UserProfileService {
+    @PersistenceContext
+    EntityManager entityManager;
     UserRepository userRepository;
     UserProfileRepository userProfileRepository;
     InterestRepository interestRepository;
@@ -71,7 +75,11 @@ public class UserProfileServiceImpl implements UserProfileService {
 
         userRepository.save(userMapper.toUpdateUserEmailAndPhoneNumber(user,profileDetailRequest));
         userProfileRepository.save(userProfileMapper.toUpdateUserProfile(userProfile,profileDetailRequest));
-        userInterestRepository.saveAll(userInterestMapper.toAttachUserInterest(listInterest,user));
+//        userInterestRepository.(userInterestMapper.toAttachUserInterest(listInterest,user));
+            for(Interest interest : listInterest){
+                entityManager.merge(userInterestMapper.toAttachOneUserInterest(interest,user));
+            }
+            entityManager.flush();
         }
     catch (DataAccessException da){
         throw new com.website.loveconnect.exception.DataAccessException("Cannot access data");
