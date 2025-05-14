@@ -20,5 +20,4 @@ public interface UserService {
     void createUser(UserCreateRequest userRequest);
     Page<ListUserResponse> getAllUserByFilters(String status, String gender, String sortType, String keyword, int page, int size);
     Page<UserSearchResponse> getAllUserByKeyword(String keyword,int page,int size);
-    Page<UserAndPhotosResponse> getAllUsersAndPhotos(int page,int size,int userId);
-}
+    Page<UserAndPhotosResponse> getAllUsersAndPhotos(int page,int size,int userId);}

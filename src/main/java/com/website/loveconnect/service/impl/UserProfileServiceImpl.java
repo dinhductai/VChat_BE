@@ -2,9 +2,11 @@ package com.website.loveconnect.service.impl;
 
 import com.website.loveconnect.dto.request.ProfileDetailRequest;
 import com.website.loveconnect.dto.response.ProfileDetailResponse;
+import com.website.loveconnect.dto.response.UserNameAndProfileResponse;
 import com.website.loveconnect.entity.Interest;
 import com.website.loveconnect.entity.User;
 import com.website.loveconnect.entity.UserProfile;
+import com.website.loveconnect.exception.DataAccessException;
 import com.website.loveconnect.exception.UserNotFoundException;
 import com.website.loveconnect.mapper.UserInterestMapper;
 import com.website.loveconnect.mapper.UserMapper;
@@ -19,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataAccessException;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -74,5 +76,14 @@ public class UserProfileServiceImpl implements UserProfileService {
     catch (DataAccessException da){
         throw new com.website.loveconnect.exception.DataAccessException("Cannot access data");
     }
+    }
+
+    @Override
+    public UserNameAndProfileResponse getUserNameAndProfile(int idUser) {
+        try {
+            return userProfileRepository.findUserNameAndProfileByUserId(idUser).orElseThrow(() -> new UserNotFoundException("User Not Found"));
+        }catch (DataAccessException e){
+            throw new DataAccessException("Cannot access database");
+        }
     }
 }

@@ -2,10 +2,7 @@ package com.website.loveconnect.controller.user;
 
 import com.website.loveconnect.dto.request.ProfileDetailRequest;
 import com.website.loveconnect.dto.request.UserCreateRequest;
-import com.website.loveconnect.dto.response.ApiResponse;
-import com.website.loveconnect.dto.response.ProfileDetailResponse;
-import com.website.loveconnect.dto.response.UserAndPhotosResponse;
-import com.website.loveconnect.dto.response.UserSearchResponse;
+import com.website.loveconnect.dto.response.*;
 import com.website.loveconnect.service.ImageService;
 import com.website.loveconnect.service.LikeService;
 import com.website.loveconnect.service.UserProfileService;
@@ -98,4 +95,9 @@ public class UserProfileController {
                 userService.getAllUsersAndPhotos(page,size,userId)));
     }
 
+    @GetMapping(value = "/user-name-profile-photo")
+    public ResponseEntity<ApiResponse<UserNameAndProfileResponse>> getUserNameAndProfilePhoto(@RequestParam Integer userId){
+        return ResponseEntity.ok(new ApiResponse<>(true,"Get full name and profile photo successful",
+                userProfileService.getUserNameAndProfile(userId)));
+    }
 }
