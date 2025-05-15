@@ -26,7 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -65,21 +67,19 @@ public class UserProfileServiceImpl implements UserProfileService {
     @Override
     public void updateProfileDetail(Integer idUser, ProfileDetailRequest profileDetailRequest) {
         try {
-        User user = userRepository.findById(idUser)
-                .orElseThrow(() -> new UserNotFoundException("User Not Found"));
+            User user = userRepository.findById(idUser)
+                    .orElseThrow(() -> new UserNotFoundException("User Not Found"));
 
-        UserProfile userProfile = userProfileRepository.findByUser_UserId(user.getUserId())
-                .orElseThrow(() -> new UserNotFoundException("User Not Found"));
+            UserProfile userProfile = userProfileRepository.findByUser_UserId(user.getUserId())
+                    .orElseThrow(() -> new UserNotFoundException("User Not Found"));
 
-        List<Interest> listInterest = interestRepository.getByInterestNameIn(profileDetailRequest.getInterestName());
-
-        userRepository.save(userMapper.toUpdateUserEmailAndPhoneNumber(user,profileDetailRequest));
-        userProfileRepository.save(userProfileMapper.toUpdateUserProfile(userProfile,profileDetailRequest));
+            List<Interest> listInterest = interestRepository.getByInterestNameIn(profileDetailRequest.getInterestName());
+            List<Integer> listInterestId = listInterest.stream().map(Interest::getInterestId).collect(Collectors.toList());
+            userRepository.save(userMapper.toUpdateUserEmailAndPhoneNumber(user, profileDetailRequest));
+            userProfileRepository.save(userProfileMapper.toUpdateUserProfile(userProfile, profileDetailRequest));
+            userInterestRepository.insertUserInterestNotExist(idUser,listInterestId);
 //        userInterestRepository.(userInterestMapper.toAttachUserInterest(listInterest,user));
-            for(Interest interest : listInterest){
-                entityManager.merge(userInterestMapper.toAttachOneUserInterest(interest,user));
-            }
-            entityManager.flush();
+
         }
     catch (DataAccessException da){
         throw new com.website.loveconnect.exception.DataAccessException("Cannot access data");
