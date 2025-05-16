@@ -3,6 +3,7 @@ package com.website.loveconnect.controller.user;
 import com.website.loveconnect.dto.response.ApiResponse;
 import com.website.loveconnect.dto.response.MatchBySenderResponse;
 import com.website.loveconnect.dto.response.MatchMatchIdResponse;
+import com.website.loveconnect.dto.response.UserMatchedResponse;
 import com.website.loveconnect.service.MatchService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -24,11 +25,11 @@ public class MatchController {
 
     @GetMapping(value = "/matches")
     public ResponseEntity<ApiResponse<List<MatchBySenderResponse>>> getMatches(
-            @RequestParam(name = "senderId") int senderId,
+            @RequestParam(name = "userId") int userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(new ApiResponse<>(true,"Get all match by sender id successful",
-                matchService.getAllMatchBySenderId(senderId, page, size)));
+                matchService.getAllMatchBySenderId(userId, page, size)));
     }
 
     @GetMapping(value = "/matches/{matchId}")
@@ -36,5 +37,14 @@ public class MatchController {
             @PathVariable int matchId){
         return ResponseEntity.ok(new ApiResponse<>(true,"Get match by match id successful",
                 matchService.getMatchMatchId(matchId)));
+    }
+
+    @GetMapping(value = "/user-matches")
+    public ResponseEntity<ApiResponse<List<UserMatchedResponse>>> getUserMatches(
+            @RequestParam(name = "userId") int userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(new ApiResponse<>(true,"Get all match by sender id successful",
+                matchService.getAllUserMatched(userId, page, size)));
     }
 }

@@ -4,6 +4,7 @@ import com.website.loveconnect.dto.request.MatchRequestDTO;
 import com.website.loveconnect.dto.response.MatchBySenderResponse;
 import com.website.loveconnect.dto.response.MatchMatchIdResponse;
 import com.website.loveconnect.dto.response.MatchResponse;
+import com.website.loveconnect.dto.response.UserMatchedResponse;
 import com.website.loveconnect.entity.Match;
 import com.website.loveconnect.entity.User;
 import com.website.loveconnect.enumpackage.MatchStatus;
@@ -88,10 +89,10 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Override
-    public List<MatchBySenderResponse> getAllMatchBySenderId(int senderId,int page,int size) {
+    public List<MatchBySenderResponse> getAllMatchBySenderId(int userId,int page,int size) {
         try{
             Pageable pageable = PageRequest.of(page, size);
-            List<Tuple> allMatchBySenderId = matchRepository.getMatchesBySenderId(senderId,pageable);
+            List<Tuple> allMatchBySenderId = matchRepository.getMatchesBySenderId(userId,pageable);
             List<MatchBySenderResponse> matchBySenderResponses =  allMatchBySenderId.stream()
                     .map(matchMapper::toMatchBySenderIdResponse).toList();
             return matchBySenderResponses;
@@ -107,6 +108,19 @@ public class MatchServiceImpl implements MatchService {
                     .orElseThrow(() -> new RuntimeException("Match not found"));
             return matchMapper.toMatchMatchIdResponse(matchById);
         }catch (DataAccessException da){
+            throw new DataAccessException("Can not access database");
+        }
+    }
+
+    @Override
+    public List<UserMatchedResponse> getAllUserMatched(int userId, int page, int size) {
+        try{
+            Pageable pageable = PageRequest.of(page, size);
+            List<Tuple> allUserMatchedBySenderId = matchRepository.getFullNameAndProfileUserMatchedBySenderId(userId,pageable);
+            List<UserMatchedResponse> userMatchedResponses =  allUserMatchedBySenderId.stream()
+                    .map(matchMapper::toUserMatchedResponse).toList();
+            return userMatchedResponses;
+        }catch (DataAccessException de){
             throw new DataAccessException("Can not access database");
         }
     }

@@ -12,10 +12,13 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MatchBySenderResponse {
+    private Integer matchId;
     private Timestamp matchDate;
     private MatchStatus matchStatus;
+    private Integer receiverId;
     private String fullName;
     private Gender gender;
     private String description;
+    private String photoUrl;
 
 }

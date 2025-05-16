@@ -38,8 +38,6 @@ public class UserProfileController {
                 .body(new ApiResponse<>(true,"Create account successful", null));
     }
 
-
-
     //lấy thông tin chi tiết người dùng
     @GetMapping(value = "/user-profile/{userId}")
     public ResponseEntity<ApiResponse<ProfileDetailResponse>> getUserProfile(

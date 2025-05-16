@@ -24,4 +24,7 @@ public interface MatchRepository extends JpaRepository<Match, Integer> {
 
     @Query(value = MatchQueries.GET_MATCH_BY_MATCH_ID,nativeQuery = true)
     Optional<Tuple> getMatchByMatchId(@Param("matchId") int matchId);
+
+    @Query(value = MatchQueries.GET_FULL_NAME_AND_PROFILE_USER_MATCHED_BY_SENDER_ID,nativeQuery = true)
+    List<Tuple> getFullNameAndProfileUserMatchedBySenderId(@Param("senderId") int senderId, Pageable pageable);
 }
