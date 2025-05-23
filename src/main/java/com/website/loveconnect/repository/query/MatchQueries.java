@@ -5,7 +5,8 @@ import org.springframework.stereotype.Component;
 
 public class MatchQueries {
     public static final String GET_ALL_MATCH_BY_SENDER_ID =
-            "SELECT m.match_id as matchId , m.match_date as matchDate, m.status as status ,m.receiver_id as receiverId, up.full_name as fullName,\n" +
+            "SELECT m.match_id as matchId , m.match_date as matchDate, m.status as status , " +
+                    "m.receiver_id as receiverId, up.full_name as fullName,\n" +
                     "up.gender as gender, up.description as description, p.photo_url as photoUrl\n" +
                     "FROM matches m \n" +
                     "left JOIN users u ON m.receiver_id = u.user_id \n" +
