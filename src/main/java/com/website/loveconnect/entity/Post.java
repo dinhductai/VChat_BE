@@ -47,7 +47,14 @@ public class Post {
     private User reviewedBy;
 
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
-    private List<PostVideo> posts = new ArrayList<>();
+    private List<PostVideo> postVideos = new ArrayList<>();
 
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    private List<PostPhoto> postPhotos = new ArrayList<>();
 
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    private List<UserPost> postUsers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    private List<Comment> comments = new ArrayList<>();
 }

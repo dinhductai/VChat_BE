@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -48,6 +50,9 @@ public class Photo {
     @JoinColumn(name = "reviewed_by")
     private User reviewedBy;
 
+
+    @OneToMany(mappedBy = "photo", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    private List<PostPhoto> photoPost = new ArrayList<>();
 
 
 }

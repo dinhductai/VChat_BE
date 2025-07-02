@@ -123,5 +123,10 @@ public class User  {
     @OneToMany(mappedBy = "reviewedBy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Post> reviewedPosts = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    private List<UserPost> userPosts = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    private List<Comment> userComments = new ArrayList<>();
 }
+

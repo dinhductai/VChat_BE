@@ -47,7 +47,7 @@ public class Video {
     private User reviewedBy;
 
     @OneToMany(mappedBy = "video", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
-    private List<PostVideo> videos = new ArrayList<>();
+    private List<PostVideo> videoPosts = new ArrayList<>();
 
 
 }
