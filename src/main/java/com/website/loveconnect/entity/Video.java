@@ -1,30 +1,28 @@
 package com.website.loveconnect.entity;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
-@Table(name = "photos")
+@Table(name = "video")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Photo {
+public class Video {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "photo_id")
-    private Integer photoId;
+    @Column(name = "video_id")
+    private Integer videoId;
 
-    @Column(name = "photo_url",nullable = false)
-    private String photoUrl;
-
-    @Column(name = "is_profile_picture")
-    private Boolean isProfilePicture;
+    @Column(name = "video_url",nullable = false)
+    private String videoUrl;
 
     @Column(name = "upload_date")
     private Timestamp uploadDate;
@@ -41,13 +39,15 @@ public class Photo {
     @ManyToOne
     @JsonIgnore
     @JoinColumn(name = "user_id")
-    private User ownedPhoto;
+    private User ownedVideo;
 
     @ManyToOne
     @JsonIgnore
     @JoinColumn(name = "reviewed_by")
     private User reviewedBy;
 
+    @OneToMany(mappedBy = "video", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    private List<PostVideo> videos = new ArrayList<>();
 
 
 }

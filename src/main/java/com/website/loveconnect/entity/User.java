@@ -60,6 +60,14 @@ public class User  {
     private List<Photo> reviewedPhotos = new ArrayList<>();
 
     @JsonIgnore
+    @OneToMany(mappedBy = "ownedVideo", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Video> ownedVideos = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "reviewedBy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Video> reviewedVideos = new ArrayList<>();
+
+    @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserInterest> userInterests = new ArrayList<>();
 
@@ -110,5 +118,10 @@ public class User  {
     @JsonIgnore
     @OneToMany(mappedBy = "receiver",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<Like> likesOfReceiver = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "reviewedBy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Post> reviewedPosts = new ArrayList<>();
+
 
 }
