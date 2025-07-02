@@ -1,7 +1,7 @@
 package com.website.loveconnect.controller.user;
 
 import com.website.loveconnect.dto.response.ApiResponse;
-import com.website.loveconnect.service.ImageService;
+import com.website.loveconnect.service.PhotoService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -20,7 +20,7 @@ import java.util.List;
 @RequestMapping(value = "/api")
 public class PhotoController {
 
-    ImageService imageService;
+    PhotoService imageService;
 
     //api dùng kèm với /sign-up
     //tạo ảnh với 1 file và user email

@@ -7,7 +7,7 @@ import com.website.loveconnect.entity.User;
 import com.website.loveconnect.exception.UserNotFoundException;
 import com.website.loveconnect.repository.PhotoRepository;
 import com.website.loveconnect.repository.UserRepository;
-import com.website.loveconnect.service.ImageService;
+import com.website.loveconnect.service.PhotoService;
 import jakarta.persistence.NoResultException;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
@@ -18,11 +18,8 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.util.StringUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +30,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Transactional
-public class ImageServiceImpl implements ImageService {
+public class PhotoServiceImpl implements PhotoService {
 
     Cloudinary cloudinary;
     UserRepository userRepository;
@@ -42,7 +39,7 @@ public class ImageServiceImpl implements ImageService {
     private static final String CLOUDINARY_BASE_URL = "http://res.cloudinary.com/dvgxke1mp/image/upload/";
 
 //    @PreAuthorize("hasAuthority('ADMIN_UPLOAD_PHOTO')")
-    //hàm lưu ảnh profile khi tạo người dùng mới và chưa được duyệt
+    //hàm lưu ảnh profile khi tạo người dùng mới
     public String saveImage(MultipartFile file, String userEmail,boolean isProfilePicture) throws IOException {
         if (file == null || file.isEmpty()) {
             log.warn("Attempt to upload empty file for user: {}", userEmail);
@@ -69,7 +66,8 @@ public class ImageServiceImpl implements ImageService {
         photo.setPhotoUrl(photoUrl);
         photo.setIsProfilePicture(isProfilePicture);
         photo.setUploadDate(new Timestamp(System.currentTimeMillis()));
-        photo.setIsApproved(false);
+        photo.setIsApproved(true);
+        photo.setIsStatus(false);
         photo.setOwnedPhoto(user);
         try {
             photoRepository.save(photo);

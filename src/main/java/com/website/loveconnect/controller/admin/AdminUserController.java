@@ -1,13 +1,12 @@
 package com.website.loveconnect.controller.admin;
 
-import com.cloudinary.Api;
 import com.website.loveconnect.dto.request.UserCreateRequest;
 import com.website.loveconnect.dto.request.UserUpdateRequest;
 import com.website.loveconnect.dto.response.ApiResponse;
 import com.website.loveconnect.dto.response.ListUserResponse;
 import com.website.loveconnect.dto.response.UserUpdateResponse;
 import com.website.loveconnect.dto.response.UserViewResponse;
-import com.website.loveconnect.service.ImageService;
+import com.website.loveconnect.service.PhotoService;
 import com.website.loveconnect.service.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -17,12 +16,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Collections;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -33,7 +30,7 @@ import java.util.Collections;
 public class AdminUserController {
 
     UserService userService;
-    ImageService imageService;
+    PhotoService imageService;
 
     //lấy tất cả người dùng
     @GetMapping(value = "/users")
