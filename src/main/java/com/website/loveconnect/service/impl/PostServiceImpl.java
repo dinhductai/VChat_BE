@@ -2,6 +2,9 @@ package com.website.loveconnect.service.impl;
 
 import com.website.loveconnect.dto.request.PostRequest;
 import com.website.loveconnect.entity.Post;
+import com.website.loveconnect.entity.User;
+import com.website.loveconnect.entity.UserPost;
+import com.website.loveconnect.exception.UserNotFoundException;
 import com.website.loveconnect.repository.*;
 import com.website.loveconnect.service.PhotoService;
 import com.website.loveconnect.service.PostService;
@@ -30,7 +33,7 @@ public class PostServiceImpl implements PostService {
     UserProfileRepository userProfileRepository;
     PhotoService photoService;
     VideoService videoService;
-
+    UserPostRepository userPostRepository;
     @Override
     public void savePost(PostRequest postRequest) {
         try {
@@ -40,12 +43,34 @@ public class PostServiceImpl implements PostService {
                     .isPublic(true)
                     .build();
             postRepository.save(post);
-            for (MultipartFile photo : postRequest.getListImage()) {
-                photoService.uploadImage(photo, postRequest.getUserEmail());
-            }
-            for (MultipartFile video : postRequest.getListVideo()) {
-                videoService.uploadVideo(video, postRequest.getUserEmail());
-            }
+            User user = userRepository.getUserByEmail(postRequest.getUserEmail())
+                    .orElseThrow(()->new UserNotFoundException("User Not Found"));
+            UserPost userPost = UserPost.builder()
+                    .post(post)
+                    .user(user)
+                    .upload(true)
+                    .share(false)
+                    .save(false)
+                    .build();
+            userPostRepository.save(userPost);
+            postRequest.getListImage()
+                    .parallelStream()
+                    .forEach(photo -> {
+                        try {
+                            photoService.uploadImage(photo, postRequest.getUserEmail());
+                        } catch (Exception e) {
+                            log.error("Failed to upload image", e);
+                        }
+                    });
+            postRequest.getListVideo()
+                    .parallelStream()
+                    .forEach(video -> {
+                        try {
+                            videoService.uploadVideo(video, postRequest.getUserEmail());
+                        } catch (Exception e) {
+                            log.error("Failed to upload video", e);
+                        }
+                    });
         }
         catch (Exception e) {
 
