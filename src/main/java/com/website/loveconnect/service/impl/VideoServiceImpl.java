@@ -2,11 +2,10 @@ package com.website.loveconnect.service.impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
-import com.website.loveconnect.entity.Photo;
-import com.website.loveconnect.entity.User;
-import com.website.loveconnect.entity.Video;
+import com.website.loveconnect.entity.*;
 import com.website.loveconnect.exception.UserNotFoundException;
 import com.website.loveconnect.repository.PhotoRepository;
+import com.website.loveconnect.repository.PostVideoRepository;
 import com.website.loveconnect.repository.UserRepository;
 import com.website.loveconnect.repository.VideoRepository;
 import com.website.loveconnect.service.VideoService;
@@ -34,8 +33,9 @@ public class VideoServiceImpl implements VideoService {
     Cloudinary cloudinary;
     UserRepository userRepository;
     VideoRepository videoRepository;
-    @Override
-    public String uploadVideo(MultipartFile file, String userEmail) throws IOException {
+    PostVideoRepository postVideoRepository;
+
+    private String saveVideo(MultipartFile file, String userEmail,Post post) throws IOException{
         if (file == null || file.isEmpty()) {
             log.warn("Attempt to upload empty file for user: {}", userEmail);
             throw new IllegalArgumentException("Video cannot be blank");
@@ -64,6 +64,13 @@ public class VideoServiceImpl implements VideoService {
         video.setIsApproved(true);
         video.setIsStatus(false);
         video.setOwnedVideo(user);
+        if(post!= null){
+            PostVideo postVideo = PostVideo.builder()
+                    .video(video)
+                    .post(post)
+                    .build();
+            postVideoRepository.save(postVideo);
+        }
         try {
             videoRepository.save(video);
             log.info("Saved image profile successfully");
@@ -77,6 +84,11 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
+    public String uploadVideo(MultipartFile file, String userEmail) throws IOException {
+       return saveVideo(file,userEmail,null);
+    }
+
+    @Override
     public List<String> getOwnedVideos(Integer idUser) {
         return List.of();
     }
@@ -84,5 +96,10 @@ public class VideoServiceImpl implements VideoService {
     @Override
     public void deleteVideo(Integer idUser, String urlImage) {
 
+    }
+
+    @Override
+    public String uploadVideoForPost(MultipartFile file, String userEmail, Post post) throws IOException {
+        return saveVideo(file, userEmail,post);
     }
 }

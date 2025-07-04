@@ -1,5 +1,6 @@
 package com.website.loveconnect.service;
 
+import com.website.loveconnect.entity.Post;
 import org.springframework.web.multipart.MultipartFile;
 
 
@@ -12,4 +13,5 @@ public interface PhotoService {
     String getProfileImage(Integer idUser);
     List<String> getOwnedPhotos(Integer idUser);
     void deleteImageProfile(Integer idUser,String urlImage);
+    String uploadPhotoForPost(MultipartFile file, String userEmail, Post post) throws IOException;
 }

@@ -1,9 +1,8 @@
 package com.website.loveconnect.service.impl;
 
 import com.website.loveconnect.dto.request.PostRequest;
-import com.website.loveconnect.entity.Post;
-import com.website.loveconnect.entity.User;
-import com.website.loveconnect.entity.UserPost;
+import com.website.loveconnect.entity.*;
+import com.website.loveconnect.enumpackage.PostStatus;
 import com.website.loveconnect.exception.UserNotFoundException;
 import com.website.loveconnect.repository.*;
 import com.website.loveconnect.service.PhotoService;
@@ -34,6 +33,9 @@ public class PostServiceImpl implements PostService {
     PhotoService photoService;
     VideoService videoService;
     UserPostRepository userPostRepository;
+    PostVideoRepository postVideoRepository;
+    PostPhotoRepository postPhotoRepository;
+
     @Override
     public void savePost(PostRequest postRequest) {
         try {
@@ -41,7 +43,28 @@ public class PostServiceImpl implements PostService {
                     .content(postRequest.getContent())
                     .uploadDate(new Timestamp(System.currentTimeMillis()))
                     .isPublic(true)
+                    .isApproved(true)
+                    .status(PostStatus.ACTIVE)
                     .build();
+            postRequest.getListImage()
+                    .parallelStream()
+                    .forEach(photo -> {
+                        try {
+                            photoService.uploadPhotoForPost(photo, postRequest.getUserEmail(),post);
+                        } catch (Exception e) {
+                            log.error("Failed to upload image", e);
+                        }
+                    });
+            postRequest.getListVideo()
+                    .parallelStream()
+                    .forEach(video -> {
+                        try {
+                            videoService.uploadVideoForPost(video, postRequest.getUserEmail(),post);
+                        } catch (Exception e) {
+                            log.error("Failed to upload video", e);
+                        }
+                    });
+
             postRepository.save(post);
             User user = userRepository.getUserByEmail(postRequest.getUserEmail())
                     .orElseThrow(()->new UserNotFoundException("User Not Found"));
@@ -53,24 +76,9 @@ public class PostServiceImpl implements PostService {
                     .save(false)
                     .build();
             userPostRepository.save(userPost);
-            postRequest.getListImage()
-                    .parallelStream()
-                    .forEach(photo -> {
-                        try {
-                            photoService.uploadImage(photo, postRequest.getUserEmail());
-                        } catch (Exception e) {
-                            log.error("Failed to upload image", e);
-                        }
-                    });
-            postRequest.getListVideo()
-                    .parallelStream()
-                    .forEach(video -> {
-                        try {
-                            videoService.uploadVideo(video, postRequest.getUserEmail());
-                        } catch (Exception e) {
-                            log.error("Failed to upload video", e);
-                        }
-                    });
+
+
+
         }
         catch (Exception e) {
 

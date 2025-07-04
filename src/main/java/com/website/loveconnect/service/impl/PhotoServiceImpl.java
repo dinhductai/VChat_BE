@@ -3,9 +3,12 @@ package com.website.loveconnect.service.impl;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.website.loveconnect.entity.Photo;
+import com.website.loveconnect.entity.Post;
+import com.website.loveconnect.entity.PostPhoto;
 import com.website.loveconnect.entity.User;
 import com.website.loveconnect.exception.UserNotFoundException;
 import com.website.loveconnect.repository.PhotoRepository;
+import com.website.loveconnect.repository.PostPhotoRepository;
 import com.website.loveconnect.repository.UserRepository;
 import com.website.loveconnect.service.PhotoService;
 import jakarta.persistence.NoResultException;
@@ -35,12 +38,12 @@ public class PhotoServiceImpl implements PhotoService {
     Cloudinary cloudinary;
     UserRepository userRepository;
     PhotoRepository photoRepository;
-
+    PostPhotoRepository postPhotoRepository;
     private static final String CLOUDINARY_BASE_URL = "http://res.cloudinary.com/dvgxke1mp/image/upload/";
 
 //    @PreAuthorize("hasAuthority('ADMIN_UPLOAD_PHOTO')")
     //hàm lưu ảnh profile khi tạo người dùng mới
-    public String saveImage(MultipartFile file, String userEmail,boolean isProfilePicture) throws IOException {
+    public String saveImage(MultipartFile file, String userEmail,boolean isProfilePicture,Post post) throws IOException {
         if (file == null || file.isEmpty()) {
             log.warn("Attempt to upload empty file for user: {}", userEmail);
             throw new IllegalArgumentException("Photo cannot be blank");
@@ -69,6 +72,13 @@ public class PhotoServiceImpl implements PhotoService {
         photo.setIsApproved(true);
         photo.setIsStatus(false);
         photo.setOwnedPhoto(user);
+        if(post != null) {
+            PostPhoto postPhoto = PostPhoto.builder()
+                    .photo(photo)
+                    .post(post)
+                    .build();
+            postPhotoRepository.save(postPhoto);
+        }
         try {
             photoRepository.save(photo);
             log.info("Saved image profile successfully");
@@ -83,12 +93,12 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     public String uploadImage(MultipartFile file, String userEmail) throws IOException {
-        return saveImage(file,userEmail,false);
+        return saveImage(file,userEmail,false,null);
     }
 
     @Override
     public String uploadImageProfile(MultipartFile file, String userEmail) throws IOException {
-        return saveImage(file,userEmail,true);
+        return saveImage(file,userEmail,true,null);
     }
 
     @Override
@@ -140,6 +150,11 @@ public class PhotoServiceImpl implements PhotoService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public String uploadPhotoForPost(MultipartFile file, String userEmail, Post post) throws IOException {
+        return saveImage(file,userEmail,true,post);
     }
 
     private String extractPublicId(String url) {
