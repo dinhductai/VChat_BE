@@ -65,7 +65,7 @@ public class VideoServiceImpl implements VideoService {
         video.setVideoUrl(videoUrl);
         video.setUploadDate(new Timestamp(System.currentTimeMillis()));
         video.setIsApproved(true);
-        video.setIsStatus(false);
+        video.setIsStory(false);
         video.setOwnedVideo(user);
 
         try {

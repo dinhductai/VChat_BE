@@ -34,8 +34,8 @@ public class Photo {
     @Column(name = "is_approved")
     private Boolean isApproved = Boolean.TRUE;
 
-    @Column(name = "is_status")
-    private Boolean isStatus = Boolean.FALSE;
+    @Column(name = "is_story")
+    private Boolean isStory = Boolean.FALSE;
 
     @Column(name = "review_date")
     private Timestamp reviewDate;

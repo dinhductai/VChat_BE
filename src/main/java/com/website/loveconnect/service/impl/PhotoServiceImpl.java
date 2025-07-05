@@ -2,11 +2,13 @@ package com.website.loveconnect.service.impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.website.loveconnect.dto.response.PhotoStoryResponse;
 import com.website.loveconnect.entity.Photo;
 import com.website.loveconnect.entity.Post;
 import com.website.loveconnect.entity.PostPhoto;
 import com.website.loveconnect.entity.User;
 import com.website.loveconnect.exception.UserNotFoundException;
+import com.website.loveconnect.mapper.PhotoMapper;
 import com.website.loveconnect.repository.PhotoRepository;
 import com.website.loveconnect.repository.PostPhotoRepository;
 import com.website.loveconnect.repository.UserRepository;
@@ -18,6 +20,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.util.StringUtils;
@@ -37,6 +42,7 @@ public class PhotoServiceImpl implements PhotoService {
 
     Cloudinary cloudinary;
     UserRepository userRepository;
+    PhotoMapper photoMapper;
     PhotoRepository photoRepository;
     PostPhotoRepository postPhotoRepository;
     private static final String CLOUDINARY_BASE_URL = "http://res.cloudinary.com/dvgxke1mp/image/upload/";
@@ -68,7 +74,7 @@ public String saveImage(MultipartFile file, String userEmail, boolean isProfileP
     photo.setIsProfilePicture(isProfilePicture);
     photo.setUploadDate(new Timestamp(System.currentTimeMillis()));
     photo.setIsApproved(true);
-    photo.setIsStatus(false);
+    photo.setIsStory(false);
     photo.setOwnedPhoto(user);
 
     // Lưu Photo trước
@@ -156,6 +162,12 @@ public String saveImage(MultipartFile file, String userEmail, boolean isProfileP
     @Override
     public String uploadPhotoForPost(MultipartFile file, String userEmail, Post post) throws IOException {
         return saveImage(file,userEmail,true,post);
+    }
+
+    @Override
+    public Page<PhotoStoryResponse> photoStories(Integer userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page,size);
+        return photoRepository.findAllStoryPhotos(userId,pageable).map(photoMapper::toPhotoStoryResponseList);
     }
 
     private String extractPublicId(String url) {

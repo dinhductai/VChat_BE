@@ -3,6 +3,7 @@ package com.website.loveconnect.repository;
 import com.website.loveconnect.entity.Photo;
 import com.website.loveconnect.entity.User;
 import com.website.loveconnect.repository.query.PhotoQueries;
+import jakarta.persistence.Tuple;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,5 +24,8 @@ public interface PhotoRepository extends JpaRepository<Photo, Integer> {
     List<String> findAllOwnedPhoto(@Param("idUser") Integer idUser);
 
     Optional<Photo> findByPhotoUrl(String photoUrl);
+
+    @Query(value = PhotoQueries.GET_ALL_STORY_PHOTOS,nativeQuery = true)
+    Page<Tuple> findAllStoryPhotos(@Param("userId") Integer userId,Pageable pageable);
 
 }

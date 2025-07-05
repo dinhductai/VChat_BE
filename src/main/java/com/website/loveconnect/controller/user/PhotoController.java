@@ -1,10 +1,13 @@
 package com.website.loveconnect.controller.user;
 
+import com.cloudinary.Api;
 import com.website.loveconnect.dto.response.ApiResponse;
+import com.website.loveconnect.dto.response.PhotoStoryResponse;
 import com.website.loveconnect.service.PhotoService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -63,6 +66,13 @@ public class PhotoController {
         return ResponseEntity.ok(new ApiResponse<>(true,"Delete photo successful",null));
     }
 
+    @GetMapping(value = "/story")
+    public ResponseEntity<ApiResponse<Page<PhotoStoryResponse>>> getPhotoStory(@RequestParam("idUser") Integer idUser,
+                                                                               @RequestParam(defaultValue = "0") int page,
+                                                                               @RequestParam(defaultValue = "4") int size){
+        return ResponseEntity.ok(new ApiResponse<>(true,"Get story successful",
+                imageService.photoStories(idUser,page,size)));
+    }
 
 
 }
