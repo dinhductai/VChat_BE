@@ -35,14 +35,19 @@ public class VideoServiceImpl implements VideoService {
     VideoRepository videoRepository;
     PostVideoRepository postVideoRepository;
 
-    private String saveVideo(MultipartFile file, String userEmail,Post post) throws IOException{
+    private String saveVideo(MultipartFile file, String userEmail, Post post) throws IOException {
         if (file == null || file.isEmpty()) {
             log.warn("Attempt to upload empty file for user: {}", userEmail);
-            throw new IllegalArgumentException("Video cannot be blank");
+            throw new IllegalArgumentException("Video cannot be null or empty");
         }
-        if (StringUtils.isEmpty(userEmail)) { //bắt validation email
+        if (StringUtils.isEmpty(userEmail)) {
             throw new IllegalArgumentException("User email cannot be blank");
         }
+        if (post != null && post.getId() == null) {
+            log.error("Post has null ID for user: {}", userEmail);
+            throw new IllegalArgumentException("Post must be saved before associating with a video");
+        }
+
         Map uploadResult;
         try {
             uploadResult = cloudinary.uploader()
@@ -54,33 +59,33 @@ public class VideoServiceImpl implements VideoService {
         String videoUrl = (String) uploadResult.get("url");
 
         User user = userRepository.getUserByEmail(userEmail)
-                .orElseThrow(()->new UserNotFoundException("User not found"));
-        if (user == null) {
-            throw new UserNotFoundException("User not found");
-        }
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
         Video video = new Video();
         video.setVideoUrl(videoUrl);
         video.setUploadDate(new Timestamp(System.currentTimeMillis()));
         video.setIsApproved(true);
         video.setIsStatus(false);
         video.setOwnedVideo(user);
-        if(post!= null){
+
+        try {
+            videoRepository.save(video);
+            log.info("Saved video successfully for user: {}", userEmail);
+        } catch (DataAccessException dae) {
+            log.error("Failed to save video to database", dae.getMessage());
+            throw new DataAccessException("Failed to save video to database", dae) {};
+        }
+
+        if (post != null) {
             PostVideo postVideo = PostVideo.builder()
                     .video(video)
                     .post(post)
                     .build();
             postVideoRepository.save(postVideo);
+            log.info("Saved PostVideo for post ID: {}", post.getId());
         }
-        try {
-            videoRepository.save(video);
-            log.info("Saved image profile successfully");
-        } catch (DataAccessException dae) {
-            log.error("Failed to save image profile", dae.getMessage());
-            throw new DataAccessException("Failed to save photo to database", dae) {
-            };
-        }
-        return videoUrl;
 
+        return videoUrl;
     }
 
     @Override

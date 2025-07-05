@@ -33,7 +33,7 @@ public class PhotoController {
                 .body(new ApiResponse<>(true,"Save profile image successful", urlImage));
     }
     //api upload ảnh profile
-    @PostMapping(value = "/prifile-photo/upload",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/profile-photo/upload",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<String>> upLoadProfileImage(@RequestParam("file") MultipartFile file,
                                                                   @RequestParam("userEmail") String userEmail) throws IOException {
         String urlImage = imageService.uploadImageProfile(file,userEmail);

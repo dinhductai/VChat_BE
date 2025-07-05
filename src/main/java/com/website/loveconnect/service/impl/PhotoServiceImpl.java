@@ -43,53 +43,54 @@ public class PhotoServiceImpl implements PhotoService {
 
 //    @PreAuthorize("hasAuthority('ADMIN_UPLOAD_PHOTO')")
     //hàm lưu ảnh profile khi tạo người dùng mới
-    public String saveImage(MultipartFile file, String userEmail,boolean isProfilePicture,Post post) throws IOException {
-        if (file == null || file.isEmpty()) {
-            log.warn("Attempt to upload empty file for user: {}", userEmail);
-            throw new IllegalArgumentException("Photo cannot be blank");
-        }
-        if (StringUtils.isEmpty(userEmail)) { //bắt validation email
-            throw new IllegalArgumentException("User email cannot be blank");
-        }
-        Map uploadResult;
-        try {
-            uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
-        } catch (IOException ioe) {
-            log.error("Failed to upload image to Cloudinary", ioe.getMessage());
-            throw ioe;
-        }
-        String photoUrl = (String) uploadResult.get("url");
-
-        User user = userRepository.getUserByEmail(userEmail)
-                .orElseThrow(()->new UserNotFoundException("User not found"));
-        if (user == null) {
-            throw new UserNotFoundException("User not found");
-        }
-        Photo photo = new Photo();
-        photo.setPhotoUrl(photoUrl);
-        photo.setIsProfilePicture(isProfilePicture);
-        photo.setUploadDate(new Timestamp(System.currentTimeMillis()));
-        photo.setIsApproved(true);
-        photo.setIsStatus(false);
-        photo.setOwnedPhoto(user);
-        if(post != null) {
-            PostPhoto postPhoto = PostPhoto.builder()
-                    .photo(photo)
-                    .post(post)
-                    .build();
-            postPhotoRepository.save(postPhoto);
-        }
-        try {
-            photoRepository.save(photo);
-            log.info("Saved image profile successfully");
-        } catch (DataAccessException dae) {
-            log.error("Failed to save image profile", dae.getMessage());
-            throw new DataAccessException("Failed to save photo to database", dae) {
-            };
-        }
-        return photoUrl;
-
+public String saveImage(MultipartFile file, String userEmail, boolean isProfilePicture, Post post) throws IOException {
+    if (file == null || file.isEmpty()) {
+        log.warn("Attempt to upload empty file for user: {}", userEmail);
+        throw new IllegalArgumentException("Photo cannot be null or empty");
     }
+    if (StringUtils.isEmpty(userEmail)) {
+        throw new IllegalArgumentException("User email cannot be blank");
+    }
+    Map uploadResult;
+    try {
+        uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+    } catch (IOException ioe) {
+        log.error("Failed to upload image to Cloudinary", ioe.getMessage());
+        throw ioe;
+    }
+    String photoUrl = (String) uploadResult.get("url");
+
+    User user = userRepository.getUserByEmail(userEmail)
+            .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+    Photo photo = new Photo();
+    photo.setPhotoUrl(photoUrl);
+    photo.setIsProfilePicture(isProfilePicture);
+    photo.setUploadDate(new Timestamp(System.currentTimeMillis()));
+    photo.setIsApproved(true);
+    photo.setIsStatus(false);
+    photo.setOwnedPhoto(user);
+
+    // Lưu Photo trước
+    try {
+        photoRepository.save(photo);
+        log.info("Saved image profile successfully");
+    } catch (DataAccessException dae) {
+        log.error("Failed to save image profile", dae.getMessage());
+        throw new DataAccessException("Failed to save photo to database", dae) {};
+    }
+
+    // Sau đó lưu PostPhoto nếu post không null
+    if (post != null) {
+        PostPhoto postPhoto = PostPhoto.builder()
+                .photo(photo)
+                .post(post)
+                .build();
+        postPhotoRepository.save(postPhoto);
+    }
+
+    return photoUrl;
+}
 
     @Override
     public String uploadImage(MultipartFile file, String userEmail) throws IOException {

@@ -1,5 +1,6 @@
 package com.website.loveconnect.service.impl;
 
+import com.cloudinary.utils.StringUtils;
 import com.website.loveconnect.dto.request.PostRequest;
 import com.website.loveconnect.entity.*;
 import com.website.loveconnect.enumpackage.PostStatus;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -39,6 +41,12 @@ public class PostServiceImpl implements PostService {
     @Override
     public void savePost(PostRequest postRequest) {
         try {
+            // Kiểm tra dữ liệu đầu vào
+            if (postRequest == null || StringUtils.isEmpty(postRequest.getUserEmail())) {
+                throw new IllegalArgumentException("PostRequest or userEmail cannot be null");
+            }
+
+            // Tạo và lưu Post trước
             Post post = Post.builder()
                     .content(postRequest.getContent())
                     .uploadDate(new Timestamp(System.currentTimeMillis()))
@@ -46,28 +54,12 @@ public class PostServiceImpl implements PostService {
                     .isApproved(true)
                     .status(PostStatus.ACTIVE)
                     .build();
-            postRequest.getListImage()
-                    .parallelStream()
-                    .forEach(photo -> {
-                        try {
-                            photoService.uploadPhotoForPost(photo, postRequest.getUserEmail(),post);
-                        } catch (Exception e) {
-                            log.error("Failed to upload image", e);
-                        }
-                    });
-            postRequest.getListVideo()
-                    .parallelStream()
-                    .forEach(video -> {
-                        try {
-                            videoService.uploadVideoForPost(video, postRequest.getUserEmail(),post);
-                        } catch (Exception e) {
-                            log.error("Failed to upload video", e);
-                        }
-                    });
+            post = postRepository.save(post); // Lưu Post để có ID
+            log.info("Saved post with ID: {}", post.getId());
 
-            postRepository.save(post);
+            // Lưu UserPost
             User user = userRepository.getUserByEmail(postRequest.getUserEmail())
-                    .orElseThrow(()->new UserNotFoundException("User Not Found"));
+                    .orElseThrow(() -> new UserNotFoundException("User not found"));
             UserPost userPost = UserPost.builder()
                     .post(post)
                     .user(user)
@@ -76,12 +68,38 @@ public class PostServiceImpl implements PostService {
                     .save(false)
                     .build();
             userPostRepository.save(userPost);
+            log.info("Saved UserPost for user: {} and post ID: {}", postRequest.getUserEmail(), post.getId());
 
+            // Xử lý ảnh
+            List<MultipartFile> imageFiles = postRequest.getListImage();
+            if (imageFiles != null && !imageFiles.isEmpty()) {
+                for (MultipartFile photo : imageFiles) {
+                    try {
+                        photoService.uploadPhotoForPost(photo, postRequest.getUserEmail(), post);
+                        log.info("Uploaded photo for post ID: {}", post.getId());
+                    } catch (Exception e) {
+                        log.error("Failed to upload photo for post ID: {}", post.getId(), e);
+                        throw new RuntimeException("Failed to upload photo", e);
+                    }
+                }
+            }
 
-
-        }
-        catch (Exception e) {
-
+            // Xử lý video
+            List<MultipartFile> videoFiles = postRequest.getListVideo();
+            if (videoFiles != null && !videoFiles.isEmpty()) {
+                for (MultipartFile video : videoFiles) {
+                    try {
+                        videoService.uploadVideoForPost(video, postRequest.getUserEmail(), post);
+                        log.info("Uploaded video for post ID: {}", post.getId());
+                    } catch (Exception e) {
+                        log.error("Failed to upload video for post ID: {}", post.getId(), e);
+                        throw new RuntimeException("Failed to upload video", e);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("Failed to save post for user: {}", postRequest.getUserEmail(), e);
+            throw new RuntimeException("Failed to save post", e);
         }
     }
 }
