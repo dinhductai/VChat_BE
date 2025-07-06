@@ -1,8 +1,13 @@
 package com.website.loveconnect.service;
 
 import com.website.loveconnect.dto.request.PostRequest;
+import com.website.loveconnect.dto.response.PostResponse;
 import com.website.loveconnect.entity.Post;
+import org.springframework.data.domain.Page;
+
+import java.util.List;
 
 public interface PostService {
     void savePost(PostRequest postRequest);
+    Page<PostResponse> getRandom(int page,int size);
 }

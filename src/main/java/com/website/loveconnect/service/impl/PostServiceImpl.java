@@ -2,9 +2,11 @@ package com.website.loveconnect.service.impl;
 
 import com.cloudinary.utils.StringUtils;
 import com.website.loveconnect.dto.request.PostRequest;
+import com.website.loveconnect.dto.response.PostResponse;
 import com.website.loveconnect.entity.*;
 import com.website.loveconnect.enumpackage.PostStatus;
 import com.website.loveconnect.exception.UserNotFoundException;
+import com.website.loveconnect.mapper.PostMapper;
 import com.website.loveconnect.repository.*;
 import com.website.loveconnect.service.PhotoService;
 import com.website.loveconnect.service.PostService;
@@ -14,6 +16,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,7 +42,7 @@ public class PostServiceImpl implements PostService {
     UserPostRepository userPostRepository;
     PostVideoRepository postVideoRepository;
     PostPhotoRepository postPhotoRepository;
-
+    PostMapper postMapper;
     @Override
     public void savePost(PostRequest postRequest) {
         try {
@@ -101,5 +106,11 @@ public class PostServiceImpl implements PostService {
             log.error("Failed to save post for user: {}", postRequest.getUserEmail(), e);
             throw new RuntimeException("Failed to save post", e);
         }
+    }
+
+    @Override
+    public Page<PostResponse> getRandom(int page, int size) {
+        Pageable pageable = PageRequest.of(page,size);
+        return postRepository.getRandomPost(pageable).map(postMapper::toPostResponse);
     }
 }

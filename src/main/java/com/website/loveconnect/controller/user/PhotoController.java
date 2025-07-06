@@ -76,7 +76,9 @@ public class PhotoController {
         return ResponseEntity.ok(new ApiResponse<>(true,"Get story successful",
                 imageService.photoStories(idUser,page,size)));
     }
-    @Operation(summary = "Create a story image")
+
+    //tạo story
+    @Operation(summary = "Create a story image",description = "User create a story image, 1 image at a time")
     @PostMapping(value = "/story/create",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<String>> upLoadStory(@RequestParam("file") MultipartFile file,
                                                            @RequestParam("userEmail") String userEmail) throws IOException {
@@ -85,7 +87,7 @@ public class PhotoController {
                 .body(new ApiResponse<>(true,"Save story successful", urlImage));
     }
     //xóa story
-    @Operation(summary = "Delete story image")
+    @Operation(summary = "Delete story image",description = "User delete a story image after upload it")
     @DeleteMapping(value = "/story/delete")
     public ResponseEntity<ApiResponse<String>> deleteStory(@RequestParam("userId") Integer userId,
                                                            @RequestParam("photoUrl") String photoUrl) {
