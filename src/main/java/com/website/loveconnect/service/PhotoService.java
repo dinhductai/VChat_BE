@@ -17,4 +17,5 @@ public interface PhotoService {
     void deleteImageProfile(Integer idUser,String urlImage);
     String uploadPhotoForPost(MultipartFile file, String userEmail, Post post) throws IOException;
     Page<PhotoStoryResponse> photoStories(Integer userId, int page, int size);
+    String uploadStory(MultipartFile file, String userEmail) throws IOException;
 }

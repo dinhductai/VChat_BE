@@ -49,7 +49,7 @@ public class PhotoServiceImpl implements PhotoService {
 
 //    @PreAuthorize("hasAuthority('ADMIN_UPLOAD_PHOTO')")
     //hàm lưu ảnh profile khi tạo người dùng mới
-public String saveImage(MultipartFile file, String userEmail, boolean isProfilePicture, Post post) throws IOException {
+public String saveImage(MultipartFile file, String userEmail, boolean isProfilePicture, Post post,boolean isStory) throws IOException {
     if (file == null || file.isEmpty()) {
         log.warn("Attempt to upload empty file for user: {}", userEmail);
         throw new IllegalArgumentException("Photo cannot be null or empty");
@@ -74,7 +74,7 @@ public String saveImage(MultipartFile file, String userEmail, boolean isProfileP
     photo.setIsProfilePicture(isProfilePicture);
     photo.setUploadDate(new Timestamp(System.currentTimeMillis()));
     photo.setIsApproved(true);
-    photo.setIsStory(false);
+    photo.setIsStory(isStory);
     photo.setOwnedPhoto(user);
 
     // Lưu Photo trước
@@ -100,12 +100,12 @@ public String saveImage(MultipartFile file, String userEmail, boolean isProfileP
 
     @Override
     public String uploadImage(MultipartFile file, String userEmail) throws IOException {
-        return saveImage(file,userEmail,false,null);
+        return saveImage(file,userEmail,false,null,false);
     }
 
     @Override
     public String uploadImageProfile(MultipartFile file, String userEmail) throws IOException {
-        return saveImage(file,userEmail,true,null);
+        return saveImage(file,userEmail,true,null,false);
     }
 
     @Override
@@ -161,13 +161,18 @@ public String saveImage(MultipartFile file, String userEmail, boolean isProfileP
 
     @Override
     public String uploadPhotoForPost(MultipartFile file, String userEmail, Post post) throws IOException {
-        return saveImage(file,userEmail,true,post);
+        return saveImage(file,userEmail,false,post,false);
     }
 
     @Override
     public Page<PhotoStoryResponse> photoStories(Integer userId, int page, int size) {
         Pageable pageable = PageRequest.of(page,size);
         return photoRepository.findAllStoryPhotos(userId,pageable).map(photoMapper::toPhotoStoryResponseList);
+    }
+
+    @Override
+    public String uploadStory(MultipartFile file, String userEmail) throws IOException {
+        return saveImage(file,userEmail,false,null,true);
     }
 
     private String extractPublicId(String url) {

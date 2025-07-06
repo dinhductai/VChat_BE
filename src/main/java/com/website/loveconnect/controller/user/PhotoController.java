@@ -73,6 +73,12 @@ public class PhotoController {
         return ResponseEntity.ok(new ApiResponse<>(true,"Get story successful",
                 imageService.photoStories(idUser,page,size)));
     }
-
+    @PostMapping(value = "/story/create",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<String>> upLoadStory(@RequestParam("file") MultipartFile file,
+                                                           @RequestParam("userEmail") String userEmail) throws IOException {
+        String urlImage = imageService.uploadStory(file,userEmail);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ApiResponse<>(true,"Save story successful", urlImage));
+    }
 
 }
