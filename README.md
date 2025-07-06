@@ -26,3 +26,4 @@ This is the backend of a Facebook-like social networking app, built using **Java
 - ✅ Profile updates & password change
 - ✅ Role-based access control
 ...
+Link Swagger: http://localhost:8080/swagger-ui.html
