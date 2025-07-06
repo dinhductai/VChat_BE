@@ -1,16 +1,12 @@
 package com.website.loveconnect.service.impl;
 
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
 //import com.cloudinary.utils.StringUtils;
-import com.website.loveconnect.dto.request.InterestDTO;
 import com.website.loveconnect.dto.request.UserCreateRequest;
 import com.website.loveconnect.dto.request.UserUpdateRequest;
 import com.website.loveconnect.dto.response.*;
 import com.website.loveconnect.entity.*;
 import com.website.loveconnect.enumpackage.AccountStatus;
-import com.website.loveconnect.enumpackage.Gender;
-import com.website.loveconnect.enumpackage.RoleName;
+        import com.website.loveconnect.enumpackage.RoleName;
 import com.website.loveconnect.exception.*;
 import com.website.loveconnect.mapper.UserInterestMapper;
 import com.website.loveconnect.mapper.UserMapper;
@@ -30,23 +26,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
+        import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
-import org.apache.commons.lang3.StringUtils;
+        import org.springframework.stereotype.Service;
+        import org.apache.commons.lang3.StringUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.sql.Timestamp;
+        import java.sql.Timestamp;
 import java.util.*;
 
 

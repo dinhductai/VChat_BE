@@ -1,7 +1,7 @@
 package com.website.loveconnect.controller.user;
 
 
-import com.website.loveconnect.dto.request.InterestDTO;
+import com.website.loveconnect.dto.request.InterestRequest;
 import com.website.loveconnect.dto.response.ApiResponse;
 import com.website.loveconnect.entity.Interest;
 import com.website.loveconnect.service.InterestService;
@@ -36,7 +36,7 @@ public class InterestController {
 
     // Request Add one Interest
     @PostMapping("/{idUser}/interests/add")
-    public ResponseEntity<ApiResponse<?>> addInterest(@Valid  @RequestBody InterestDTO interestDTO ,
+    public ResponseEntity<ApiResponse<?>> addInterest(@Valid  @RequestBody InterestRequest interestDTO ,
                                                       @PathVariable Integer idUser) {
             interestService.addInterest(idUser , interestDTO);
             return ResponseEntity.ok(new ApiResponse<>(true,"Added interest successful", null));
@@ -44,7 +44,7 @@ public class InterestController {
 
     // Request Update one Interest
     @PutMapping("/{idUser}/interests/update/{idInterest}")
-    public ResponseEntity<ApiResponse<?>> updateInterest(@Valid @RequestBody InterestDTO interestDTO
+    public ResponseEntity<ApiResponse<?>> updateInterest(@Valid @RequestBody InterestRequest interestDTO
             , @PathVariable Integer idUser
             , @PathVariable Integer idInterest) {
             interestService.updateInterest(idInterest, idUser, interestDTO);

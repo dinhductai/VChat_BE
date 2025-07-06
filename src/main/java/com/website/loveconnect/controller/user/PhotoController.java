@@ -59,7 +59,7 @@ public class PhotoController {
     }
 
     //xóa ảnh
-    @DeleteMapping(value = "/photo-delete")
+    @DeleteMapping(value = "/photo/delete")
     public ResponseEntity<ApiResponse<String>> deletePhoto(@RequestParam("userId") Integer userId,
                                                            @RequestParam("photoUrl") String photoUrl) {
         imageService.deleteImageProfile(userId,photoUrl);
@@ -80,5 +80,11 @@ public class PhotoController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiResponse<>(true,"Save story successful", urlImage));
     }
-
+    //xóa story
+    @DeleteMapping(value = "/story/delete")
+    public ResponseEntity<ApiResponse<String>> deleteStory(@RequestParam("userId") Integer userId,
+                                                           @RequestParam("photoUrl") String photoUrl) {
+        imageService.deleteImageProfile(userId,photoUrl);
+        return ResponseEntity.ok(new ApiResponse<>(true,"Delete photo successful",null));
+    }
 }

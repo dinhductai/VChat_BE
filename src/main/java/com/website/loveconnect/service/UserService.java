@@ -1,13 +1,9 @@
 package com.website.loveconnect.service;
 
-import com.website.loveconnect.dto.request.InterestDTO;
 import com.website.loveconnect.dto.request.UserCreateRequest;
 import com.website.loveconnect.dto.request.UserUpdateRequest;
 import com.website.loveconnect.dto.response.*;
-import com.website.loveconnect.entity.Interest;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import java.util.List;
 
 public interface UserService {
     Page<ListUserResponse> getAllUser(int page, int size);

@@ -1,6 +1,6 @@
 package com.website.loveconnect.service.impl;
 
-import com.website.loveconnect.dto.request.InterestDTO;
+import com.website.loveconnect.dto.request.InterestRequest;
 import com.website.loveconnect.entity.Interest;
 import com.website.loveconnect.entity.User;
 import com.website.loveconnect.entity.UserInterest;
@@ -24,7 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -40,7 +39,7 @@ public class InterestServiceImpl implements InterestService {
     InterestRepository interestRepository;
     UserInterestRepository userInterestRepository;
     @Override
-    public void addInterest(int idUser, InterestDTO interestDTO) {
+    public void addInterest(int idUser, InterestRequest interestDTO) {
         try {
             User user = userRepository.findById(idUser)
                     .orElseThrow(() -> new UserNotFoundException("User with id "+ idUser + " not found"));
@@ -77,7 +76,7 @@ public class InterestServiceImpl implements InterestService {
     }
 
     @Override
-    public void updateInterest(int idInterest, int idUser, InterestDTO interestDTO) {
+    public void updateInterest(int idInterest, int idUser, InterestRequest interestDTO) {
         try {
             userRepository.findById(idUser)
                     .orElseThrow(() -> new UserNotFoundException("User with id "+ idUser + " not found"));
