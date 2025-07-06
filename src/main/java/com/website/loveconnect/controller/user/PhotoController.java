@@ -4,6 +4,7 @@ import com.cloudinary.Api;
 import com.website.loveconnect.dto.response.ApiResponse;
 import com.website.loveconnect.dto.response.PhotoStoryResponse;
 import com.website.loveconnect.service.PhotoService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -52,7 +53,7 @@ public class PhotoController {
     }
 
     //lấy toàn bộ ảnh của người dùng
-    @GetMapping(value = "/photos")
+    @GetMapping(value = "/photo")
     public ResponseEntity<ApiResponse<List<String>>> getPhotoAll(@RequestParam("idUser") Integer idUser){
         List<String> urlPhotos = imageService.getOwnedPhotos(idUser);
         return ResponseEntity.ok(new ApiResponse<>(true,"Get photos successful",urlPhotos));
@@ -66,6 +67,7 @@ public class PhotoController {
         return ResponseEntity.ok(new ApiResponse<>(true,"Delete photo successful",null));
     }
 
+    @Operation(summary = "Get stories of your friends, at least a day")
     @GetMapping(value = "/story")
     public ResponseEntity<ApiResponse<Page<PhotoStoryResponse>>> getPhotoStory(@RequestParam("idUser") Integer idUser,
                                                                                @RequestParam(defaultValue = "0") int page,
@@ -73,6 +75,7 @@ public class PhotoController {
         return ResponseEntity.ok(new ApiResponse<>(true,"Get story successful",
                 imageService.photoStories(idUser,page,size)));
     }
+    @Operation(summary = "Create a story image")
     @PostMapping(value = "/story/create",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<String>> upLoadStory(@RequestParam("file") MultipartFile file,
                                                            @RequestParam("userEmail") String userEmail) throws IOException {
@@ -81,6 +84,7 @@ public class PhotoController {
                 .body(new ApiResponse<>(true,"Save story successful", urlImage));
     }
     //xóa story
+    @Operation(summary = "Delete story image")
     @DeleteMapping(value = "/story/delete")
     public ResponseEntity<ApiResponse<String>> deleteStory(@RequestParam("userId") Integer userId,
                                                            @RequestParam("photoUrl") String photoUrl) {
