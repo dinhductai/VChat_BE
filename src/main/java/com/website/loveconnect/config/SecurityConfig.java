@@ -113,9 +113,10 @@ public class SecurityConfig {
         };
 
         String[] apiDocumentEndpoint = {
-                "/v3/api-docs/**",
-                "/swagger-ui/**",
-                "/swagger-ui.html"
+                "/api-docs",           // thay vì /v3/api-docs
+                "/api-docs/**",
+                "/swagger-ui.html",
+                "/swagger-ui/**"
         };
         registry.requestMatchers(apiDocumentEndpoint).permitAll();
 

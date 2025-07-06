@@ -67,7 +67,8 @@ public class PhotoController {
         return ResponseEntity.ok(new ApiResponse<>(true,"Delete photo successful",null));
     }
 
-    @Operation(summary = "Get stories of your friends, at least a day")
+    @Operation(summary = "Get all story",
+            description = "Get stories of your friends, at least a day")
     @GetMapping(value = "/story")
     public ResponseEntity<ApiResponse<Page<PhotoStoryResponse>>> getPhotoStory(@RequestParam("idUser") Integer idUser,
                                                                                @RequestParam(defaultValue = "0") int page,
