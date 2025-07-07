@@ -122,10 +122,11 @@ public String saveImage(MultipartFile file, String userEmail, boolean isProfileP
     }
 
     @Override
-    public List<String> getOwnedPhotos(Integer idUser) {
+    public Page<String> getOwnedPhotos(Integer idUser,int page,int size) {
         boolean existingUser = userRepository.existsByUserId(idUser);
+        Pageable pageable = PageRequest.of(page,size);
         if(existingUser){
-            List<String> photosUrl = photoRepository.findAllOwnedPhoto(idUser);
+            Page<String> photosUrl = photoRepository.findAllOwnedPhoto(idUser,pageable);
             if(!photosUrl.isEmpty()){
                 return photosUrl;
             }else

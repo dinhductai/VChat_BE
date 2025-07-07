@@ -13,7 +13,7 @@ public interface PhotoService {
     String uploadImage(MultipartFile file, String userEmail) throws IOException;
     String uploadImageProfile(MultipartFile file, String userEmail) throws IOException;
     String getProfileImage(Integer idUser);
-    List<String> getOwnedPhotos(Integer idUser);
+    Page<String> getOwnedPhotos(Integer idUser,int page,int size);
     void deleteImageProfile(Integer idUser,String urlImage);
     String uploadPhotoForPost(MultipartFile file, String userEmail, Post post) throws IOException;
     Page<PhotoStoryResponse> photoStories(Integer userId, int page, int size);

@@ -21,7 +21,7 @@ public interface PhotoRepository extends JpaRepository<Photo, Integer> {
     Optional<Photo> findFirstByOwnedPhotoAndIsApprovedAndIsProfilePicture(User user, Boolean isApproved, Boolean isProfilePicture);
 
     @Query(value = PhotoQueries.FIND_OWNED_PHOTO,nativeQuery = true)
-    List<String> findAllOwnedPhoto(@Param("idUser") Integer idUser);
+    Page<String> findAllOwnedPhoto(@Param("idUser") Integer idUser,Pageable pageable);
 
     Optional<Photo> findByPhotoUrl(String photoUrl);
 
