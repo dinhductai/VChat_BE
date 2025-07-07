@@ -3,7 +3,9 @@ package com.website.loveconnect.controller.user;
 import com.cloudinary.Api;
 import com.website.loveconnect.dto.response.ApiResponse;
 import com.website.loveconnect.dto.response.PhotoStoryResponse;
+import com.website.loveconnect.dto.response.UserAndPhotosResponse;
 import com.website.loveconnect.service.PhotoService;
+import com.website.loveconnect.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +30,7 @@ import java.util.List;
 public class PhotoController {
 
     PhotoService imageService;
-
+    UserService userService;
     //api dùng kèm với /sign-up
     //tạo ảnh với 1 file và user email
     //api upload ảnh bình thường
@@ -113,5 +115,14 @@ public class PhotoController {
         return ResponseEntity.ok(new ApiResponse<>(true,"Delete photo successful",null));
     }
 
-
+    //lấy ds ảnh của user random ( phụ thuộc vào looking for)
+    @Operation(summary = "Get all love partner",description = "Get all picture of users, depend on LookingFor")
+    @GetMapping(value = "/random-user-photos")
+    public ResponseEntity<ApiResponse<Page<UserAndPhotosResponse>>> getUserAndPhotos(@AuthenticationPrincipal Jwt jwt,
+                                                                                     @RequestParam(defaultValue = "0") int page,
+                                                                                     @RequestParam(defaultValue = "10") int size){
+        Integer userId = Integer.parseInt(jwt.getSubject());
+        return ResponseEntity.ok(new ApiResponse<>(true,"Get page user and photos successful",
+                userService.getAllUsersAndPhotos(page,size,userId)));
+    }
 }

@@ -7,12 +7,15 @@ import com.website.loveconnect.service.PhotoService;
 import com.website.loveconnect.service.LikeService;
 import com.website.loveconnect.service.UserProfileService;
 import com.website.loveconnect.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,71 +27,41 @@ public class UserProfileController {
     PhotoService imageService;
     UserProfileService userProfileService;
     LikeService likeService;
-    //tạo tài khoản người dùng
-    @PostMapping(value = "/sign-up")
-    public ResponseEntity<ApiResponse<String>> signUpAccount(@RequestBody UserCreateRequest userCreateRequest){
-        userService.createUser(userCreateRequest);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ApiResponse<>(true,"Create account successful", null));
-    }
+
 
     //lấy thông tin chi tiết người dùng
-    @GetMapping(value = "/user-profile/{userId}")
-    public ResponseEntity<ApiResponse<ProfileDetailResponse>> getUserProfile(
-            @PathVariable("userId") Integer userId){
+    @Operation(summary = "Get user profile",description = "Get all information detail of user")
+    @GetMapping(value = "/user-profile")
+    public ResponseEntity<ApiResponse<ProfileDetailResponse>> getUserProfile(@AuthenticationPrincipal Jwt jwt){
+        Integer userId = Integer.parseInt(jwt.getSubject());
         return ResponseEntity.ok(new ApiResponse<>(true,"Get user profile successful",
                 userProfileService.getProfileDetail(userId)));
     }
 
     //cập nhật thông tin chi tiết người dùng
-    @PutMapping(value = "/user-profile/{userId}/update")
-    public ResponseEntity<ApiResponse<String>> updateUserProfile(
-            @PathVariable("userId") Integer userId,
-            @RequestBody ProfileDetailRequest profileDetailRequest){
+    @Operation(summary = "Update user profile",description = "Update info detail of user profile")
+    @PutMapping(value = "/user-profile/update")
+    public ResponseEntity<ApiResponse<String>> updateUserProfile(@AuthenticationPrincipal Jwt jwt,
+                                                                 @RequestBody ProfileDetailRequest profileDetailRequest){
+        Integer userId = Integer.parseInt(jwt.getSubject());
         userProfileService.updateProfileDetail(userId,profileDetailRequest);
         return ResponseEntity.ok(new ApiResponse<>(true,"Update user profile successful",null));
     }
 
     //xóa người dùng
-    @DeleteMapping(value = "/user-profile/{userId}/delete")
-    public ResponseEntity<ApiResponse<String>> deleteUser(@PathVariable int userId) {
+    @Operation(summary = "Delete account",description = "User want to delete account")
+    @DeleteMapping(value = "/user-profile/delete")
+    public ResponseEntity<ApiResponse<String>> deleteUser(@AuthenticationPrincipal Jwt jwt) {
+        Integer userId = Integer.parseInt(jwt.getSubject());
         userService.deleteUser(userId);
         return ResponseEntity.ok(new ApiResponse<>(true,"Delete account successful",null));
     }
 
-    @GetMapping(value = "/user-profile/search")
-    public ResponseEntity<ApiResponse<Page<UserSearchResponse>>> searchUserByKeyword(
-            @RequestParam(name = "keyword") String keyword,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size){
-        return ResponseEntity.ok(new ApiResponse<>(true,"Search users successful",
-                userService.getAllUserByKeyword(keyword,page,size)));
-    }
-
-    @PostMapping(value = "/user-profile/{senderId}/like/{receivedId}")
-    public ResponseEntity<ApiResponse<String>> likeUser(@PathVariable int senderId,
-                                                        @PathVariable int receivedId){
-        likeService.likeUserById(senderId,receivedId);
-        return ResponseEntity.ok(new ApiResponse<>(true,"Like user successful",null));
-    }
-
-    @PostMapping(value = "/user-profile/{senderId}/dislike/{receivedId}")
-    public ResponseEntity<ApiResponse<String>> dislikeUser(@PathVariable int senderId,
-                                                        @PathVariable int receivedId){
-        likeService.dislikeUserById(senderId,receivedId);
-        return ResponseEntity.ok(new ApiResponse<>(true,"Dislike user successful",null));
-    }
-
-    @GetMapping(value = "/random-user-photos/{userId}")
-    public ResponseEntity<ApiResponse<Page<UserAndPhotosResponse>>> getUserAndPhotos(@PathVariable("userId") Integer userId,
-                                                                                     @RequestParam(defaultValue = "0") int page,
-                                                                                     @RequestParam(defaultValue = "10") int size){
-        return ResponseEntity.ok(new ApiResponse<>(true,"Get page user and photos successful",
-                userService.getAllUsersAndPhotos(page,size,userId)));
-    }
-
-    @GetMapping(value = "/user-name-profile-photo")
-    public ResponseEntity<ApiResponse<UserNameAndProfileResponse>> getUserNameAndProfilePhoto(@RequestParam Integer userId){
+    //lấy ra tên và ảnh profile
+    @Operation(summary = "Get name and profile picture",description = "Get full name and profile picture of user")
+    @GetMapping(value = "/user-name-profile")
+    public ResponseEntity<ApiResponse<UserNameAndProfileResponse>> getUserNameAndProfilePhoto(@AuthenticationPrincipal Jwt jwt){
+        Integer userId = Integer.parseInt(jwt.getSubject());
         return ResponseEntity.ok(new ApiResponse<>(true,"Get full name and profile photo successful",
                 userProfileService.getUserNameAndProfile(userId)));
     }

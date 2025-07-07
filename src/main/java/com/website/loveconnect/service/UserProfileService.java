@@ -7,6 +7,6 @@ import com.website.loveconnect.dto.response.UserNameAndProfileResponse;
 public interface UserProfileService {
     ProfileDetailResponse getProfileDetail(Integer idUser);
     void updateProfileDetail(Integer idUser,ProfileDetailRequest profileDetailRequest);
-    UserNameAndProfileResponse getUserNameAndProfile(int idUser);
+    UserNameAndProfileResponse getUserNameAndProfile(Integer idUser);
 
 }

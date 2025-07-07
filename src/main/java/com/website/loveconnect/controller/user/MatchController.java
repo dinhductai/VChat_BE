@@ -5,11 +5,14 @@ import com.website.loveconnect.dto.response.MatchBySenderResponse;
 import com.website.loveconnect.dto.response.MatchMatchIdResponse;
 import com.website.loveconnect.dto.response.UserMatchedResponse;
 import com.website.loveconnect.service.MatchService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,27 +26,29 @@ public class MatchController {
 
     MatchService matchService;
 
+    @Operation(summary = "Get all matches",description = "Get all friend matched")
     @GetMapping(value = "/matches")
-    public ResponseEntity<ApiResponse<List<MatchBySenderResponse>>> getMatches(
-            @RequestParam(name = "userId") int userId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<ApiResponse<List<MatchBySenderResponse>>> getMatches(@AuthenticationPrincipal Jwt jwt,
+                                                                               @RequestParam(defaultValue = "0") int page,
+                                                                               @RequestParam(defaultValue = "10") int size) {
+        int userId = Integer.parseInt(jwt.getSubject());
         return ResponseEntity.ok(new ApiResponse<>(true,"Get all match by sender id successful",
                 matchService.getAllMatchBySenderId(userId, page, size)));
     }
 
+    @Operation(summary = "Get one match", description = "Get one match by id")
     @GetMapping(value = "/matches/{matchId}")
-    public ResponseEntity<ApiResponse<MatchMatchIdResponse>> getMatchBySenderId(
-            @PathVariable int matchId){
+    public ResponseEntity<ApiResponse<MatchMatchIdResponse>> getMatchBySenderId(@PathVariable int matchId){
         return ResponseEntity.ok(new ApiResponse<>(true,"Get match by match id successful",
                 matchService.getMatchMatchId(matchId)));
     }
 
+    @Operation(summary = "Get user matches",description = "Get all user's matches")
     @GetMapping(value = "/user-matches")
-    public ResponseEntity<ApiResponse<List<UserMatchedResponse>>> getUserMatches(
-            @RequestParam(name = "userId") int userId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<ApiResponse<List<UserMatchedResponse>>> getUserMatches(@AuthenticationPrincipal Jwt jwt,
+                                                                                 @RequestParam(defaultValue = "0") int page,
+                                                                                 @RequestParam(defaultValue = "10") int size) {
+        int userId = Integer.parseInt(jwt.getSubject());
         return ResponseEntity.ok(new ApiResponse<>(true,"Get all match by sender id successful",
                 matchService.getAllUserMatched(userId, page, size)));
     }

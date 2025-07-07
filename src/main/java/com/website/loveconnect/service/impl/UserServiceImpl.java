@@ -224,7 +224,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(int idUser) {
+    public void deleteUser(Integer idUser) {
         validateUserId(idUser);
         User user = userRepository.findById(idUser)
                 .orElseThrow(()-> new UserNotFoundException("User with id "+ idUser + " not found"));
@@ -306,7 +306,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<UserAndPhotosResponse> getAllUsersAndPhotos( int page, int size, int userId) {
+    public Page<UserAndPhotosResponse> getAllUsersAndPhotos( int page, int size, Integer userId) {
         validateUserId(userId);
         try {
             User user =  userRepository.findById(userId)

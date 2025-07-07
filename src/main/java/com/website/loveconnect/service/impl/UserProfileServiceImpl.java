@@ -87,7 +87,7 @@ public class UserProfileServiceImpl implements UserProfileService {
     }
 
     @Override
-    public UserNameAndProfileResponse getUserNameAndProfile(int idUser) {
+    public UserNameAndProfileResponse getUserNameAndProfile(Integer idUser) {
         try {
             return userProfileRepository.findUserNameAndProfileByUserId(idUser).orElseThrow(() -> new UserNotFoundException("User Not Found"));
         }catch (DataAccessException e){
