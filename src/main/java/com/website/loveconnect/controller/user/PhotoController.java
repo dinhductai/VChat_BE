@@ -14,6 +14,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.core.Authentication;
 
 import java.io.IOException;
 import java.util.List;
@@ -47,9 +50,10 @@ public class PhotoController {
 
     //lấy ảnh profile của user
     @GetMapping(value = "/profile-photo")
-    public ResponseEntity<ApiResponse<String>> getProfileImage(@RequestParam("userid") Integer userid){
+    public ResponseEntity<ApiResponse<String>> getProfileImage(@AuthenticationPrincipal Jwt jwt){
+        Integer userId = Integer.parseInt(jwt.getSubject());
         return ResponseEntity.ok(new ApiResponse<>(true,"Get profile image successful",
-                imageService.getProfileImage(userid)));
+                imageService.getProfileImage(userId)));
     }
 
     //lấy toàn bộ ảnh của người dùng
@@ -90,8 +94,11 @@ public class PhotoController {
     @Operation(summary = "Delete story image",description = "User delete a story image after upload it")
     @DeleteMapping(value = "/story/delete")
     public ResponseEntity<ApiResponse<String>> deleteStory(@RequestParam("userId") Integer userId,
-                                                           @RequestParam("photoUrl") String photoUrl) {
+                                                           @RequestParam("photoUrl") String photoUrl,
+                                                           @RequestHeader("Authorization") String authorization) {
         imageService.deleteImageProfile(userId,photoUrl);
         return ResponseEntity.ok(new ApiResponse<>(true,"Delete photo successful",null));
     }
+
+
 }
