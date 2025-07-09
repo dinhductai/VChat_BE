@@ -10,7 +10,7 @@ public class PostQueries {
                     "    prof_pic.photo_url AS profilePicture,\n" +
                     "    p.post_id as postId,\n" +
                     "    p.content as content,\n" +
-                    "    DATE_FORMAT(p.upload_date, '%d-%m-%Y %H:%i:%s') as uploadDate,\n" +
+                    "    p.upload_date as uploadDate,\n" +
                     "    p.status as status,\n" +
                     "    p.is_public as isPublic,\n" +
                     "    GROUP_CONCAT(DISTINCT ph.photo_url SEPARATOR ', ') AS photosUrl,\n" +
