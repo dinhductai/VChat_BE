@@ -373,3 +373,26 @@ CREATE TABLE comments (
     FOREIGN KEY (parent_comment_id) REFERENCES comments(comment_id) ON DELETE CASCADE
 );
 
+CREATE TABLE emotions (
+    emotion_id INT AUTO_INCREMENT PRIMARY KEY,
+    emotion_name enum('LIKE','LOVE','HAHA','WOW','SAD','ANGRY'), -- Ví dụ: 'Like', 'Love', 'Haha'
+    emotion_icon_url VARCHAR(255) -- Đường dẫn tới icon của cảm xúc (tùy chọn)
+);
+
+CREATE TABLE reactions (
+    reaction_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,           -- Người thả cảm xúc
+    emotion_id INT NOT NULL,        -- Loại cảm xúc được thả
+    
+    content_id INT NOT NULL,        -- ID của nội dung (post_id, photo_id, video_id, comment_id)
+    content_type ENUM('POST', 'PHOTO', 'VIDEO', 'COMMENT') NOT NULL, -- Loại nội dung
+
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (emotion_id) REFERENCES emotions(emotion_id) ON DELETE CASCADE,
+    
+    -- Đây là khóa UNIQUE quan trọng nhất để đảm bảo mỗi user chỉ có 1 reaction trên 1 content
+    UNIQUE KEY unique_reaction (user_id, content_id, content_type)
+);
