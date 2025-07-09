@@ -152,4 +152,35 @@ public  class UserQueries {
                     "    u.account_status = 'ACTIVE'\n" +
                     "    AND up.gender = :lookingFor \n" +
                     "GROUP BY u.user_id, up.full_name, up.location, up.gender ";
+
+    public static final String GET_USER_FRIENDS =
+            "SELECT DISTINCT \n" +
+                    "    u.user_id AS user_id,\n" +
+                    "    up.full_name AS user_fullname,\n" +
+                    "    p.photo_url AS photoUrl,\n" +
+                    "    up.bio,\n" +
+                    "    u.phone_number\n" +
+                    "FROM matches m\n" +
+                    "JOIN users u \n" +
+                    "    ON u.user_id = (\n" +
+                    "        CASE \n" +
+                    "            WHEN m.sender_id = :userId THEN m.receiver_id\n" +
+                    "            ELSE m.sender_id\n" +
+                    "        END\n" +
+                    "    )\n" +
+                    "LEFT JOIN user_profiles up ON u.user_id = up.user_id\n" +
+                    "LEFT JOIN (\n" +
+                    "    SELECT p1.*\n" +
+                    "    FROM photos p1\n" +
+                    "    JOIN (\n" +
+                    "        SELECT user_id, MAX(upload_date) AS max_upload_date\n" +
+                    "        FROM photos\n" +
+                    "        WHERE is_profile_picture = true\n" +
+                    "        GROUP BY user_id\n" +
+                    "    ) latest ON p1.user_id = latest.user_id AND p1.upload_date = latest.max_upload_date\n" +
+                    "    WHERE p1.is_profile_picture = true\n" +
+                    ") p ON p.user_id = u.user_id\n" +
+                    "WHERE \n" +
+                    "    (m.sender_id = :userId OR m.receiver_id = :userId)\n" +
+                    "    AND m.status = 'MATCHED' ";
 }

@@ -60,7 +60,9 @@ public class SecurityConfig {
         //endpoint công khai cho tất cả role và chưa đăng nhập
         String[] publicPostEndpoint = {
                 AUTH_API_PREFIX+"/log-in",
-                AUTH_API_PREFIX+"/logout"
+                AUTH_API_PREFIX+"/logout",
+                USER_API_PREFIX+"/sign-up"
+
         };
 
         //endpoint mà admin và user dùng chung
@@ -101,7 +103,6 @@ public class SecurityConfig {
                 USER_API_PREFIX+"/user/interest/{idUser}"
         };
         String[] userPostEndpoint = {
-                USER_API_PREFIX+"/sign-up",
                 USER_API_PREFIX+"/profile-image/upload",
                 USER_API_PREFIX+"/user/interest/add/{idUser}"
         };
@@ -113,7 +114,7 @@ public class SecurityConfig {
         };
 
         String[] apiDocumentEndpoint = {
-                "/api-docs",           // thay vì /v3/api-docs
+                "/api-docs",
                 "/api-docs/**",
                 "/swagger-ui.html",
                 "/swagger-ui/**"
