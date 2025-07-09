@@ -15,7 +15,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.core.Authentication;
 import javax.naming.AuthenticationException;
 import java.text.ParseException;
 
@@ -73,5 +75,11 @@ public class AuthenticationController {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
+    }
+    @GetMapping("/token-data")
+    public ResponseEntity<?> getProfile(@AuthenticationPrincipal Jwt jwt) {
+        String email = jwt.getClaimAsString("email");
+        String idUser = jwt.getSubject();
+        return ResponseEntity.ok("Your email: " + email + "  Your id:" +idUser);
     }
 }

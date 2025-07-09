@@ -4,7 +4,9 @@ import com.cloudinary.Api;
 import com.website.loveconnect.dto.request.PostRequest;
 import com.website.loveconnect.dto.response.ApiResponse;
 import com.website.loveconnect.dto.response.PostResponse;
+import com.website.loveconnect.dto.response.UserAndPhotosResponse;
 import com.website.loveconnect.service.PostService;
+import com.website.loveconnect.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,8 @@ import java.io.IOException;
 @RequestMapping(value = "/api")
 public class PostController {
     PostService postService;
+    UserService userService;
+
 
     @Operation(summary = "Create post",description = "Create a post with text, image or post")
     @PostMapping(value = "/post/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -41,5 +45,6 @@ public class PostController {
         return ResponseEntity.ok(new ApiResponse<>(true,"Get random post successful",
                 postService.getRandom(page,size)));
     }
+
 
 }

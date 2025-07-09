@@ -5,6 +5,7 @@ import com.website.loveconnect.dto.response.ApiResponse;
 import com.website.loveconnect.dto.response.ReportTypeResponse;
 import com.website.loveconnect.entity.Report;
 import com.website.loveconnect.service.ReportService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class ReportController {
     ReportService reportService;
 
+    @Operation(summary = "Report user", description = "User make a report to other user")
     @PostMapping(value = "/report")
     public ResponseEntity<ApiResponse<String>> report(
             @RequestParam(value = "typeName") String typeName,

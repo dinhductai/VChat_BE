@@ -45,4 +45,7 @@ public interface UserRepository extends JpaRepository<User, Integer>, UserReposi
 
         @Query(value = UserQueries.GET_USER_AND_PHOTO_HOME_PAGE,nativeQuery = true)
         Page<Tuple> getAllUserAndPhotos(@Param("lookingFor") String lookingFor, Pageable pageable);
+
+        @Query(value = UserQueries.GET_USER_FRIENDS,nativeQuery = true)
+        Page<Tuple> getAllUserFriends(@Param("userId")Integer userId,Pageable pageable);
 }
