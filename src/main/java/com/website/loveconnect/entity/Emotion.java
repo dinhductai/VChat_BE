@@ -27,6 +27,6 @@ public class Emotion {
 
     @JsonIgnore
     @OneToMany(mappedBy = "emotion", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
-    private List<Emotion> listReaction = new ArrayList<>();
+    private List<Reaction> listReaction = new ArrayList<>();
 
 }
