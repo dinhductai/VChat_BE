@@ -33,7 +33,7 @@ public class CommentController {
         return ResponseEntity.ok(new ApiResponse<>(true,"Create comment successful",null));
     }
 
-    @Operation(summary = "Create comment",description = "Create 1 comment on a post, a comment")
+    @Operation(summary = "Rep comment",description = "Create 1 comment rep on a comment")
     @PostMapping(value = "/comment/rep")
     public ResponseEntity<ApiResponse<String>> repComment(@Valid @RequestBody CommentRequest commentRequest,
                                                              @AuthenticationPrincipal Jwt jwt) {

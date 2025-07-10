@@ -61,7 +61,7 @@ public class CommentServiceImpl implements CommentService {
                     .orElseThrow(()-> new PostNotFoundException("Post not found"));
             Comment commentRepted = commentRepository.findById(commentRequest.getCommentId())
                     .orElseThrow(ChangeSetPersister.NotFoundException::new);
-            if(commentRepted.getLevel()>1 && commentRequest.getLevel()<=3){
+
                 Comment comment = Comment.builder()
                         .user(user)
                         .post(post)
@@ -73,7 +73,7 @@ public class CommentServiceImpl implements CommentService {
                         .level(commentRequest.getLevel()) //=2 =3
                         .build();
                 commentRepository.save(comment);
-            }
+
 
         }catch (Exception e){
             e.printStackTrace();
