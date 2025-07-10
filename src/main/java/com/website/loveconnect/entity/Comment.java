@@ -32,6 +32,9 @@ public class Comment {
     @Column(name = "is_deleted")
     private Boolean isDeleted = Boolean.FALSE;
 
+    @Column(name = "level",nullable = false)
+    private Integer level;
+
     @ManyToOne
     @JsonIgnore
     @JoinColumn(name = "user_id")

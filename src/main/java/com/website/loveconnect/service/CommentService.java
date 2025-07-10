@@ -5,4 +5,5 @@ import com.website.loveconnect.entity.Comment;
 
 public interface CommentService {
     void createComment(CommentRequest commentRequest,Integer userId);
+    void repComment(CommentRequest commentRequest,Integer userId);
 }

@@ -15,6 +15,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -43,8 +44,37 @@ public class CommentServiceImpl implements CommentService {
                     .commentDate(new Timestamp(System.currentTimeMillis()))
                     .isEdited(commentRequest.getIsEdited())
                     .isDeleted(commentRequest.getIsDeleted())
+                    .level(commentRequest.getLevel()) //=1
                     .build();
             commentRepository.save(comment);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void repComment(CommentRequest commentRequest, Integer userId) {
+        try {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(()->new UserNotFoundException("User not found"));
+            Post post =  postRepository.findById(commentRequest.getPostId())
+                    .orElseThrow(()-> new PostNotFoundException("Post not found"));
+            Comment commentRepted = commentRepository.findById(commentRequest.getCommentId())
+                    .orElseThrow(ChangeSetPersister.NotFoundException::new);
+            if(commentRepted.getLevel()>1 && commentRequest.getLevel()<=3){
+                Comment comment = Comment.builder()
+                        .user(user)
+                        .post(post)
+                        .content(commentRequest.getContent())
+                        .commentDate(new Timestamp(System.currentTimeMillis()))
+                        .isEdited(commentRequest.getIsEdited())
+                        .isDeleted(commentRequest.getIsDeleted())
+                        .parentComment(commentRepted)
+                        .level(commentRequest.getLevel()) //=2 =3
+                        .build();
+                commentRepository.save(comment);
+            }
+
         }catch (Exception e){
             e.printStackTrace();
         }
