@@ -9,6 +9,7 @@ import com.website.loveconnect.entity.Match;
 import com.website.loveconnect.entity.User;
 import com.website.loveconnect.enumpackage.MatchStatus;
 import com.website.loveconnect.exception.DataAccessException;
+import com.website.loveconnect.exception.MatchNotFoundException;
 import com.website.loveconnect.exception.UserNotFoundException;
 import com.website.loveconnect.mapper.MatchMapper;
 import com.website.loveconnect.repository.LikeRepository;
@@ -25,6 +26,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -122,6 +124,49 @@ public class MatchServiceImpl implements MatchService {
             return userMatchedResponses;
         }catch (DataAccessException de){
             throw new DataAccessException("Can not access database");
+        }
+    }
+
+    @Override
+    public void createRequestFriend(Integer senderId, Integer receiverId) {
+        try {
+            User sender = userRepository.findById(senderId)
+                    .orElseThrow(() -> new UserNotFoundException("Sender not found"));
+            User receiver = userRepository.findById(receiverId)
+                    .orElseThrow(() -> new UserNotFoundException("Receiver not found"));
+
+            Match match = Match.builder()
+                    .sender(sender)
+                    .receiver(receiver)
+                    .matchDate(new Timestamp(System.currentTimeMillis()))
+                    .status(MatchStatus.PENDING)
+                    .build();
+            matchRepository.save(match);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void updateRequestFriend(Integer senderId, Integer receiverId,MatchStatus matchStatus) {
+        try {
+            User sender = userRepository.findById(senderId)
+                    .orElseThrow(() -> new UserNotFoundException("Sender not found"));
+            User receiver = userRepository.findById(receiverId)
+                    .orElseThrow(() -> new UserNotFoundException("Receiver not found"));
+
+            Match match = matchRepository.findBySenderAndReceiver(receiver,sender)
+                    .orElseThrow(()->new MatchNotFoundException("Match not found"));
+            if(matchStatus.equals(MatchStatus.MATCHED)){
+                match.setStatus(MatchStatus.MATCHED);
+                matchRepository.save(match);
+            }else if(matchStatus.equals(MatchStatus.REJECTED)){
+                match.setStatus(MatchStatus.REJECTED);
+                matchRepository.save(match);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 }

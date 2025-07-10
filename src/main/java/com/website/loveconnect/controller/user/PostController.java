@@ -15,6 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,7 +33,10 @@ public class PostController {
 
     @Operation(summary = "Create post",description = "Create a post with text, image or post")
     @PostMapping(value = "/post/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<String>> createPost(@ModelAttribute PostRequest postRequest){
+    public ResponseEntity<ApiResponse<String>> createPost(@ModelAttribute PostRequest postRequest,
+                                                          @AuthenticationPrincipal Jwt jwt){
+        String userEmail = jwt.getClaimAsString("email");
+        postRequest.setUserEmail(userEmail);
         postService.savePost(postRequest);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiResponse<>(true,"Create post successful", null));

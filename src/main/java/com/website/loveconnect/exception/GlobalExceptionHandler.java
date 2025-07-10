@@ -327,4 +327,13 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorDetail, HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler(MatchNotFoundException.class)
+    public ResponseEntity<ErrorDetail> handleMatchNotFoundException(MatchNotFoundException ex, WebRequest request) {
+        ErrorDetail errorDetail = new ErrorDetail(
+                LocalDateTime.now(),
+                "Match not found",
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetail, HttpStatus.NOT_FOUND);
+    }
 }

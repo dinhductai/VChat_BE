@@ -1,6 +1,7 @@
 package com.website.loveconnect.repository;
 
 import com.website.loveconnect.entity.Match;
+import com.website.loveconnect.entity.User;
 import com.website.loveconnect.enumpackage.MatchStatus;
 import com.website.loveconnect.repository.query.MatchQueries;
 import jakarta.persistence.Tuple;
@@ -27,4 +28,6 @@ public interface MatchRepository extends JpaRepository<Match, Integer> {
 
     @Query(value = MatchQueries.GET_FULL_NAME_AND_PROFILE_USER_MATCHED_BY_SENDER_ID,nativeQuery = true)
     List<Tuple> getFullNameAndProfileUserMatchedBySenderId(@Param("senderId") int senderId, Pageable pageable);
+
+    Optional<Match> findBySenderAndReceiver(User sender, User receiver);
 }

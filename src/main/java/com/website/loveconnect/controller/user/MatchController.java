@@ -4,12 +4,14 @@ import com.website.loveconnect.dto.response.ApiResponse;
 import com.website.loveconnect.dto.response.MatchBySenderResponse;
 import com.website.loveconnect.dto.response.MatchMatchIdResponse;
 import com.website.loveconnect.dto.response.UserMatchedResponse;
+import com.website.loveconnect.enumpackage.MatchStatus;
 import com.website.loveconnect.service.MatchService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -52,4 +54,25 @@ public class MatchController {
         return ResponseEntity.ok(new ApiResponse<>(true,"Get all match by sender id successful",
                 matchService.getAllUserMatched(userId, page, size)));
     }
+
+    @Operation(summary = "Create request friend", description = "User1 send a request friend to user2")
+    @PostMapping(value = "/match/create")
+    public ResponseEntity<ApiResponse<String>> createRequestFriend(@AuthenticationPrincipal Jwt jwt,
+                                                                   @RequestParam("receiverId") Integer receiverId){
+        Integer senderId = Integer.parseInt(jwt.getSubject());
+        matchService.createRequestFriend(senderId,receiverId);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ApiResponse<>(true,"Create request friend successful", null));
+    }
+    @Operation(summary = "Update request friend", description = "User1 accept or reject a request friend from user2")
+    @PutMapping(value = "/match/update")
+    public ResponseEntity<ApiResponse<String>> updateRequestFriend(@AuthenticationPrincipal Jwt jwt,
+                                                                   @RequestParam("receiverId") Integer receiverId,
+                                                                   @RequestParam("matchStatus") MatchStatus matchStatus){
+        Integer senderId = Integer.parseInt(jwt.getSubject());
+        matchService.updateRequestFriend(senderId,receiverId,matchStatus);
+        return ResponseEntity.ok(new ApiResponse<>(true,"Update request friend successful", null));
+    }
+
+
 }
