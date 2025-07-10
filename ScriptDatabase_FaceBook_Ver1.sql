@@ -359,6 +359,8 @@ CREATE TABLE post_videos (
     FOREIGN KEY (video_id) REFERENCES video(video_id) ON DELETE CASCADE
 );
 
+-- drop table comments;
+
 CREATE TABLE comments (
     comment_id INT AUTO_INCREMENT PRIMARY KEY,
     post_id INT NOT NULL,
@@ -367,6 +369,7 @@ CREATE TABLE comments (
     comment_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     is_edited BOOLEAN DEFAULT FALSE,
     is_deleted BOOLEAN DEFAULT FALSE,
+    level int not null,
     parent_comment_id INT DEFAULT NULL, -- để hỗ trợ comment lồng nhau (reply)
     FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
@@ -375,8 +378,7 @@ CREATE TABLE comments (
 
 CREATE TABLE emotions (
     emotion_id INT AUTO_INCREMENT PRIMARY KEY,
-    emotion_name enum('LIKE','LOVE','HAHA','WOW','SAD','ANGRY'), -- Ví dụ: 'Like', 'Love', 'Haha'
-    emotion_icon_url VARCHAR(255) -- Đường dẫn tới icon của cảm xúc (tùy chọn)
+    emotion_name enum('LIKE','LOVE','HAHA','WOW','SAD','ANGRY')
 );
 
 CREATE TABLE reactions (
@@ -396,3 +398,10 @@ CREATE TABLE reactions (
     -- Đây là khóa UNIQUE quan trọng nhất để đảm bảo mỗi user chỉ có 1 reaction trên 1 content
     UNIQUE KEY unique_reaction (user_id, content_id, content_type)
 );
+INSERT INTO emotions (emotion_name) VALUES
+('LIKE'),
+('LOVE'),
+('HAHA'),
+('WOW'),
+('SAD'),
+('ANGRY');
