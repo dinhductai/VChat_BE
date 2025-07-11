@@ -1,7 +1,9 @@
 package com.website.loveconnect.controller.user;
 
+import com.website.loveconnect.dto.request.CommentGetRequest;
 import com.website.loveconnect.dto.request.CommentRequest;
 import com.website.loveconnect.dto.response.ApiResponse;
+import com.website.loveconnect.dto.response.CommentResponse;
 import com.website.loveconnect.entity.Comment;
 import com.website.loveconnect.service.CommentService;
 
@@ -11,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -42,4 +45,12 @@ public class CommentController {
         return ResponseEntity.ok(new ApiResponse<>(true,"Create comment successful",null));
     }
 
+    @Operation(summary = "Get comments",description = "Get all comment and sub comment on a post by level")
+    @GetMapping(value = "/comments")
+    public ResponseEntity<ApiResponse<Page<CommentResponse>>> getComments(@Valid @RequestBody CommentGetRequest commentGetRequest,
+                                                                          @RequestParam(defaultValue = "0") int page,
+                                                                          @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(new ApiResponse<>(true,"Get comments successful",
+                commentService.getComments(commentGetRequest,page,size)));
+    }
 }
