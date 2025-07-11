@@ -46,6 +46,7 @@ public class Video {
     @JoinColumn(name = "reviewed_by")
     private User reviewedBy;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "video", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<PostVideo> videoPosts = new ArrayList<>();
 
