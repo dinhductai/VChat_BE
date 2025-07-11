@@ -5,6 +5,8 @@ import com.website.loveconnect.dto.request.PostRequest;
 import com.website.loveconnect.dto.response.PostResponse;
 import com.website.loveconnect.entity.*;
 import com.website.loveconnect.enumpackage.PostStatus;
+import com.website.loveconnect.exception.DataAccessException;
+import com.website.loveconnect.exception.PostNotFoundException;
 import com.website.loveconnect.exception.UserNotFoundException;
 import com.website.loveconnect.mapper.PostMapper;
 import com.website.loveconnect.repository.*;
@@ -44,7 +46,7 @@ public class PostServiceImpl implements PostService {
     PostPhotoRepository postPhotoRepository;
     PostMapper postMapper;
     @Override
-    public void savePost(PostRequest postRequest) {
+    public PostResponse savePost(PostRequest postRequest) {
         try {
             // Kiểm tra dữ liệu đầu vào
             if (postRequest == null || StringUtils.isEmpty(postRequest.getUserEmail())) {
@@ -102,6 +104,7 @@ public class PostServiceImpl implements PostService {
                     }
                 }
             }
+            return postMapper.toPostResponse(postRepository.getOnePostByPostId(post.getId()));
         } catch (Exception e) {
             log.error("Failed to save post for user: {}", postRequest.getUserEmail(), e);
             throw new RuntimeException("Failed to save post", e);
@@ -112,5 +115,16 @@ public class PostServiceImpl implements PostService {
     public Page<PostResponse> getRandom(int page, int size) {
         Pageable pageable = PageRequest.of(page,size);
         return postRepository.getRandomPost(pageable).map(postMapper::toPostResponse);
+    }
+
+    @Override
+    public PostResponse getPostById(Integer postId) {
+        try{
+            Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("Post not found"));
+            return postMapper.toPostResponse(postRepository.getOnePostByPostId(postId));
+        }catch (DataAccessException e){
+            throw new DataAccessException("Cannot access database");
+        }
+
     }
 }
