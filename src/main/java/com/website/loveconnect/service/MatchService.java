@@ -18,4 +18,6 @@ public interface MatchService {
     List<MatchBySenderResponse> getAllMatchBySenderId(int userId,int page,int size);
     MatchMatchIdResponse getMatchMatchId(int matchId);
     List<UserMatchedResponse> getAllUserMatched(int userId,int page,int size);
+    void createRequestFriend(Integer senderId, Integer receiverId);
+    void updateRequestFriend(Integer senderId, Integer receiverId,MatchStatus matchStatus);
 }

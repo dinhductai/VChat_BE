@@ -2,10 +2,7 @@ package com.website.loveconnect.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -16,6 +13,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,6 +31,9 @@ public class Comment {
 
     @Column(name = "is_deleted")
     private Boolean isDeleted = Boolean.FALSE;
+
+    @Column(name = "level",nullable = false)
+    private Integer level;
 
     @ManyToOne
     @JsonIgnore

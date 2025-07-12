@@ -15,6 +15,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.util.StringUtils;
@@ -94,8 +97,14 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
-    public List<String> getOwnedVideos(Integer idUser) {
-        return List.of();
+    public Page<Video> getOwnedVideos(Integer idUser,int page,int size) {
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            User user = userRepository.findById(idUser).orElseThrow(() -> new UserNotFoundException("User not found"));
+            return videoRepository.findByOwnedVideoAndIsStory(user, false, pageable);
+        }catch (DataAccessException e){
+            throw new DataAccessException("Failed to save video to database", e) {};
+        }
     }
 
     @Override
