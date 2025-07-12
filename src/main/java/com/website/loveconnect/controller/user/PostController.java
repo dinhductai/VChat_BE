@@ -8,6 +8,7 @@ import com.website.loveconnect.dto.response.UserAndPhotosResponse;
 import com.website.loveconnect.service.PostService;
 import com.website.loveconnect.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -33,7 +34,7 @@ public class PostController {
 
     @Operation(summary = "Create post",description = "Create a post with text, image or post")
     @PostMapping(value = "/post/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<PostResponse>> createPost(@ModelAttribute PostRequest postRequest,
+    public ResponseEntity<ApiResponse<PostResponse>> createPost(@Valid  @ModelAttribute PostRequest postRequest,
                                                           @AuthenticationPrincipal Jwt jwt){
         String userEmail = jwt.getClaimAsString("email");
         postRequest.setUserEmail(userEmail);
@@ -56,6 +57,7 @@ public class PostController {
         return ResponseEntity.ok(new ApiResponse<>(true,"Get one post successful",
                 postService.getPostById(postId)));
     }
+
 
 
 

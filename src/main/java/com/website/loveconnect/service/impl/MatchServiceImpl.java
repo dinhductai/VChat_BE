@@ -16,6 +16,7 @@ import com.website.loveconnect.repository.LikeRepository;
 import com.website.loveconnect.repository.MatchRepository;
 import com.website.loveconnect.repository.UserRepository;
 import com.website.loveconnect.service.MatchService;
+import com.website.loveconnect.service.NotificationService;
 import jakarta.persistence.Tuple;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
@@ -41,6 +42,7 @@ public class MatchServiceImpl implements MatchService {
     UserRepository userRepository;
     LikeRepository likeRepository;
     MatchMapper matchMapper;
+    NotificationService notificationService;
 
     @Override
     public MatchResponse createMatch(MatchRequestDTO matchRequestDTO) {
@@ -142,6 +144,7 @@ public class MatchServiceImpl implements MatchService {
                     .status(MatchStatus.PENDING)
                     .build();
             matchRepository.save(match);
+            notificationService.createNotificationRequestFriend(sender);
         }catch (Exception e){
             e.printStackTrace();
         }

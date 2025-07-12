@@ -52,12 +52,15 @@ public class PostServiceImpl implements PostService {
             if (postRequest == null || StringUtils.isEmpty(postRequest.getUserEmail())) {
                 throw new IllegalArgumentException("PostRequest or userEmail cannot be null");
             }
-
+//            boolean isPublic = true;
+//            if(postRequest.getIsPublic() == 0){
+//                isPublic = false;
+//            }
             // Tạo và lưu Post trước
             Post post = Post.builder()
                     .content(postRequest.getContent())
                     .uploadDate(new Timestamp(System.currentTimeMillis()))
-                    .isPublic(true)
+                    .isPublic(postRequest.getIsPublic())
                     .isApproved(true)
                     .status(PostStatus.ACTIVE)
                     .build();
