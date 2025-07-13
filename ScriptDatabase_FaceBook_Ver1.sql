@@ -165,7 +165,9 @@ CREATE TABLE notifications (
     content TEXT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
-
+ALTER TABLE notifications
+ADD COLUMN sender_id INT NULL AFTER content,
+ADD FOREIGN KEY (sender_id) REFERENCES users(user_id);
 -- ====================================
 -- 13. Bảng USER_NOTIFICATIONS: Liên kết users ↔ notifications
 -- ====================================
