@@ -2,29 +2,40 @@ package com.website.loveconnect.repository.query;
 
 public class NotificationQueries {
     public static final String GET_MATCH_NOTIFICATION_BY_USER_ID =
-            "SELECT \n" +
-                    "    n.notification_id as notificationId,\n" +
-                    "    n.notification_type as notificationType,\n" +
-                    "    n.content as content,\n" +
-                    "    n.created_at as createAt,\n" +
-                    "    u.user_id AS senderId,\n" +
-                    "    p.photo_url AS profilePicture\n" +
-                    "FROM user_notifications un\n" +
-                    "JOIN notifications n ON un.notification_id = n.notification_id\n" +
-                    "JOIN matches m ON m.sender_id = un.user_id AND m.receiver_id = :userId\n" +
-                    "JOIN users u ON u.user_id = un.user_id\n" +
-                    "LEFT JOIN photos p ON p.user_id = u.user_id\n" +
-                    "                 AND p.is_profile_picture = TRUE\n" +
-                    "                 AND p.upload_date = (\n" +
-                    "                     SELECT MAX(upload_date)\n" +
-                    "                     FROM photos\n" +
-                    "                     WHERE user_id = u.user_id AND is_profile_picture = TRUE\n" +
-                    "                 )\n" +
-                    "WHERE un.user_id != :userId\n" +
-                    "  AND un.user_id = m.sender_id\n" +
-                    "  AND n.notification_type = 'MATCH'\n" +
-                    "  AND un.is_read = 'false' \n"+
-                    "  AND m.status = 'PENDING';";
+            "SELECT\n" +
+                    "    n.notification_id AS notificationId,\n" +
+                    "    n.notification_type AS notificationType,\n" +
+                    "    n.content AS content,\n" +
+                    "    n.created_at AS createAt,\n" +
+                    "    n.sender_id AS senderId,\n" +
+                    "    latest_photo.photo_url AS profilePicture\n" +
+                    "FROM\n" +
+                    "    user_notifications un\n" +
+                    "JOIN\n" +
+                    "    notifications n ON un.notification_id = n.notification_id\n" +
+                    "JOIN\n" +
+                    "    matches m ON m.receiver_id = un.user_id AND m.sender_id = n.sender_id \n" +
+                    "LEFT JOIN (\n" +
+                    "    -- Subquery để lấy ảnh mới nhất của người gửi\n" +
+                    "    SELECT\n" +
+                    "        user_id,\n" +
+                    "        photo_url\n" +
+                    "    FROM (\n" +
+                    "        SELECT\n" +
+                    "            user_id,\n" +
+                    "            photo_url,\n" +
+                    "            ROW_NUMBER() OVER(PARTITION BY user_id ORDER BY upload_date DESC) as rn\n" +
+                    "        FROM\n" +
+                    "            photos\n" +
+                    "    ) AS ranked_photos\n" +
+                    "    WHERE\n" +
+                    "        rn = 1\n" +
+                    ") AS latest_photo ON n.sender_id = latest_photo.user_id\n" +
+                    "WHERE\n" +
+                    "    un.user_id = :userId \n" +
+                    "    AND n.notification_type = 'MATCH'\n" +
+                    "    AND un.is_read = FALSE\n" +
+                    "    AND m.status = 'PENDING';";
 
 
     public static final String GET_MESSAGE_NOTIFICATION_BY_USER_ID =

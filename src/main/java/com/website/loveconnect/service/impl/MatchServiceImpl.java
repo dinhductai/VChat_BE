@@ -144,7 +144,7 @@ public class MatchServiceImpl implements MatchService {
                     .status(MatchStatus.PENDING)
                     .build();
             matchRepository.save(match);
-            notificationService.createNotificationRequestFriend(sender);
+            notificationService.createNotificationRequestFriend(sender,receiver);
         }catch (Exception e){
             e.printStackTrace();
         }

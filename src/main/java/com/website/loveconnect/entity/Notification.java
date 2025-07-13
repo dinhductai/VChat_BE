@@ -35,4 +35,10 @@ public class Notification {
     @JsonIgnore
     @OneToMany(mappedBy = "notification" ,fetch = FetchType.LAZY , cascade = CascadeType.ALL)
     private List<UserNotification> userNotifications = new ArrayList<>();
+
+
+    @ManyToOne
+    @JsonIgnore
+    @JoinColumn(name = "sender_id",nullable = false)
+    private User sender;
 }

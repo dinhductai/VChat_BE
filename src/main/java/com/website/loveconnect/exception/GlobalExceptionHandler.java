@@ -346,4 +346,13 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorDetail, HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler(NotificationNotFoundException.class)
+    public ResponseEntity<ErrorDetail> handleNotificationNotFoundException(NotificationNotFoundException ex, WebRequest request) {
+        ErrorDetail errorDetail = new ErrorDetail(
+                LocalDateTime.now(),
+                "Notification not found",
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetail, HttpStatus.NOT_FOUND);
+    }
 }

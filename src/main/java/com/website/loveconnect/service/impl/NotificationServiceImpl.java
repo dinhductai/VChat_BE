@@ -4,6 +4,7 @@ import com.website.loveconnect.dto.response.NotificationResponse;
 import com.website.loveconnect.entity.*;
 import com.website.loveconnect.enumpackage.NotificationType;
 import com.website.loveconnect.exception.DataAccessException;
+import com.website.loveconnect.exception.NotificationNotFoundException;
 import com.website.loveconnect.exception.UserNotFoundException;
 import com.website.loveconnect.mapper.NotificationMapper;
 import com.website.loveconnect.repository.NotificationRepository;
@@ -39,18 +40,19 @@ public class NotificationServiceImpl implements NotificationService {
     UserProfileRepository userProfileRepository;
     NotificationMapper notificationMapper;
     @Override
-    public void createNotificationRequestFriend(User user) {
+    public void createNotificationRequestFriend(User sender,User receiver) {
         try {
-            UserProfile userProfile = userProfileRepository.findByUser_UserId(user.getUserId())
+            UserProfile userProfile = userProfileRepository.findByUser_UserId(sender.getUserId())
                     .orElseThrow(()->new UserNotFoundException("User not found"));
             Notification notification = Notification.builder()
                     .notificationType(NotificationType.MATCH)
                     .content(userProfile.getFullName() + " just sent you a friend request")
                     .createdAt(new Timestamp(System.currentTimeMillis()))
+                    .sender(sender)
                     .build();
             notificationRepository.save(notification);
             UserNotification userNotification = UserNotification.builder()
-                    .user(user)
+                    .user(receiver)
                     .notification(notification)
                     .isRead(false)
                     .build();
@@ -109,10 +111,10 @@ public class NotificationServiceImpl implements NotificationService {
         try{
             User user = userRepository.findById(userId).orElseThrow(()->new UserNotFoundException("User not found"));
             for(Integer id : notificationIds){
-                Notification notification = notificationRepository.findById(id).orElseThrow(()->new UserNotFoundException("User not found"));
+                Notification notification = notificationRepository.findById(id).orElseThrow(()->new NotificationNotFoundException("Notification not found"));
                 UserNotification userNotification = userNotificationRepository
-                        .findUserNotificationByUserAndNotificationAndIsRead(user,notification,false)
-                        .orElseThrow(()->new UserNotFoundException("User not found"));
+                        .findUserNotificationByUserAndNotification(user,notification)
+                        .orElseThrow(()->new NotificationNotFoundException("Notification not found"));
                 userNotification.setIsRead(true);
                 userNotificationRepository.save(userNotification);
             }

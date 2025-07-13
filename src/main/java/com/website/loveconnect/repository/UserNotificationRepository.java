@@ -19,5 +19,5 @@ public interface UserNotificationRepository extends JpaRepository<UserNotificati
     @Query(value = NotificationQueries.GET_MATCH_NOTIFICATION_BY_USER_ID,nativeQuery = true)
     List<Tuple> getMatchNotificationByUserId(@Param("userId") String userId);
 
-    Optional<UserNotification> findUserNotificationByUserAndNotificationAndIsRead(User user, Notification notification, Boolean isRead);
+    Optional<UserNotification> findUserNotificationByUserAndNotification(User user, Notification notification);
 }

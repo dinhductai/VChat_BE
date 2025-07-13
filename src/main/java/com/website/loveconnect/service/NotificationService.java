@@ -9,7 +9,7 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface NotificationService {
-    void createNotificationRequestFriend(User user);
+    void createNotificationRequestFriend(User sender,User receiver);
     Page<NotificationResponse> getNewNotifications(Integer userId,int page,int size);
     void readNotification(Integer userId,Integer[] notificationIds);
 }
