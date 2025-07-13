@@ -13,8 +13,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserNotificationRepository extends JpaRepository<UserNotification, Integer> {
     @Query(value = NotificationQueries.GET_MATCH_NOTIFICATION_BY_USER_ID,nativeQuery = true)
     List<Tuple> getMatchNotificationByUserId(@Param("userId") String userId);
+
+    Optional<UserNotification> findUserNotificationByUserAndNotificationAndIsRead(User user, Notification notification, Boolean isRead);
 }

@@ -11,4 +11,5 @@ import java.util.List;
 public interface NotificationService {
     void createNotificationRequestFriend(User user);
     Page<NotificationResponse> getNewNotifications(Integer userId,int page,int size);
+    void readNotification(Integer userId,Integer[] notificationIds);
 }

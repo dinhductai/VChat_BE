@@ -26,4 +26,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
 
     @Query(value = NotificationQueries.GET_POST_NOTIFICATION_BY_USER_ID,nativeQuery = true)
     List<Tuple> getPostNotificationByUserId(@Param("userId") Integer userId);
+
+    void deleteNotificationByNotificationIdIn(Long[] notificationIds);
+
 }

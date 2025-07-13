@@ -104,5 +104,22 @@ public class NotificationServiceImpl implements NotificationService {
 
     }
 
+    @Override
+    public void readNotification(Integer userId,Integer[] notificationIds) {
+        try{
+            User user = userRepository.findById(userId).orElseThrow(()->new UserNotFoundException("User not found"));
+            for(Integer id : notificationIds){
+                Notification notification = notificationRepository.findById(id).orElseThrow(()->new UserNotFoundException("User not found"));
+                UserNotification userNotification = userNotificationRepository
+                        .findUserNotificationByUserAndNotificationAndIsRead(user,notification,false)
+                        .orElseThrow(()->new UserNotFoundException("User not found"));
+                userNotification.setIsRead(true);
+                userNotificationRepository.save(userNotification);
+            }
+        }catch (DataAccessException da){
+            throw new DataAccessException("Cannot access database");
+        }
+    }
+
 
 }
