@@ -8,11 +8,13 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -27,9 +29,11 @@ public class NotificationController {
 
     @Operation(summary = "Get notification")
     @GetMapping(value = "/notification")
-    public ResponseEntity<ApiResponse<List<NotificationResponse>>> getNotification(@AuthenticationPrincipal Jwt jwt){
+    public ResponseEntity<ApiResponse<Page<NotificationResponse>>> getNotification(@AuthenticationPrincipal Jwt jwt,
+                                                                                   @RequestParam(defaultValue = "0") int page,
+                                                                                   @RequestParam(defaultValue = "10") int size){
         Integer userId = Integer.parseInt(jwt.getSubject());
         return ResponseEntity.ok(new ApiResponse<>(true,"Get notification successful",
-                notificationService.getNewNotifications(userId)));
+                notificationService.getNewNotifications(userId,page,size)));
     }
 }

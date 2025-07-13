@@ -17,10 +17,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -47,6 +52,7 @@ public class NotificationServiceImpl implements NotificationService {
             UserNotification userNotification = UserNotification.builder()
                     .user(user)
                     .notification(notification)
+                    .isRead(false)
                     .build();
             userNotificationRepository.save(userNotification);
         }catch (DataAccessException da){
@@ -55,17 +61,46 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public List<NotificationResponse> getNewNotifications(Integer userId) {
+    public Page<NotificationResponse> getNewNotifications(Integer userId,int page,int size) {
         try{
             User user =  userRepository.findById(userId).orElseThrow(()->new UserNotFoundException("User not found"));
             List<NotificationResponse> getMatchNotification = notificationRepository.getMatchNotificationByUserId(user.getUserId())
                     .stream().map(notificationMapper::toNotificationResponse).toList();
-            return  getMatchNotification;
+            List<NotificationResponse> getPostNotification = notificationRepository.getPostNotificationByUserId(user.getUserId())
+                    .stream().map(notificationMapper::toNotificationResponse).toList();
+            List<NotificationResponse> getLikeNotification = notificationRepository.getLikeNotificationByUserId(user.getUserId())
+                    .stream().map(notificationMapper::toNotificationResponse).toList();
+            List<NotificationResponse> getSystemNotification = notificationRepository.getSystemNotificationByUserId(user.getUserId())
+                    .stream().map(notificationMapper::toNotificationResponse).toList();
+
+            List<NotificationResponse> newNotification = new ArrayList<>();
+            newNotification.addAll(getMatchNotification);
+            newNotification.addAll(getPostNotification);
+            newNotification.addAll(getLikeNotification);
+            newNotification.addAll(getSystemNotification);
+            newNotification.sort((a,b) -> b.getCreateAt().compareTo(a.getCreateAt()));
+
+            int start = page*size;
+            int end = Math.min(start+size,getMatchNotification.size());
+
+            //nếu trang vượt quá dữ liệu, trả về rỗng
+            if (start >= newNotification.size()) {
+                return new PageImpl<>(Collections.emptyList(), PageRequest.of(page, size), newNotification.size());
+            }
+
+            //cắt danh sách để trả về trang hiện tại
+            List<NotificationResponse> pageContent = newNotification.subList(start, end);
+
+            //trả về Page
+            return new PageImpl<>(pageContent, PageRequest.of(page, size), newNotification.size());
+
+        }catch (DataAccessException de){
+            throw  new DataAccessException("Cannot access database");
         }catch (Exception e){
             e.printStackTrace();
+            return null;
         }
 
-        return null;
 
     }
 

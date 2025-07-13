@@ -28,4 +28,8 @@ public class UserNotification {
     private Notification notification;
 
 
+    @Column(name = "is_read")
+    private Boolean isRead;
+
+
 }

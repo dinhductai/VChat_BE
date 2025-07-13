@@ -23,6 +23,7 @@ public class NotificationQueries {
                     "WHERE un.user_id != :userId\n" +
                     "  AND un.user_id = m.sender_id\n" +
                     "  AND n.notification_type = 'MATCH'\n" +
+                    "  AND un.is_read = 'false' \n"+
                     "  AND m.status = 'PENDING';";
 
 
@@ -47,6 +48,7 @@ public class NotificationQueries {
                     "                 )\n" +
                     "WHERE un.user_id != :userId\n" +
                     "  AND un.user_id = m.sender_id\n" +
+                    "  AND un.is_read = 'false' \n"+
                     "  AND n.notification_type = 'MESSAGE'\n";
 
 
@@ -71,6 +73,7 @@ public class NotificationQueries {
                     "                 )\n" +
                     "WHERE un.user_id != :userId\n" +
                     "  AND un.user_id = m.sender_id\n" +
+                    "  AND un.is_read = 'false' \n"+
                     "  AND n.notification_type = 'LIKE'\n";
 
     public static final String GET_SYSTEM_NOTIFICATION_BY_USER_ID =
@@ -94,6 +97,7 @@ public class NotificationQueries {
                     "                 )\n" +
                     "WHERE un.user_id != :userId\n" +
                     "  AND un.user_id = m.sender_id\n" +
+                    "  AND un.is_read = 'false' \n"+
                     "  AND n.notification_type = 'SYSTEM'\n" ;
 
     public static final String GET_POST_NOTIFICATION_BY_USER_ID =
@@ -118,6 +122,7 @@ public class NotificationQueries {
                     "WHERE un.user_id != :userId\n" +
                     "  AND un.user_id = m.sender_id\n" +
                     "  AND n.notification_type = 'POST'\n" +
+                    "  AND un.is_read = 'false' \n"+
                     "  AND m.status = 'MATCHED';";
 
 }
