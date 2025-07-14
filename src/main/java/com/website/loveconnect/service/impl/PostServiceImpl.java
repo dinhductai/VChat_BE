@@ -32,6 +32,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Transactional
+
 public class PostServiceImpl implements PostService {
 
     PostRepository postRepository;
@@ -116,8 +117,16 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Page<PostResponse> getRandom(int page, int size) {
-        Pageable pageable = PageRequest.of(page,size);
-        return postRepository.getRandomPost(pageable).map(postMapper::toPostResponse);
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            return postRepository.getRandomPost(pageable).map(postMapper::toPostResponse);
+        }
+        catch (DataAccessException e) {
+            throw new DataAccessException("Cannot access database");
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
@@ -129,5 +138,18 @@ public class PostServiceImpl implements PostService {
             throw new DataAccessException("Cannot access database");
         }
 
+    }
+
+    @Override
+    public Page<PostResponse> getOwnPost(Integer userId, int page, int size) {
+        try{
+            Pageable pageable = PageRequest.of(page,size);
+            return postRepository.getPostsByUserId(userId, pageable).map(postMapper::toPostResponse);
+        }catch (DataAccessException e){
+            throw new DataAccessException("Cannot access database");
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
     }
 }

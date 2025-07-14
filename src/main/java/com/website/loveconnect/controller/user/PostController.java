@@ -58,6 +58,15 @@ public class PostController {
                 postService.getPostById(postId)));
     }
 
+    @Operation(summary = "Get own posts",description = "Get all post of owner")
+    @GetMapping(value = "/post/owner")
+    public ResponseEntity<ApiResponse<Page<PostResponse>>> getOwnPosts(@RequestParam(defaultValue = "0") int page,
+                                                                       @RequestParam(defaultValue = "3") int size,
+                                                                       @AuthenticationPrincipal Jwt jwt){
+        Integer userId = Integer.parseInt(jwt.getSubject());
+        return ResponseEntity.ok(new ApiResponse<>(true,"Get own posts successful",
+                postService.getOwnPost(userId,page,size)));
+    }
 
 
 
