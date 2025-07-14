@@ -12,10 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/api")
@@ -35,4 +32,11 @@ public class ReactionController {
                 .body(new ApiResponse<>(true,"Create reaction successful",null));
     }
 
+
+    @Operation(summary = "Count reaction",description = "Count reaction on a post")
+    @GetMapping(value = "/reaction/cnt")
+    public ResponseEntity<ApiResponse<Long>> countReactionOnAPost(@RequestParam Integer postId) {
+        return ResponseEntity.ok(new ApiResponse<>(true,"Count reaction successful",
+                reactionService.countReactionOnAPost(postId)));
+    }
 }
