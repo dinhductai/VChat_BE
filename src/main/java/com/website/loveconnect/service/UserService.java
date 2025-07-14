@@ -17,5 +17,6 @@ public interface UserService {
     Page<ListUserResponse> getAllUserByFilters(String status, String gender, String sortType, String keyword, int page, int size);
     Page<UserSearchResponse> getAllUserByKeyword(String keyword,int page,int size);
     Page<UserAndPhotosResponse> getAllUsersAndPhotos(int page,int size,Integer userId);
+    Page<UserFriendResponse> getAllFriendsMatched(int page,int size,Integer userId);
 
 }

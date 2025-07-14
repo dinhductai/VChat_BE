@@ -183,4 +183,34 @@ public  class UserQueries {
                     "WHERE \n" +
                     "    (m.sender_id = :userId OR m.receiver_id = :userId)\n" +
                     "    AND m.status = 'MATCHED' ";
+
+    public static final String GET_FRIENDS_MATCHED =
+            "SELECT\n" +
+                    "    friends.friend_id AS userId,\n" +
+                    "    up.full_name AS fullName,\n" +
+                    "    up.bio AS bio,\n" +
+                    "    u.phone_number AS phoneNumber,\n" +
+                    "    (\n" +
+                    "        SELECT p.photo_url\n" +
+                    "        FROM photos p\n" +
+                    "        WHERE p.user_id = friends.friend_id\n" +
+                    "        ORDER BY p.upload_date DESC\n" +
+                    "        LIMIT 1\n" +
+                    "    ) AS photoProfile\n" +
+                    "FROM\n" +
+                    "    (\n" +
+                    "        SELECT receiver_id AS friend_id, match_date\n" +
+                    "        FROM matches\n" +
+                    "        WHERE sender_id = :userId AND status = 'MATCHED'\n" +
+                    "        UNION\n" +
+                    "        SELECT sender_id AS friend_id, match_date\n" +
+                    "        FROM matches\n" +
+                    "        WHERE receiver_id = :userId AND status = 'MATCHED'\n" +
+                    "    ) AS friends\n" +
+                    "JOIN\n" +
+                    "    users AS u ON friends.friend_id = u.user_id\n" +
+                    "JOIN\n" +
+                    "    user_profiles AS up ON friends.friend_id = up.user_id\n" +
+                    "ORDER BY\n" +
+                    "    friends.match_date DESC ";
 }
