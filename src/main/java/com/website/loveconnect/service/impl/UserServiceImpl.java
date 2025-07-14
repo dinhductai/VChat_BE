@@ -348,6 +348,27 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public Page<UserFriendResponse> getFiendsFriendsMatched(int page, int size, Integer userId) {
+        try{
+            boolean userExists = userRepository.existsById(userId);
+            if(userExists) {
+                Pageable pageable = PageRequest.of(page,size);
+                return userRepository.getFriendsFriends(userId,pageable)
+                        .map(userMapper::toUserFriendResponse);
+            }
+            else{
+                throw new UserNotFoundException("User with id "+ userId + " not found");
+            }
+
+        }catch (DataAccessException da){
+            throw new DataAccessException("Cannot access database");
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     private void validateUserId(int idUser)  {
         if (idUser <= 0) {
             throw new IllegalArgumentException("User ID must be positive");
