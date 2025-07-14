@@ -15,4 +15,12 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
     @Query(value = CommentQueries.GET_COMMENTS, nativeQuery = true)
     Page<Tuple> getComments(Pageable pageable,@Param("postId") Integer postId,@Param("level") Integer level,
                             @Param("parentCommentId") Integer parentCommentId) ;
+
+    List<Comment> findByPostPostIdOrderByCommentDateAsc(Integer postId);
+
+
+    @Query(value = CommentQueries.GET_ALL_COMMENTS_FOR_TREE, nativeQuery = true)
+    List<Tuple> getAllCommentsByPostId(@Param("postId") Integer postId);
+
+
 }

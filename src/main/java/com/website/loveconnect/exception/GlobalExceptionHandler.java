@@ -355,4 +355,14 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorDetail, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(CommentNotFoundException.class)
+    public ResponseEntity<ErrorDetail> handleCommentNotFoundException(CommentNotFoundException ex, WebRequest request) {
+        ErrorDetail errorDetail = new ErrorDetail(
+                LocalDateTime.now(),
+                "Comment not found",
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetail, HttpStatus.NOT_FOUND);
+    }
 }

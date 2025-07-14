@@ -57,7 +57,7 @@ public class ReactionServiceImpl implements ReactionService {
         try{
             Post post = postRepository.findById(postId).orElseThrow(()->new PostNotFoundException("Post Not Found"));
             if(post!=null){
-                return reactionRepository.countReactionOnAPost(post.getId());
+                return reactionRepository.countReactionOnAPost(post.getPostId());
             }else return null;
         }catch (DataAccessException da){
             throw  new DataAccessException("Cannot access database");

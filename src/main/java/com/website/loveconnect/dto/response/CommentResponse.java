@@ -7,6 +7,8 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -28,4 +30,7 @@ public class CommentResponse {
     private String bio;
     private String phoneNumber;
     private String photoUrl;
+
+    // Thêm trường mới để chứa các bình luận trả lời
+    private List<CommentResponse> replies = new ArrayList<>();
 }
