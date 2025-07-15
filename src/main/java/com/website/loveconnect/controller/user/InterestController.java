@@ -13,6 +13,8 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,42 +30,40 @@ public class InterestController {
     InterestService interestService;
 
     // Request Get all Interest
-    @GetMapping("/{idUser}/interests")
-    public ResponseEntity<ApiResponse<?>> getAllInterest(@PathVariable Integer idUser) {
+    @GetMapping("/interests")
+    public ResponseEntity<ApiResponse<?>> getAllInterest(@AuthenticationPrincipal Jwt jwt) {
+            int idUser = Integer.parseInt(jwt.getSubject());
             List<Interest> interests = interestService.getAllInterest(idUser);
             return ResponseEntity.ok(new ApiResponse<>(true,"Get interests successful", interests));
     }
 
     // Request Add one Interest
-    @PostMapping("/{idUser}/interests/add")
+    @PostMapping("/interests/add")
     public ResponseEntity<ApiResponse<?>> addInterest(@Valid  @RequestBody InterestRequest interestDTO ,
-                                                      @PathVariable Integer idUser) {
+                                                      @AuthenticationPrincipal Jwt jwt) {
+            int idUser = Integer.parseInt(jwt.getSubject());
             interestService.addInterest(idUser , interestDTO);
             return ResponseEntity.ok(new ApiResponse<>(true,"Added interest successful", null));
     }
 
     // Request Update one Interest
-    @PutMapping("/{idUser}/interests/update/{idInterest}")
+    @PutMapping("/interests/update/{idInterest}")
     public ResponseEntity<ApiResponse<?>> updateInterest(@Valid @RequestBody InterestRequest interestDTO
-            , @PathVariable Integer idUser
+            , @AuthenticationPrincipal Jwt jwt
             , @PathVariable Integer idInterest) {
+        int idUser = Integer.parseInt(jwt.getSubject());
             interestService.updateInterest(idInterest, idUser, interestDTO);
             return ResponseEntity.ok(new ApiResponse<>(true,"Updated interest successful", null));
 
     }
 
     // Request Delete one Interest
-    @DeleteMapping("/{idUser}/interests/delete/{idInterest}")
-    public ResponseEntity<ApiResponse<?>> deleteInterest(@PathVariable Integer idUser ,
+    @DeleteMapping("/interests/delete/{idInterest}")
+    public ResponseEntity<ApiResponse<?>> deleteInterest(@AuthenticationPrincipal Jwt jwt,
                                                          @PathVariable Integer idInterest) {
-        try {
-            log.info("Request SỬA sở thích vào danh sách của user có ID : {}" , idUser);
+             int idUser = Integer.parseInt(jwt.getSubject());
             interestService.deleterInterest(idUser , idInterest);
             return ResponseEntity.ok(new ApiResponse<>(true,"Deleted interest successful", null));
-        }catch (Exception ex) {
-            log.error("--->>> Không thể xóa được sở thích vì : {}" , ex.getMessage() , ex.getCause());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
     }
 
     //lấy danh sách đầy đủ sở thích

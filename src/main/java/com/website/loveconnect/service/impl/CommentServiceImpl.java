@@ -184,7 +184,6 @@ public class CommentServiceImpl implements CommentService {
                 .build(); // Trả về DTO
     }
 
-    // Bỏ hàm getComments cũ
 
     // Thêm hàm mới để lấy và xây dựng cây bình luận
     public List<CommentResponse> getCommentTreeByPostId(Integer postId) {
