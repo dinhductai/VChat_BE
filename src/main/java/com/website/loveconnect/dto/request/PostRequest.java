@@ -1,5 +1,7 @@
 package com.website.loveconnect.dto.request;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,9 +17,8 @@ public class PostRequest {
     private List<MultipartFile> listImage;
     private List<MultipartFile> listVideo;
     private String content;
-    @NotBlank(message = "Email cannot be blank")
     private String userEmail;
-    @NotBlank(message = "Post can be public or private")
+    @NonNull
     private Boolean isPublic;
 
 }

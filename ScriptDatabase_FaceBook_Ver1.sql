@@ -155,16 +155,19 @@ CREATE TABLE messages (
     FOREIGN KEY (receiver_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
+-- drop table notifications
 -- ====================================
 -- 12. Bảng NOTIFICATIONS: Lưu thông báo
 -- ====================================
 CREATE TABLE notifications (
     notification_id INT AUTO_INCREMENT PRIMARY KEY,
-    notification_type ENUM('MATCH', 'MESSAGE', 'LIKE', 'SYSTEM') NOT NULL,
+    notification_type ENUM('MATCH', 'MESSAGE', 'LIKE','POST', 'SYSTEM') NOT NULL,
     content TEXT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
-
+ALTER TABLE notifications
+ADD COLUMN sender_id INT NULL AFTER content,
+ADD FOREIGN KEY (sender_id) REFERENCES users(user_id);
 -- ====================================
 -- 13. Bảng USER_NOTIFICATIONS: Liên kết users ↔ notifications
 -- ====================================

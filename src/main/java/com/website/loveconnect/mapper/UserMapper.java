@@ -151,4 +151,14 @@ public class UserMapper {
                     : Collections.emptyList())
                 .build();
     }
+
+    public UserFriendResponse toUserFriendResponse(Tuple tuple){
+        return UserFriendResponse.builder()
+                .userId(tuple.get("userId", Integer.class))
+                .fullName(tuple.get("fullName", String.class))
+                .bio(tuple.get("bio", String.class))
+                .phoneNumber(tuple.get("phoneNumber", String.class))
+                .photoProfile(tuple.get("photoProfile", String.class))
+                .build();
+    }
 }

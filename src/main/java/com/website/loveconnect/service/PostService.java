@@ -11,4 +11,5 @@ public interface PostService {
     PostResponse savePost(PostRequest postRequest);
     Page<PostResponse> getRandom(int page,int size);
     PostResponse getPostById(Integer postId);
+    Page<PostResponse> getOwnPost(Integer userId,int page,int size);
 }

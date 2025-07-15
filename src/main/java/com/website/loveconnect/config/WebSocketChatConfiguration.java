@@ -11,14 +11,16 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebSocketChatConfiguration implements WebSocketMessageBrokerConfigurer {
 
     @Override
-    public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.setApplicationDestinationPrefixes("/app");
-        registry.enableSimpleBroker("/topic");
-        registry.setUserDestinationPrefix("/user");
+    public void configureMessageBroker(MessageBrokerRegistry config) {
+        config.enableSimpleBroker("/topic", "/queue");
+        config.setApplicationDestinationPrefixes("/app");
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/love-connect").setAllowedOriginPatterns("*").withSockJS();
+        // SỬA ĐỔI QUAN TRỌNG Ở ĐÂY
+        registry.addEndpoint("/ws")
+                .setAllowedOriginPatterns("*"); // Cho phép kết nối từ mọi nguồn gốc (origin)
     }
+
 }

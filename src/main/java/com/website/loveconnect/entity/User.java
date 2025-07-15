@@ -134,5 +134,9 @@ public class User  {
     @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<Reaction> userReactions = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "sender", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    private List<Notification> userNotification = new ArrayList<>();
 }
 

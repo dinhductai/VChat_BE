@@ -2,6 +2,7 @@ package com.website.loveconnect.controller.user;
 
 import com.website.loveconnect.dto.request.UserCreateRequest;
 import com.website.loveconnect.dto.response.ApiResponse;
+import com.website.loveconnect.dto.response.UserFriendResponse;
 import com.website.loveconnect.dto.response.UserSearchResponse;
 import com.website.loveconnect.service.LikeService;
 import com.website.loveconnect.service.PhotoService;
@@ -14,6 +15,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -44,5 +47,25 @@ public class UserController {
             @RequestParam(defaultValue = "10") int size){
         return ResponseEntity.ok(new ApiResponse<>(true,"Search users successful",
                 userService.getAllUserByKeyword(keyword,page,size)));
+    }
+
+    @Operation(summary = "Get friends",description = "Get all friend matched with owner")
+    @GetMapping(value = "/user/friends")
+    public ResponseEntity<ApiResponse<Page<UserFriendResponse>>> getFriends(@AuthenticationPrincipal Jwt jwt,
+                                                                            @RequestParam(defaultValue = "0") int page,
+                                                                            @RequestParam(defaultValue = "10") int size){
+        Integer userId = Integer.parseInt(jwt.getSubject());
+        return ResponseEntity.ok(new ApiResponse<>(true,"Get friends successful",
+                userService.getAllFriendsMatched(page,size,userId)));
+    }
+
+    @Operation(summary = "Get friends friends",description = "Get all friend matched with owner friends")
+    @GetMapping(value = "/user/friends-friends")
+    public ResponseEntity<ApiResponse<Page<UserFriendResponse>>> getFriendsFriends(@AuthenticationPrincipal Jwt jwt,
+                                                                            @RequestParam(defaultValue = "0") int page,
+                                                                            @RequestParam(defaultValue = "10") int size){
+        Integer userId = Integer.parseInt(jwt.getSubject());
+        return ResponseEntity.ok(new ApiResponse<>(true,"Get friends friends successful",
+                userService.getFiendsFriendsMatched(page,size,userId)));
     }
 }

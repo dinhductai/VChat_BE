@@ -32,6 +32,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Transactional
+
 public class PostServiceImpl implements PostService {
 
     PostRepository postRepository;
@@ -52,17 +53,20 @@ public class PostServiceImpl implements PostService {
             if (postRequest == null || StringUtils.isEmpty(postRequest.getUserEmail())) {
                 throw new IllegalArgumentException("PostRequest or userEmail cannot be null");
             }
-
+//            boolean isPublic = true;
+//            if(postRequest.getIsPublic() == 0){
+//                isPublic = false;
+//            }
             // Tạo và lưu Post trước
             Post post = Post.builder()
                     .content(postRequest.getContent())
                     .uploadDate(new Timestamp(System.currentTimeMillis()))
-                    .isPublic(true)
+                    .isPublic(postRequest.getIsPublic())
                     .isApproved(true)
                     .status(PostStatus.ACTIVE)
                     .build();
             post = postRepository.save(post); // Lưu Post để có ID
-            log.info("Saved post with ID: {}", post.getId());
+            log.info("Saved post with ID: {}", post.getPostId());
 
             // Lưu UserPost
             User user = userRepository.getUserByEmail(postRequest.getUserEmail())
@@ -75,7 +79,7 @@ public class PostServiceImpl implements PostService {
                     .save(false)
                     .build();
             userPostRepository.save(userPost);
-            log.info("Saved UserPost for user: {} and post ID: {}", postRequest.getUserEmail(), post.getId());
+            log.info("Saved UserPost for user: {} and post ID: {}", postRequest.getUserEmail(), post.getPostId());
 
             // Xử lý ảnh
             List<MultipartFile> imageFiles = postRequest.getListImage();
@@ -83,9 +87,9 @@ public class PostServiceImpl implements PostService {
                 for (MultipartFile photo : imageFiles) {
                     try {
                         photoService.uploadPhotoForPost(photo, postRequest.getUserEmail(), post);
-                        log.info("Uploaded photo for post ID: {}", post.getId());
+                        log.info("Uploaded photo for post ID: {}", post.getPostId());
                     } catch (Exception e) {
-                        log.error("Failed to upload photo for post ID: {}", post.getId(), e);
+                        log.error("Failed to upload photo for post ID: {}", post.getPostId(), e);
                         throw new RuntimeException("Failed to upload photo", e);
                     }
                 }
@@ -97,14 +101,14 @@ public class PostServiceImpl implements PostService {
                 for (MultipartFile video : videoFiles) {
                     try {
                         videoService.uploadVideoForPost(video, postRequest.getUserEmail(), post);
-                        log.info("Uploaded video for post ID: {}", post.getId());
+                        log.info("Uploaded video for post ID: {}", post.getPostId());
                     } catch (Exception e) {
-                        log.error("Failed to upload video for post ID: {}", post.getId(), e);
+                        log.error("Failed to upload video for post ID: {}", post.getPostId(), e);
                         throw new RuntimeException("Failed to upload video", e);
                     }
                 }
             }
-            return postMapper.toPostResponse(postRepository.getOnePostByPostId(post.getId()));
+            return postMapper.toPostResponse(postRepository.getOnePostByPostId(post.getPostId()));
         } catch (Exception e) {
             log.error("Failed to save post for user: {}", postRequest.getUserEmail(), e);
             throw new RuntimeException("Failed to save post", e);
@@ -113,8 +117,16 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Page<PostResponse> getRandom(int page, int size) {
-        Pageable pageable = PageRequest.of(page,size);
-        return postRepository.getRandomPost(pageable).map(postMapper::toPostResponse);
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            return postRepository.getRandomPost(pageable).map(postMapper::toPostResponse);
+        }
+        catch (DataAccessException e) {
+            throw new DataAccessException("Cannot access database");
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
@@ -126,5 +138,18 @@ public class PostServiceImpl implements PostService {
             throw new DataAccessException("Cannot access database");
         }
 
+    }
+
+    @Override
+    public Page<PostResponse> getOwnPost(Integer userId, int page, int size) {
+        try{
+            Pageable pageable = PageRequest.of(page,size);
+            return postRepository.getPostsByUserId(userId, pageable).map(postMapper::toPostResponse);
+        }catch (DataAccessException e){
+            throw new DataAccessException("Cannot access database");
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
     }
 }

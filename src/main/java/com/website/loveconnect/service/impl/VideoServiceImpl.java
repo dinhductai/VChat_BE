@@ -46,7 +46,7 @@ public class VideoServiceImpl implements VideoService {
         if (StringUtils.isEmpty(userEmail)) {
             throw new IllegalArgumentException("User email cannot be blank");
         }
-        if (post != null && post.getId() == null) {
+        if (post != null && post.getPostId() == null) {
             log.error("Post has null ID for user: {}", userEmail);
             throw new IllegalArgumentException("Post must be saved before associating with a video");
         }
@@ -85,7 +85,7 @@ public class VideoServiceImpl implements VideoService {
                     .post(post)
                     .build();
             postVideoRepository.save(postVideo);
-            log.info("Saved PostVideo for post ID: {}", post.getId());
+            log.info("Saved PostVideo for post ID: {}", post.getPostId());
         }
 
         return videoUrl;

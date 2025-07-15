@@ -3,10 +3,7 @@ package com.website.loveconnect.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.website.loveconnect.entity.entityid.UserNotificationId;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Table(name = "user_notifications")
 @Entity
@@ -15,6 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @IdClass(UserNotificationId.class)
+@Builder
 public class UserNotification {
 
     @Id
@@ -28,6 +26,10 @@ public class UserNotification {
     @JsonIgnore
     @JoinColumn(name = "notification_id",nullable = false)
     private Notification notification;
+
+
+    @Column(name = "is_read")
+    private Boolean isRead;
 
 
 }

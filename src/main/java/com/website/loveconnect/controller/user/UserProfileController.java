@@ -65,4 +65,7 @@ public class UserProfileController {
         return ResponseEntity.ok(new ApiResponse<>(true,"Get full name and profile photo successful",
                 userProfileService.getUserNameAndProfile(userId)));
     }
+
+
+
 }

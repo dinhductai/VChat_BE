@@ -3,10 +3,7 @@ package com.website.loveconnect.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.website.loveconnect.enumpackage.NotificationType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -18,6 +15,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,4 +35,10 @@ public class Notification {
     @JsonIgnore
     @OneToMany(mappedBy = "notification" ,fetch = FetchType.LAZY , cascade = CascadeType.ALL)
     private List<UserNotification> userNotifications = new ArrayList<>();
+
+
+    @ManyToOne
+    @JsonIgnore
+    @JoinColumn(name = "sender_id",nullable = false)
+    private User sender;
 }
