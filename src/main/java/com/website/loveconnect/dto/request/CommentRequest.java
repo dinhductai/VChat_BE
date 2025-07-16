@@ -15,6 +15,7 @@ import java.sql.Timestamp;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CommentRequest {
+    private String token;
     private Integer commentId;
     @NonNull
     private Integer postId;

@@ -10,6 +10,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
@@ -19,13 +20,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CommentSocketController {
 
-    CommentService commentService;
-    SimpMessagingTemplate messagingTemplate;
-
+    private final CommentService commentService;
+    private final SimpMessagingTemplate messagingTemplate;
+    private final JwtDecoder jwtDecoder;
     @MessageMapping("/comments.add/{postId}")
     public void addComment(@DestinationVariable Integer postId,
-                           @Payload CommentRequest request,
-                           @AuthenticationPrincipal Jwt jwt) {
+                           @Payload CommentRequest request) {
+        Jwt jwt = jwtDecoder.decode(request.getToken());
         Integer userId = Integer.parseInt(jwt.getSubject());
         CommentResponse newComment;
 
@@ -41,15 +42,15 @@ public class CommentSocketController {
 
 
     @MessageMapping("/comments.fetchAll/{postId}")
-    public void fetchAllComments(@DestinationVariable Integer postId,
-                                 @AuthenticationPrincipal Jwt jwt) {
+    public void fetchAllComments(@DestinationVariable Integer postId, Principal principal) {
+        // Gọi service để lấy toàn bộ cây bình luận
         List<CommentResponse> commentTree = commentService.getCommentTreeByPostId(postId);
 
-        // Gửi cây bình luận về hàng đợi riêng của người dùng
+        // Gửi cây bình luận về hàng đợi (queue) riêng của người dùng
         messagingTemplate.convertAndSendToUser(
-                jwt.getSubject(),
-                "/queue/comments",
-                commentTree
+                principal.getName(),      // Tên định danh của user, Spring sẽ tự tìm đúng session
+                "/queue/comments",      // Đích đến riêng tư
+                commentTree               // Dữ liệu cần gửi
         );
     }
 }

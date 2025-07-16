@@ -148,9 +148,13 @@ public class CommentServiceImpl implements CommentService {
                 .isDeleted(savedComment.getIsDeleted())
                 .isEdited(savedComment.getIsEdited())
                 .level(savedComment.getLevel())
-                .parentCommentId(savedComment.getParentComment().getCommentId())
-                .postId(commentRequest.getPostId())
+                .parentCommentId(
+                        savedComment.getParentComment() != null
+                                ? savedComment.getParentComment().getCommentId()
+                                : null
+                )                .postId(commentRequest.getPostId())
                 .userId(userId)
+
                 .build();
     }
 

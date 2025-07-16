@@ -120,7 +120,7 @@ public class SecurityConfig {
                 "/swagger-ui/**"
         };
         registry.requestMatchers(apiDocumentEndpoint).permitAll();
-
+        registry.requestMatchers("/ws/**").permitAll();
         //api không cần đăng nhập
         registry.requestMatchers(HttpMethod.POST, publicPostEndpoint).permitAll();
         //api các role dùng chung
