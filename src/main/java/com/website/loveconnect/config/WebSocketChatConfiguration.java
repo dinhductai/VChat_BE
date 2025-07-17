@@ -20,7 +20,8 @@ public class WebSocketChatConfiguration implements WebSocketMessageBrokerConfigu
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // SỬA ĐỔI QUAN TRỌNG Ở ĐÂY
         registry.addEndpoint("/ws")
-                .setAllowedOriginPatterns("*"); // Cho phép kết nối từ mọi nguồn gốc (origin)
+                .setAllowedOriginPatterns("*")
+                .withSockJS(); // Cho phép kết nối từ mọi nguồn gốc (origin)
     }
 
 }
