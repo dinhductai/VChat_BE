@@ -1,4 +1,4 @@
-package com.website.loveconnect.exception.exceptionmodel;
+package com.website.loveconnect.dto.response;
 
 
 import lombok.*;
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ErrorDetail {
+public class ErrorDetailResponse {
     private LocalDateTime timestamp;
     private String message;
     private String details;
