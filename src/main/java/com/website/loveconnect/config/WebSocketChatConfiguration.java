@@ -24,4 +24,6 @@ public class WebSocketChatConfiguration implements WebSocketMessageBrokerConfigu
                 .withSockJS(); // Cho phép kết nối từ mọi nguồn gốc (origin)
     }
 
+
+
 }

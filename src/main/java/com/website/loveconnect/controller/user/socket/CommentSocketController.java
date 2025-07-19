@@ -26,6 +26,9 @@ public class CommentSocketController {
     @MessageMapping("/comments.add/{postId}")
     public void addComment(@DestinationVariable Integer postId,
                            @Payload CommentRequest request) {
+
+        // Lấy userId từ Principal đã được xác thực an toàn
+//        Integer userId = Integer.parseInt(principal.getName());
         Jwt jwt = jwtDecoder.decode(request.getToken());
         Integer userId = Integer.parseInt(jwt.getSubject());
         CommentResponse newComment;
@@ -36,7 +39,6 @@ public class CommentSocketController {
             newComment = commentService.repComment(request, userId);
         }
 
-        // Broadcast comment mới đến topic công khai của bài viết
         messagingTemplate.convertAndSend("/topic/posts/" + postId + "/comments", newComment);
     }
 

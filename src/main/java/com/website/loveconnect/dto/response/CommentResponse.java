@@ -32,5 +32,6 @@ public class CommentResponse {
     private String photoUrl;
 
     // Thêm trường mới để chứa các bình luận trả lời
+    @Builder.Default
     private List<CommentResponse> replies = new ArrayList<>();
 }
