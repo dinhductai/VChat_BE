@@ -125,4 +125,13 @@ public class PhotoController {
         return ResponseEntity.ok(new ApiResponse<>(true,"Get page user and photos successful",
                 userService.getAllUsersAndPhotos(page,size,userId)));
     }
+
+    //lấy toàn bộ story
+    @Operation(summary = "Get owner story", description = "Get owner stories , at least a day")
+    @GetMapping(value = "/story/owner")
+    public ResponseEntity<ApiResponse<List<PhotoStoryResponse>>> getOwnerStories(@AuthenticationPrincipal Jwt jwt){
+        Integer userId = Integer.parseInt(jwt.getSubject());
+        return ResponseEntity.ok(new ApiResponse<>(true,"Get owner story successful",
+                imageService.getOwnerStories(userId)));
+    }
 }

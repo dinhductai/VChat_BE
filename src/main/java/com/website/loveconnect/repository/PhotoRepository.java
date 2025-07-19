@@ -28,4 +28,7 @@ public interface PhotoRepository extends JpaRepository<Photo, Integer> {
     @Query(value = PhotoQueries.GET_ALL_STORY_PHOTOS,nativeQuery = true)
     Page<Tuple> findAllStoryPhotos(@Param("userId") Integer userId,Pageable pageable);
 
+    @Query(value = PhotoQueries.GET_OWNER_STORIES,nativeQuery = true)
+    List<Tuple> findOwnerStories(@Param("userId") Integer userId);
+
 }

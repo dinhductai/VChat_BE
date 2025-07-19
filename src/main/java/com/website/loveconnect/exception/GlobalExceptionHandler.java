@@ -1,7 +1,7 @@
 package com.website.loveconnect.exception;
 
 import com.nimbusds.jose.JOSEException;
-import com.website.loveconnect.exception.exceptionmodel.ErrorDetail;
+import com.website.loveconnect.dto.response.ErrorDetailResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -15,7 +15,6 @@ import org.springframework.web.context.request.WebRequest;
 import javax.naming.AuthenticationException;
 import java.text.ParseException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -24,8 +23,8 @@ public class GlobalExceptionHandler {
 
     // Xử lý mọi ngoại lệ chung
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorDetail> handleAllExceptions(Exception ex, WebRequest request) {
-        ErrorDetail errorDetail = new ErrorDetail(
+    public ResponseEntity<ErrorDetailResponse> handleAllExceptions(Exception ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
                 LocalDateTime.now(),
                 "An unexpected error occurred",
                 request.getDescription(false)
@@ -35,8 +34,8 @@ public class GlobalExceptionHandler {
 
     // Xử lý lỗi quyền truy cập
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ErrorDetail> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
-        ErrorDetail errorDetail = new ErrorDetail(
+    public ResponseEntity<ErrorDetailResponse> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
                 LocalDateTime.now(),
                 "Access denied",
                 request.getDescription(false)
@@ -46,8 +45,8 @@ public class GlobalExceptionHandler {
 
     // Xử lý lỗi đọc HTTP message (sửa tên lớp)
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorDetail> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex, WebRequest request) {
-        ErrorDetail errorDetail = new ErrorDetail(
+    public ResponseEntity<ErrorDetailResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
                 LocalDateTime.now(),
                 "Invalid request body",
                 request.getDescription(false)
@@ -57,8 +56,8 @@ public class GlobalExceptionHandler {
 
     // Xử lý lỗi không tìm thấy người dùng
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ErrorDetail> handleUserNotFoundException(UserNotFoundException ex, WebRequest request) {
-        ErrorDetail errorDetail = new ErrorDetail(
+    public ResponseEntity<ErrorDetailResponse> handleUserNotFoundException(UserNotFoundException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
                 LocalDateTime.now(),
                 ex.getMessage(), // Giữ lỗi cụ thể từ exception
                 request.getDescription(false)
@@ -70,8 +69,8 @@ public class GlobalExceptionHandler {
 
     // Xử lý lỗi truy cập dữ liệu
     @ExceptionHandler(com.website.loveconnect.exception.DataAccessException.class)
-    public ResponseEntity<ErrorDetail> handleDataAccessException(DataAccessException ex, WebRequest request) {
-        ErrorDetail errorDetail = new ErrorDetail(
+    public ResponseEntity<ErrorDetailResponse> handleDataAccessException(DataAccessException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
                 LocalDateTime.now(),
                 "Database error occurred: " + ex.getMessage(),
                 request.getDescription(false)
@@ -81,8 +80,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorDetail> handleIllegalArgumentException(IllegalArgumentException ex, WebRequest request) {
-        ErrorDetail errorDetail = new ErrorDetail(
+    public ResponseEntity<ErrorDetailResponse> handleIllegalArgumentException(IllegalArgumentException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
                 LocalDateTime.now(),
                 ex.getMessage(),
                 request.getDescription(false)
@@ -91,8 +90,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(EmailAlreadyInUseException.class)
-    public ResponseEntity<ErrorDetail> handleEmailAlreadyInUseException(EmailAlreadyInUseException ex, WebRequest request) {
-        ErrorDetail errorDetail = new ErrorDetail(
+    public ResponseEntity<ErrorDetailResponse> handleEmailAlreadyInUseException(EmailAlreadyInUseException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
                 LocalDateTime.now(),
                 ex.getMessage(),
                 request.getDescription(false)
@@ -101,9 +100,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<ErrorDetail> handleAuthenticationException(AuthenticationException ex, WebRequest request) {
+    public ResponseEntity<ErrorDetailResponse> handleAuthenticationException(AuthenticationException ex, WebRequest request) {
         String message;
-        ErrorDetail errorDetail = new ErrorDetail(
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
                 LocalDateTime.now(),
                 "Incorrect email or password",
                 request.getDescription(false)
@@ -113,8 +112,8 @@ public class GlobalExceptionHandler {
 
     // Xử lý sai email/password
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ErrorDetail> handleBadCredentialsException(BadCredentialsException ex, WebRequest request) {
-        ErrorDetail errorDetail = new ErrorDetail(
+    public ResponseEntity<ErrorDetailResponse> handleBadCredentialsException(BadCredentialsException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
                 LocalDateTime.now(),
                 "Incorrect email or password",
                 request.getDescription(false)
@@ -124,8 +123,8 @@ public class GlobalExceptionHandler {
 
     // Xử lý user không tồn tại
     @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<ErrorDetail> handleUsernameNotFoundException(UsernameNotFoundException ex, WebRequest request) {
-        ErrorDetail errorDetail = new ErrorDetail(
+    public ResponseEntity<ErrorDetailResponse> handleUsernameNotFoundException(UsernameNotFoundException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
                 LocalDateTime.now(),
                 "User not found",
                 request.getDescription(false)
@@ -135,8 +134,8 @@ public class GlobalExceptionHandler {
 
     // Xử lý token hết hạn (nếu dùng JWT)
     @ExceptionHandler(ExpiredJwtException.class)
-    public ResponseEntity<ErrorDetail> handleExpiredJwtException(ExpiredJwtException ex, WebRequest request) {
-        ErrorDetail errorDetail = new ErrorDetail(
+    public ResponseEntity<ErrorDetailResponse> handleExpiredJwtException(ExpiredJwtException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
                 LocalDateTime.now(),
                 "Token has expired",
                 request.getDescription(false)
@@ -146,8 +145,8 @@ public class GlobalExceptionHandler {
 
     // Xử lý các AuthenticationException chung
     @ExceptionHandler(GenericAuthenticationException.class)
-    public ResponseEntity<ErrorDetail> handleGenericAuthenticationException(GenericAuthenticationException ex, WebRequest request) {
-        ErrorDetail errorDetail = new ErrorDetail(
+    public ResponseEntity<ErrorDetailResponse> handleGenericAuthenticationException(GenericAuthenticationException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
                 LocalDateTime.now(),
                 "Authentication failed: " + ex.getMessage(),
                 request.getDescription(false)
@@ -158,8 +157,8 @@ public class GlobalExceptionHandler {
 
     // Xử lý lỗi JOSEException (liên quan đến JWT)
     @ExceptionHandler(JOSEException.class)
-    public ResponseEntity<ErrorDetail> handleJoseException(com.nimbusds.jose.JOSEException ex, WebRequest request) {
-        ErrorDetail errorDetail = new ErrorDetail(
+    public ResponseEntity<ErrorDetailResponse> handleJoseException(com.nimbusds.jose.JOSEException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
                 LocalDateTime.now(),
                 "Error processing JWT: " + ex.getMessage(),
                 request.getDescription(false)
@@ -169,8 +168,8 @@ public class GlobalExceptionHandler {
 
     // Xử lý lỗi ParseException (liên quan đến parsing JWT)
     @ExceptionHandler(ParseException.class)
-    public ResponseEntity<ErrorDetail> handleParseException(ParseException ex, WebRequest request) {
-        ErrorDetail errorDetail = new ErrorDetail(
+    public ResponseEntity<ErrorDetailResponse> handleParseException(ParseException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
                 LocalDateTime.now(),
                 "Invalid token format: " + ex.getMessage(),
                 request.getDescription(false)
@@ -180,8 +179,8 @@ public class GlobalExceptionHandler {
 
     // Xử lý AuthenticationException riêng cho introspect
     @ExceptionHandler(IntrospectAuthenticationException.class)
-    public ResponseEntity<ErrorDetail> handleIntrospectAuthenticationException(IntrospectAuthenticationException ex, WebRequest request) {
-        ErrorDetail errorDetail = new ErrorDetail(
+    public ResponseEntity<ErrorDetailResponse> handleIntrospectAuthenticationException(IntrospectAuthenticationException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
                 LocalDateTime.now(),
                 "Token validation failed: " + ex.getMessage(),
                 request.getDescription(false)
@@ -191,8 +190,8 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(PermissionAlreadyExistException.class)
-    public ResponseEntity<ErrorDetail> handlePermissionAlreadyExistException(PermissionAlreadyExistException ex, WebRequest request) {
-        ErrorDetail errorDetail = new ErrorDetail(
+    public ResponseEntity<ErrorDetailResponse> handlePermissionAlreadyExistException(PermissionAlreadyExistException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
                 LocalDateTime.now(),
                 ex.getMessage(),
                 request.getDescription(false)
@@ -201,8 +200,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(PermissionNotFoundException.class)
-    public ResponseEntity<ErrorDetail> handlePermissionNotFoundException(PermissionNotFoundException ex, WebRequest request) {
-        ErrorDetail errorDetail = new ErrorDetail(
+    public ResponseEntity<ErrorDetailResponse> handlePermissionNotFoundException(PermissionNotFoundException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
                 LocalDateTime.now(),
                 "Permission does not exist", // Giữ lỗi cụ thể từ exception
                 request.getDescription(false)
@@ -211,8 +210,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ResourceEmptyException.class)
-    public ResponseEntity<ErrorDetail> handleResourceEmptyException(ResourceEmptyException ex, WebRequest request) {
-        ErrorDetail errorDetail = new ErrorDetail(
+    public ResponseEntity<ErrorDetailResponse> handleResourceEmptyException(ResourceEmptyException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
                 LocalDateTime.now(),
                 "Result is null", // Giữ lỗi cụ thể từ exception
                 request.getDescription(false)
@@ -221,8 +220,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(RoleNotFoundException.class)
-    public ResponseEntity<ErrorDetail> handleRoleNotFoundException(RoleNotFoundException ex, WebRequest request) {
-        ErrorDetail errorDetail = new ErrorDetail(
+    public ResponseEntity<ErrorDetailResponse> handleRoleNotFoundException(RoleNotFoundException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
                 LocalDateTime.now(),
                 ex.getMessage(), // Giữ lỗi cụ thể từ exception
                 request.getDescription(false)
@@ -231,8 +230,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(PasswordIncorrectException.class)
-    public ResponseEntity<ErrorDetail> handlePasswordIncorrectException(PasswordIncorrectException ex, WebRequest request) {
-        ErrorDetail errorDetail = new ErrorDetail(
+    public ResponseEntity<ErrorDetailResponse> handlePasswordIncorrectException(PasswordIncorrectException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
                 LocalDateTime.now(),
                 ex.getMessage(), // Giữ lỗi cụ thể từ exception
                 request.getDescription(false)
@@ -241,8 +240,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InterestNotFoundException.class)
-    public ResponseEntity<ErrorDetail> handleInterestNotFoundException(InterestNotFoundException ex, WebRequest request) {
-        ErrorDetail errorDetail = new ErrorDetail(
+    public ResponseEntity<ErrorDetailResponse> handleInterestNotFoundException(InterestNotFoundException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
                 LocalDateTime.now(),
                 ex.getMessage(), // Giữ lỗi cụ thể từ exception
                 request.getDescription(false)
@@ -251,8 +250,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(TokenInvalid.class)
-    public ResponseEntity<ErrorDetail> handleTokenInvalid(TokenInvalid ex, WebRequest request) {
-        ErrorDetail errorDetail = new ErrorDetail(
+    public ResponseEntity<ErrorDetailResponse> handleTokenInvalid(TokenInvalid ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
                 LocalDateTime.now(),
                 "Token invalid",
                 request.getDescription(false)
@@ -261,8 +260,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(LikeDuplicatedException.class)
-    public ResponseEntity<ErrorDetail> handleLikeDuplicatedException(LikeDuplicatedException ex, WebRequest request) {
-        ErrorDetail errorDetail = new ErrorDetail(
+    public ResponseEntity<ErrorDetailResponse> handleLikeDuplicatedException(LikeDuplicatedException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
                 LocalDateTime.now(),
                 "Like already exists",
                 request.getDescription(false)
@@ -271,8 +270,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ReportTypeConflictedException.class)
-    public ResponseEntity<ErrorDetail> handleReportTypeDuplicatedException(ReportTypeConflictedException ex, WebRequest request) {
-        ErrorDetail errorDetail = new ErrorDetail(
+    public ResponseEntity<ErrorDetailResponse> handleReportTypeDuplicatedException(ReportTypeConflictedException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
                 LocalDateTime.now(),
                 "Report type already exists",
                 request.getDescription(false)
@@ -280,8 +279,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorDetail, HttpStatus.CONFLICT);
     }
     @ExceptionHandler(ReportTypeNotFoundException.class)
-    public ResponseEntity<ErrorDetail> handleReportTypeNotFoundException(ReportTypeNotFoundException ex, WebRequest request) {
-        ErrorDetail errorDetail = new ErrorDetail(
+    public ResponseEntity<ErrorDetailResponse> handleReportTypeNotFoundException(ReportTypeNotFoundException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
                 LocalDateTime.now(),
                 "Report type not found",
                 request.getDescription(false)
@@ -290,8 +289,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ReportConflictedException.class)
-    public ResponseEntity<ErrorDetail> handleReportConflictException(ReportConflictedException ex, WebRequest request) {
-        ErrorDetail errorDetail = new ErrorDetail(
+    public ResponseEntity<ErrorDetailResponse> handleReportConflictException(ReportConflictedException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
                 LocalDateTime.now(),
                 "Report already exists",
                 request.getDescription(false)
@@ -300,8 +299,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ReportNotFoundException.class)
-    public ResponseEntity<ErrorDetail> handleReportNotFoundException(ReportNotFoundException ex, WebRequest request) {
-        ErrorDetail errorDetail = new ErrorDetail(
+    public ResponseEntity<ErrorDetailResponse> handleReportNotFoundException(ReportNotFoundException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
                 LocalDateTime.now(),
                 "Report not found",
                 request.getDescription(false)
@@ -319,8 +318,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(EmotionNotFoundException.class)
-    public ResponseEntity<ErrorDetail> handleEmotionNotFoundException(EmotionNotFoundException ex, WebRequest request) {
-        ErrorDetail errorDetail = new ErrorDetail(
+    public ResponseEntity<ErrorDetailResponse> handleEmotionNotFoundException(EmotionNotFoundException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
                 LocalDateTime.now(),
                 "Emotion not found",
                 request.getDescription(false)
@@ -328,8 +327,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorDetail, HttpStatus.NOT_FOUND);
     }
     @ExceptionHandler(MatchNotFoundException.class)
-    public ResponseEntity<ErrorDetail> handleMatchNotFoundException(MatchNotFoundException ex, WebRequest request) {
-        ErrorDetail errorDetail = new ErrorDetail(
+    public ResponseEntity<ErrorDetailResponse> handleMatchNotFoundException(MatchNotFoundException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
                 LocalDateTime.now(),
                 "Match not found",
                 request.getDescription(false)
@@ -338,8 +337,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(PostNotFoundException.class)
-    public ResponseEntity<ErrorDetail> handlePostNotFoundException(PostNotFoundException ex, WebRequest request) {
-        ErrorDetail errorDetail = new ErrorDetail(
+    public ResponseEntity<ErrorDetailResponse> handlePostNotFoundException(PostNotFoundException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
                 LocalDateTime.now(),
                 "Post not found",
                 request.getDescription(false)
@@ -347,8 +346,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorDetail, HttpStatus.NOT_FOUND);
     }
     @ExceptionHandler(NotificationNotFoundException.class)
-    public ResponseEntity<ErrorDetail> handleNotificationNotFoundException(NotificationNotFoundException ex, WebRequest request) {
-        ErrorDetail errorDetail = new ErrorDetail(
+    public ResponseEntity<ErrorDetailResponse> handleNotificationNotFoundException(NotificationNotFoundException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
                 LocalDateTime.now(),
                 "Notification not found",
                 request.getDescription(false)
@@ -357,8 +356,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(CommentNotFoundException.class)
-    public ResponseEntity<ErrorDetail> handleCommentNotFoundException(CommentNotFoundException ex, WebRequest request) {
-        ErrorDetail errorDetail = new ErrorDetail(
+    public ResponseEntity<ErrorDetailResponse> handleCommentNotFoundException(CommentNotFoundException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
                 LocalDateTime.now(),
                 "Comment not found",
                 request.getDescription(false)

@@ -7,6 +7,7 @@ import com.website.loveconnect.entity.Photo;
 import com.website.loveconnect.entity.Post;
 import com.website.loveconnect.entity.PostPhoto;
 import com.website.loveconnect.entity.User;
+import com.website.loveconnect.exception.DataAccessException;
 import com.website.loveconnect.exception.UserNotFoundException;
 import com.website.loveconnect.mapper.PhotoMapper;
 import com.website.loveconnect.repository.PhotoRepository;
@@ -19,7 +20,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -83,7 +83,7 @@ public String saveImage(MultipartFile file, String userEmail, boolean isProfileP
         log.info("Saved image profile successfully");
     } catch (DataAccessException dae) {
         log.error("Failed to save image profile", dae.getMessage());
-        throw new DataAccessException("Failed to save photo to database", dae) {};
+        throw new DataAccessException("Failed to save photo to database") {};
     }
 
     // Sau đó lưu PostPhoto nếu post không null
@@ -167,13 +167,28 @@ public String saveImage(MultipartFile file, String userEmail, boolean isProfileP
 
     @Override
     public Page<PhotoStoryResponse> photoStories(Integer userId, int page, int size) {
-        Pageable pageable = PageRequest.of(page,size);
-        return photoRepository.findAllStoryPhotos(userId,pageable).map(photoMapper::toPhotoStoryResponseList);
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            return photoRepository.findAllStoryPhotos(userId, pageable).map(photoMapper::toPhotoStoryResponseList);
+        }catch (DataAccessException da){
+            log.error(da.getMessage());
+            throw new DataAccessException("Cannot access data");
+        }
     }
 
     @Override
     public String uploadStory(MultipartFile file, String userEmail) throws IOException {
         return saveImage(file,userEmail,false,null,true);
+    }
+
+    @Override
+    public List<PhotoStoryResponse> getOwnerStories(Integer userId) {
+        try{
+            return photoRepository.findOwnerStories(userId).stream().map(photoMapper::toPhotoStoryResponseList).toList();
+        }catch (DataAccessException da){
+            log.error(da.getMessage());
+            throw new DataAccessException("Cannot access data");
+        }
     }
 
     private String extractPublicId(String url) {

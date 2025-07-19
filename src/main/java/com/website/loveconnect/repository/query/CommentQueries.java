@@ -53,7 +53,7 @@ public class CommentQueries {
             "     FROM photos p \n" +
             "     WHERE p.user_id = c.user_id \n" +
             "     ORDER BY p.upload_date DESC \n" +
-            "     LIMIT 1) AS photoUrl\n" + // Sửa lại tên alias cho khớp DTO
+            "     LIMIT 1) AS photoUrl\n" +
             "FROM\n" +
             "    comments c\n" +
             "JOIN\n" +
@@ -62,7 +62,7 @@ public class CommentQueries {
             "    user_profiles up ON u.user_id = up.user_id\n" +
             "WHERE\n" +
             "    c.post_id = :postId\n" +
-            "ORDER BY c.comment_date ASC;"; // Sắp xếp theo thời gian
+            "ORDER BY c.comment_date ASC;";
 
 
 
