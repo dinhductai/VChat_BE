@@ -18,5 +18,5 @@ public interface PhotoService {
     String uploadPhotoForPost(MultipartFile file, String userEmail, Post post) throws IOException;
     Page<PhotoStoryResponse> photoStories(Integer userId, int page, int size);
     String uploadStory(MultipartFile file, String userEmail) throws IOException;
-    Page<PhotoStoryResponse> getOwnerStories(Integer userId, int page, int size);
+    List<PhotoStoryResponse> getOwnerStories(Integer userId);
 }

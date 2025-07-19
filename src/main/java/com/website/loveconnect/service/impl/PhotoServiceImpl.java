@@ -182,10 +182,9 @@ public String saveImage(MultipartFile file, String userEmail, boolean isProfileP
     }
 
     @Override
-    public Page<PhotoStoryResponse> getOwnerStories(Integer userId, int page, int size) {
+    public List<PhotoStoryResponse> getOwnerStories(Integer userId) {
         try{
-            Pageable pageable = PageRequest.of(page,size);
-            return photoRepository.findOwnerStories(userId,pageable).map(photoMapper::toPhotoStoryResponseList);
+            return photoRepository.findOwnerStories(userId).stream().map(photoMapper::toPhotoStoryResponseList).toList();
         }catch (DataAccessException da){
             log.error(da.getMessage());
             throw new DataAccessException("Cannot access data");

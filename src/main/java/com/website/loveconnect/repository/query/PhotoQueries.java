@@ -60,7 +60,6 @@ public class PhotoQueries {
                     "    INNER JOIN user_profiles up ON u.user_id = up.user_id\n" +
                     "    LEFT JOIN photos p2 ON u.user_id = p2.user_id\n" +
                     "        AND p2.is_story = TRUE\n" +
-                    "        AND p2.upload_date >= NOW() - INTERVAL 1 DAY\n" +
                     "WHERE\n" +
                     "    u.user_id = :userId\n" +
                     "    AND u.account_status = 'ACTIVE'\n" +
