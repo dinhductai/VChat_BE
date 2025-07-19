@@ -364,4 +364,14 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorDetail, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(VideoNotFoundException.class)
+    public ResponseEntity<ErrorDetailResponse> handleVideoNotFoundException(VideoNotFoundException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
+                LocalDateTime.now(),
+                "Video not found",
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetail, HttpStatus.NOT_FOUND);
+    }
 }

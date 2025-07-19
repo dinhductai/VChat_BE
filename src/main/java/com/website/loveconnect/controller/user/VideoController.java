@@ -1,5 +1,6 @@
 package com.website.loveconnect.controller.user;
 
+import com.cloudinary.Api;
 import com.website.loveconnect.dto.response.ApiResponse;
 import com.website.loveconnect.entity.Video;
 import com.website.loveconnect.service.VideoService;
@@ -42,6 +43,16 @@ public class VideoController {
         Integer userId = Integer.parseInt(jwt.getSubject());
         return ResponseEntity.ok(new ApiResponse<>(true,"Get video successful",
                 videoService.getOwnedVideos(userId,page,size)));
+    }
+
+    @Operation(summary = "Delete video",description = "Delete owner video")
+    @DeleteMapping(value = "/video/delete")
+    public ResponseEntity<ApiResponse<String>> deleteVideo(@RequestParam("videoUrl") String videoUrl,
+                                                           @AuthenticationPrincipal Jwt jwt){
+        Integer userId = Integer.parseInt(jwt.getSubject());
+        videoService.deleteVideo(userId,videoUrl);
+        return ResponseEntity.ok(new ApiResponse<>(true,"Delete video successful",null));
+
     }
 }
 
