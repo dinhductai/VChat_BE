@@ -4,6 +4,7 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.website.loveconnect.entity.*;
 import com.website.loveconnect.exception.UserNotFoundException;
+import com.website.loveconnect.exception.VideoNotFoundException;
 import com.website.loveconnect.repository.PhotoRepository;
 import com.website.loveconnect.repository.PostVideoRepository;
 import com.website.loveconnect.repository.UserRepository;
@@ -108,12 +109,59 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
-    public void deleteVideo(Integer idUser, String urlImage) {
+    public void deleteVideo(Integer idUser, String urlVideo) {
+        try {
+            // 1. Kiểm tra xem người dùng có tồn tại không
+            boolean userExisting = userRepository.existsByUserId(idUser);
 
+            // 2. Tìm đối tượng Video trong database bằng URL
+            //    Giả sử bạn có một VideoRepository tương tự như PhotoRepository
+            Video video = videoRepository.findByVideoUrl(urlVideo)
+                    .orElseThrow(() -> new VideoNotFoundException("Video not found with url: " + urlVideo));
+
+            if (userExisting) {
+                // 3. Trích xuất public_id từ URL của video
+                String publicId = extractPublicId(video.getVideoUrl());
+
+                // 4. ĐẶT TÙY CHỌN XÓA: Chỉ định đây là một video
+                //    Đây là bước quan trọng nhất!
+                Map options = ObjectUtils.asMap("resource_type", "video");
+
+                // 5. Gọi API của Cloudinary để xóa video bằng publicId và tùy chọn đã đặt
+                Map deleteResult = cloudinary.uploader().destroy(publicId, options);
+
+                // 6. Nếu Cloudinary trả về "ok", tiến hành xóa trong database
+                if (deleteResult.get("result").equals("ok")) {
+                    videoRepository.delete(video);
+                }
+            }
+        } catch (com.website.loveconnect.exception.DataAccessException da) {
+            log.error(da.getMessage());
+            throw new com.website.loveconnect.exception.DataAccessException("Cannot access database");
+        } catch (IOException e) {
+            log.error("Cloudinary delete failed: " + e.getMessage());
+            throw new RuntimeException("Error while deleting video from cloud", e);
+        }
     }
 
     @Override
     public String uploadVideoForPost(MultipartFile file, String userEmail, Post post) throws IOException {
         return saveVideo(file, userEmail,post);
+    }
+
+    private String extractPublicId(String url) {
+        if(url != null){
+            //xóa loại ảnh ví dụ .mp4
+            Integer lastDotIndex = url.lastIndexOf(".");
+            if(lastDotIndex != -1){
+                url = url.substring(0, lastDotIndex);
+            }
+            //loại bỏ phần trước,chỉ giữ lại public id
+            Integer firstSlastIndex = url.lastIndexOf("/");
+            if(firstSlastIndex != -1){
+                url = url.substring(firstSlastIndex+1);
+            }
+            return url;
+        }else return null;
     }
 }

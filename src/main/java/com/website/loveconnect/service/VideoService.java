@@ -11,6 +11,6 @@ import java.util.List;
 public interface VideoService {
     String uploadVideo(MultipartFile file, String userEmail) throws IOException;
     Page<Video> getOwnedVideos(Integer idUser,int page,int size);
-    void deleteVideo(Integer idUser,String urlImage);
+    void deleteVideo(Integer idUser,String urlVideo);
     String uploadVideoForPost(MultipartFile file, String userEmail, Post post) throws IOException;
 }
