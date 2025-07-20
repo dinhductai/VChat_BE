@@ -328,6 +328,7 @@ create table posts(
     status ENUM('ACTIVE', 'BLOCKED','DELETED') DEFAULT 'ACTIVE',
     FOREIGN KEY (reviewed_by) REFERENCES users(user_id) ON DELETE SET NULL
 );
+alter table video drop column is_reel ;
 
 create table user_posts(
 	user_id int not null,
