@@ -2,7 +2,9 @@ package com.website.loveconnect.service.impl;
 
 import com.cloudinary.utils.StringUtils;
 import com.website.loveconnect.dto.request.PostRequest;
+import com.website.loveconnect.dto.request.ReelRequest;
 import com.website.loveconnect.dto.response.PostResponse;
+import com.website.loveconnect.dto.response.ReelResponse;
 import com.website.loveconnect.entity.*;
 import com.website.loveconnect.enumpackage.PostStatus;
 import com.website.loveconnect.exception.DataAccessException;
@@ -151,5 +153,15 @@ public class PostServiceImpl implements PostService {
             e.printStackTrace();
             return null;
         }
+    }
+
+    @Override
+    public Page<ReelResponse> getReel(Integer userId, int page, int size) {
+        return null;
+    }
+
+    @Override
+    public ReelResponse createReel(ReelRequest reelRequest) {
+        return null;
     }
 }

@@ -195,8 +195,8 @@ public class CommentServiceImpl implements CommentService {
                         savedComment.getParentComment() != null
                                 ? savedComment.getParentComment().getCommentId()
                                 : null
-                )                .postId(commentRequest.getPostId())
-                .postId(post.getPostId())
+                )
+                .postId(commentRequest.getPostId())
                 .userId(userId)
                 .fullName(userNameAndProfileResponse.getFullName())
                 .photoUrl(userNameAndProfileResponse.getProfileUrl())

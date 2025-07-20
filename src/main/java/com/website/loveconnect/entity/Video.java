@@ -33,8 +33,12 @@ public class Video {
     @Column(name = "is_story")
     private Boolean isStory = Boolean.FALSE;
 
+    @Column(name = "is_reel")
+    private Boolean isReel = Boolean.FALSE;
+
     @Column(name = "review_date")
     private Timestamp reviewDate;
+
 
     @ManyToOne
     @JsonIgnore
