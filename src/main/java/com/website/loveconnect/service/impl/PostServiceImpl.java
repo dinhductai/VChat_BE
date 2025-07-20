@@ -65,6 +65,7 @@ public class PostServiceImpl implements PostService {
                     .uploadDate(new Timestamp(System.currentTimeMillis()))
                     .isPublic(postRequest.getIsPublic())
                     .isApproved(true)
+                    .isReel(false)
                     .status(PostStatus.ACTIVE)
                     .build();
             post = postRepository.save(post); // Lưu Post để có ID
@@ -162,6 +163,51 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public ReelResponse createReel(ReelRequest reelRequest) {
-        return null;
+        try {
+            // Kiểm tra dữ liệu đầu vào
+            if (reelRequest == null || StringUtils.isEmpty(reelRequest.getUserEmail())) {
+                throw new IllegalArgumentException("PostRequest or userEmail cannot be null");
+            }
+            Post post = Post.builder()
+                    .content(reelRequest.getContent())
+                    .uploadDate(new Timestamp(System.currentTimeMillis()))
+                    .isPublic(reelRequest.getIsPublic())
+                    .isApproved(true)
+                    .status(PostStatus.ACTIVE)
+                    .isReel(true)
+                    .build();
+            post = postRepository.save(post); // Lưu Post để có ID
+            log.info("Saved post with ID: {}", post.getPostId());
+
+            // Lưu UserPost
+            User user = userRepository.getUserByEmail(reelRequest.getUserEmail())
+                    .orElseThrow(() -> new UserNotFoundException("User not found"));
+            UserPost userPost = UserPost.builder()
+                    .post(post)
+                    .user(user)
+                    .upload(true)
+                    .share(false)
+                    .save(false)
+                    .build();
+            userPostRepository.save(userPost);
+            log.info("Saved UserPost for user: {} and post ID: {}", reelRequest.getUserEmail(), post.getPostId());
+
+            // Xử lý video
+            MultipartFile videoFiles = reelRequest.getVideo();
+            if (videoFiles != null && !videoFiles.isEmpty()) {
+                    try {
+                        videoService.uploadVideoForPost(videoFiles, reelRequest.getUserEmail(), post);
+                        log.info("Uploaded video for post ID: {}", post.getPostId());
+                    } catch (Exception e) {
+                        log.error("Failed to upload video for post ID: {}", post.getPostId(), e);
+                        throw new RuntimeException("Failed to upload video", e);
+                    }
+
+            }
+            return postMapper.toReelResponse(postRepository.getOneReelByPostId(post.getPostId()));
+        } catch (Exception e) {
+            log.error("Failed to save post for user: {}", reelRequest.getUserEmail(), e);
+            throw new RuntimeException("Failed to save post", e);
+        }
     }
 }
