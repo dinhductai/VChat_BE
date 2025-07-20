@@ -111,26 +111,14 @@ public class VideoServiceImpl implements VideoService {
     @Override
     public void deleteVideo(Integer idUser, String urlVideo) {
         try {
-            // 1. Kiểm tra xem người dùng có tồn tại không
             boolean userExisting = userRepository.existsByUserId(idUser);
-
-            // 2. Tìm đối tượng Video trong database bằng URL
-            //    Giả sử bạn có một VideoRepository tương tự như PhotoRepository
             Video video = videoRepository.findByVideoUrl(urlVideo)
                     .orElseThrow(() -> new VideoNotFoundException("Video not found with url: " + urlVideo));
 
             if (userExisting) {
-                // 3. Trích xuất public_id từ URL của video
                 String publicId = extractPublicId(video.getVideoUrl());
-
-                // 4. ĐẶT TÙY CHỌN XÓA: Chỉ định đây là một video
-                //    Đây là bước quan trọng nhất!
                 Map options = ObjectUtils.asMap("resource_type", "video");
-
-                // 5. Gọi API của Cloudinary để xóa video bằng publicId và tùy chọn đã đặt
                 Map deleteResult = cloudinary.uploader().destroy(publicId, options);
-
-                // 6. Nếu Cloudinary trả về "ok", tiến hành xóa trong database
                 if (deleteResult.get("result").equals("ok")) {
                     videoRepository.delete(video);
                 }

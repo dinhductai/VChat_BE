@@ -3,15 +3,18 @@ package com.website.loveconnect.service.impl;
 import com.website.loveconnect.dto.request.CommentGetRequest;
 import com.website.loveconnect.dto.request.CommentRequest;
 import com.website.loveconnect.dto.response.CommentResponse;
+import com.website.loveconnect.dto.response.UserNameAndProfileResponse;
 import com.website.loveconnect.entity.Comment;
 import com.website.loveconnect.entity.Post;
 import com.website.loveconnect.entity.User;
+import com.website.loveconnect.entity.UserProfile;
 import com.website.loveconnect.exception.CommentNotFoundException;
 import com.website.loveconnect.exception.PostNotFoundException;
 import com.website.loveconnect.exception.UserNotFoundException;
 import com.website.loveconnect.mapper.CommentMapper;
 import com.website.loveconnect.repository.CommentRepository;
 import com.website.loveconnect.repository.PostRepository;
+import com.website.loveconnect.repository.UserProfileRepository;
 import com.website.loveconnect.repository.UserRepository;
 import com.website.loveconnect.service.CommentService;
 import jakarta.persistence.Tuple;
@@ -44,6 +47,7 @@ public class CommentServiceImpl implements CommentService {
     UserRepository userRepository;
     PostRepository postRepository;
     CommentMapper commentMapper;
+    UserProfileRepository userProfileRepository;
 //    @Override
 //    public void createComment(CommentRequest commentRequest,Integer userId) {
 //        try {
@@ -140,7 +144,8 @@ public class CommentServiceImpl implements CommentService {
                 .level(1) // Comment gốc luôn là level 1
                 .build();
         Comment savedComment = commentRepository.save(comment);
-
+        UserNameAndProfileResponse userNameAndProfileResponse = userProfileRepository.findUserNameAndProfileByUserId(user.getUserId())
+                .orElseThrow(()-> new UserNotFoundException("User not found"));
         return CommentResponse.builder()
                 .commentId(savedComment.getCommentId())
                 .content(savedComment.getContent())
@@ -155,7 +160,8 @@ public class CommentServiceImpl implements CommentService {
                 )
                 .postId(commentRequest.getPostId())
                 .userId(userId)
-
+                .fullName(userNameAndProfileResponse.getFullName())
+                .photoUrl(userNameAndProfileResponse.getProfileUrl())
                 .build();
     }
 
@@ -176,6 +182,8 @@ public class CommentServiceImpl implements CommentService {
                 .level(parentComment.getLevel()+1) // Level của con = level của cha + 1
                 .build();
         Comment savedComment = commentRepository.save(reply);
+        UserNameAndProfileResponse userNameAndProfileResponse = userProfileRepository.findUserNameAndProfileByUserId(user.getUserId())
+                .orElseThrow(()-> new UserNotFoundException("User not found"));
         return CommentResponse.builder()
                 .commentId(savedComment.getCommentId())
                 .content(savedComment.getContent())
@@ -183,9 +191,15 @@ public class CommentServiceImpl implements CommentService {
                 .isDeleted(savedComment.getIsDeleted())
                 .isEdited(savedComment.getIsEdited())
                 .level(savedComment.getLevel())
-                .parentCommentId(savedComment.getParentComment().getCommentId())
-                .postId(commentRequest.getPostId())
+                .parentCommentId(
+                        savedComment.getParentComment() != null
+                                ? savedComment.getParentComment().getCommentId()
+                                : null
+                )                .postId(commentRequest.getPostId())
+                .postId(post.getPostId())
                 .userId(userId)
+                .fullName(userNameAndProfileResponse.getFullName())
+                .photoUrl(userNameAndProfileResponse.getProfileUrl())
                 .build(); // Trả về DTO
     }
 
