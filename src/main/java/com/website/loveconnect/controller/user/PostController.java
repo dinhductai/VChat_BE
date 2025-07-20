@@ -80,6 +80,13 @@ public class PostController {
                 .body(new ApiResponse<>(true,"Create reel successful",postService.createReel(reelRequest)));
     }
 
-
+    @Operation(summary = "Get random reel",
+            description = "Get all random reel with page index automatically increase")
+    @GetMapping(value = "/reel")
+    public ResponseEntity<ApiResponse<Page<ReelResponse>>> getRandomReel(@RequestParam(defaultValue = "0") int page,
+                                                                         @RequestParam(defaultValue = "10") int size){
+        return ResponseEntity.ok(new ApiResponse<>(true,"Get random post successful",
+                postService.getReelRandom(page,size)));
+    }
 
 }

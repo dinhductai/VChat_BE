@@ -157,9 +157,17 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Page<ReelResponse> getReel(Integer userId, int page, int size) {
-        return null;
-    }
+    public Page<ReelResponse> getReelRandom( int page, int size) {
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            return postRepository.getRandomReel(pageable).map(postMapper::toReelResponse);
+        }
+        catch (DataAccessException e) {
+            throw new DataAccessException("Cannot access database");
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }    }
 
     @Override
     public ReelResponse createReel(ReelRequest reelRequest) {
