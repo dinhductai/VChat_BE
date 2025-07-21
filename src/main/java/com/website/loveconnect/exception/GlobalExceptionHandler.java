@@ -374,4 +374,14 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorDetail, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(ReactionAlreadyExistException.class)
+    public ResponseEntity<ErrorDetailResponse> handleReactionAlreadyExistException(ReactionAlreadyExistException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
+                LocalDateTime.now(),
+                "Reaction already exist",
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetail, HttpStatus.CONFLICT);
+    }
 }

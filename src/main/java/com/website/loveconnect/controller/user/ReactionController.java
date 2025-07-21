@@ -2,6 +2,9 @@ package com.website.loveconnect.controller.user;
 
 import com.website.loveconnect.dto.request.ReactionRequest;
 import com.website.loveconnect.dto.response.ApiResponse;
+import com.website.loveconnect.dto.response.ReactionResponse;
+import com.website.loveconnect.entity.Interest;
+import com.website.loveconnect.enumpackage.ContentType;
 import com.website.loveconnect.service.ReactionService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AccessLevel;
@@ -39,4 +42,14 @@ public class ReactionController {
         return ResponseEntity.ok(new ApiResponse<>(true,"Count reaction successful",
                 reactionService.countReactionOnAPost(postId)));
     }
+
+    @Operation(summary = "Count and check reaction",description = "Count reaction and check user react on a post")
+    @GetMapping(value = "/reaction/cnt-check")
+    public ResponseEntity<ApiResponse<ReactionResponse>> countAndCheck(@RequestParam Integer postId,
+                                                                       @AuthenticationPrincipal Jwt jwt){
+        Integer userId = Integer.parseInt(jwt.getSubject());
+        return ResponseEntity.ok(new ApiResponse<>(true,"Get total reaction and check user react successful",
+                reactionService.countReactionAndCheckUserReact(postId,userId)));
+    }
+
 }
