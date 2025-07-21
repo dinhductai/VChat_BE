@@ -218,4 +218,30 @@ public class PostServiceImpl implements PostService {
             throw new RuntimeException("Failed to save post", e);
         }
     }
+
+    @Override
+    public void sharePost(Integer postId, Integer userId) {
+        try{
+            User user =  userRepository.findById(userId)
+                    .orElseThrow(() -> new UserNotFoundException("User not found"));
+            Post post = postRepository.findById(postId)
+                    .orElseThrow(() -> new PostNotFoundException("Post not found"));
+            UserPost userPost = userPostRepository.findByUserAndPostAndUpload(user,post,true);
+            if(userPost == null){
+                UserPost newUserPost = UserPost.builder()
+                        .user(user)
+                        .post(post)
+                        .upload(false)
+                        .share(true)
+                        .save(false)
+                        .build();
+                userPostRepository.save(newUserPost);
+            }else{
+                userPost.setShare(true);
+                userPostRepository.save(userPost);
+            }
+        }catch (DataAccessException da){
+            throw new DataAccessException("Cannot access database");
+        }
+    }
 }

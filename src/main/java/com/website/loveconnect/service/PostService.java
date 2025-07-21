@@ -16,4 +16,5 @@ public interface PostService {
     Page<PostResponse> getOwnPost(Integer userId,int page,int size);
     Page<ReelResponse> getReelRandom(int page,int size);
     ReelResponse createReel(ReelRequest reelRequest);
+    void sharePost(Integer postId,Integer userId);
 }

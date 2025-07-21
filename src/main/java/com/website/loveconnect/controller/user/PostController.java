@@ -89,4 +89,13 @@ public class PostController {
                 postService.getReelRandom(page,size)));
     }
 
+    @Operation(summary = "Share post",description = "User share a post to profile")
+    @PostMapping(value = "/post/share")
+    public ResponseEntity<ApiResponse<String>> sharePost(@RequestParam Integer postId,
+                                                         @AuthenticationPrincipal Jwt jwt){
+        Integer userId = Integer.parseInt(jwt.getSubject());
+        postService.sharePost(postId,userId);
+        return ResponseEntity.ok(new ApiResponse<>(true,"Share post successful", null));
+    }
+
 }
