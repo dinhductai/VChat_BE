@@ -2,6 +2,7 @@ package com.website.loveconnect.service.impl;
 
 import com.cloudinary.utils.StringUtils;
 import com.website.loveconnect.dto.request.PostRequest;
+import com.website.loveconnect.dto.request.PostShareSaveRequest;
 import com.website.loveconnect.dto.request.ReelRequest;
 import com.website.loveconnect.dto.response.PostResponse;
 import com.website.loveconnect.dto.response.ReelResponse;
@@ -220,14 +221,14 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void sharePost(Integer postId, Integer userId) {
+    public void shareOrSavePost(PostShareSaveRequest postShareSaveRequest, Integer userId) {
         try{
             User user =  userRepository.findById(userId)
                     .orElseThrow(() -> new UserNotFoundException("User not found"));
-            Post post = postRepository.findById(postId)
+            Post post = postRepository.findById(postShareSaveRequest.getPostId())
                     .orElseThrow(() -> new PostNotFoundException("Post not found"));
             UserPost userPost = userPostRepository.findByUserAndPostAndUpload(user,post,true);
-            if(userPost == null){
+            if(userPost == null && postShareSaveRequest.getStatus().equals("SHARE")){
                 UserPost newUserPost = UserPost.builder()
                         .user(user)
                         .post(post)
@@ -236,7 +237,16 @@ public class PostServiceImpl implements PostService {
                         .save(false)
                         .build();
                 userPostRepository.save(newUserPost);
-            }else{
+            }else if(userPost == null && postShareSaveRequest.getStatus().equals("SAVE")) {
+                UserPost newUserPost = UserPost.builder()
+                        .user(user)
+                        .post(post)
+                        .upload(false)
+                        .share(false)
+                        .save(true)
+                        .build();
+                userPostRepository.save(newUserPost);
+            }else {
                 userPost.setShare(true);
                 userPostRepository.save(userPost);
             }

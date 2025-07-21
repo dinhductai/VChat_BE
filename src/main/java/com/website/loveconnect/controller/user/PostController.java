@@ -2,6 +2,7 @@ package com.website.loveconnect.controller.user;
 
 import com.cloudinary.Api;
 import com.website.loveconnect.dto.request.PostRequest;
+import com.website.loveconnect.dto.request.PostShareSaveRequest;
 import com.website.loveconnect.dto.request.ReelRequest;
 import com.website.loveconnect.dto.response.ApiResponse;
 import com.website.loveconnect.dto.response.PostResponse;
@@ -90,12 +91,12 @@ public class PostController {
     }
 
     @Operation(summary = "Share post",description = "User share a post to profile")
-    @PostMapping(value = "/post/share")
-    public ResponseEntity<ApiResponse<String>> sharePost(@RequestParam Integer postId,
+    @PostMapping(value = "/post/share-save")
+    public ResponseEntity<ApiResponse<String>> sharePost(@RequestBody PostShareSaveRequest request,
                                                          @AuthenticationPrincipal Jwt jwt){
         Integer userId = Integer.parseInt(jwt.getSubject());
-        postService.sharePost(postId,userId);
-        return ResponseEntity.ok(new ApiResponse<>(true,"Share post successful", null));
+        postService.shareOrSavePost(request,userId);
+        return ResponseEntity.ok(new ApiResponse<>(true,"Share or save post successful", null));
     }
 
 }
