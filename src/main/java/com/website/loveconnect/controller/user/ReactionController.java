@@ -52,4 +52,12 @@ public class ReactionController {
                 reactionService.countReactionAndCheckUserReact(postId,userId)));
     }
 
+    @DeleteMapping(value = "/reaction/delete")
+    public ResponseEntity<ApiResponse<String>> deleteReaction(@RequestParam Integer postId,
+                                                              @RequestParam ContentType contentType,
+                                                              @AuthenticationPrincipal Jwt jwt){
+        Integer userId = Integer.parseInt(jwt.getSubject());
+        reactionService.deleteReaction(postId,userId,contentType);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -97,4 +97,16 @@ public class ReactionServiceImpl implements ReactionService {
         }
     }
 
+    @Override
+    public void deleteReaction(Integer postId, Integer userId, ContentType contentType) {
+        try{
+            User user = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("User Not Found"));
+            Reaction reaction =  reactionRepository.findByUserAndContentIdAndContentType(user,postId,contentType);
+            if(reaction!=null){
+                reactionRepository.delete(reaction);
+            }else throw new DataAccessException("Cannot delete reaction");
+        }catch (DataAccessException da){
+            throw new DataAccessException("Cannot access database");
+        }
+    }
 }
