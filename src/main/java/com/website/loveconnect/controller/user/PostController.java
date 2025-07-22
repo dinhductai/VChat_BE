@@ -2,8 +2,11 @@ package com.website.loveconnect.controller.user;
 
 import com.cloudinary.Api;
 import com.website.loveconnect.dto.request.PostRequest;
+import com.website.loveconnect.dto.request.PostShareSaveRequest;
+import com.website.loveconnect.dto.request.ReelRequest;
 import com.website.loveconnect.dto.response.ApiResponse;
 import com.website.loveconnect.dto.response.PostResponse;
+import com.website.loveconnect.dto.response.ReelResponse;
 import com.website.loveconnect.dto.response.UserAndPhotosResponse;
 import com.website.loveconnect.service.PostService;
 import com.website.loveconnect.service.UserService;
@@ -68,6 +71,32 @@ public class PostController {
                 postService.getOwnPost(userId,page,size)));
     }
 
+    @Operation(summary = "Create reel",description = "Create a reel with text and post")
+    @PostMapping(value = "/reel/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<ReelResponse>> createPost(@Valid  @ModelAttribute ReelRequest reelRequest,
+                                                                @AuthenticationPrincipal Jwt jwt){
+        String userEmail = jwt.getClaimAsString("email");
+        reelRequest.setUserEmail(userEmail);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ApiResponse<>(true,"Create reel successful",postService.createReel(reelRequest)));
+    }
 
+    @Operation(summary = "Get random reel",
+            description = "Get all random reel with page index automatically increase")
+    @GetMapping(value = "/reel")
+    public ResponseEntity<ApiResponse<Page<ReelResponse>>> getRandomReel(@RequestParam(defaultValue = "0") int page,
+                                                                         @RequestParam(defaultValue = "10") int size){
+        return ResponseEntity.ok(new ApiResponse<>(true,"Get random post successful",
+                postService.getReelRandom(page,size)));
+    }
+
+    @Operation(summary = "Share post",description = "User share a post to profile")
+    @PostMapping(value = "/post/share-save")
+    public ResponseEntity<ApiResponse<String>> sharePost(@RequestBody PostShareSaveRequest request,
+                                                         @AuthenticationPrincipal Jwt jwt){
+        Integer userId = Integer.parseInt(jwt.getSubject());
+        postService.shareOrSavePost(request,userId);
+        return ResponseEntity.ok(new ApiResponse<>(true,"Share or save post successful", null));
+    }
 
 }

@@ -2,7 +2,10 @@ package com.website.loveconnect.service.impl;
 
 import com.cloudinary.utils.StringUtils;
 import com.website.loveconnect.dto.request.PostRequest;
+import com.website.loveconnect.dto.request.PostShareSaveRequest;
+import com.website.loveconnect.dto.request.ReelRequest;
 import com.website.loveconnect.dto.response.PostResponse;
+import com.website.loveconnect.dto.response.ReelResponse;
 import com.website.loveconnect.entity.*;
 import com.website.loveconnect.enumpackage.PostStatus;
 import com.website.loveconnect.exception.DataAccessException;
@@ -63,6 +66,7 @@ public class PostServiceImpl implements PostService {
                     .uploadDate(new Timestamp(System.currentTimeMillis()))
                     .isPublic(postRequest.getIsPublic())
                     .isApproved(true)
+                    .isReel(false)
                     .status(PostStatus.ACTIVE)
                     .build();
             post = postRepository.save(post); // Lưu Post để có ID
@@ -150,6 +154,104 @@ public class PostServiceImpl implements PostService {
         }catch (Exception e){
             e.printStackTrace();
             return null;
+        }
+    }
+
+    @Override
+    public Page<ReelResponse> getReelRandom( int page, int size) {
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            return postRepository.getRandomReel(pageable).map(postMapper::toReelResponse);
+        }
+        catch (DataAccessException e) {
+            throw new DataAccessException("Cannot access database");
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }    }
+
+    @Override
+    public ReelResponse createReel(ReelRequest reelRequest) {
+        try {
+            // Kiểm tra dữ liệu đầu vào
+            if (reelRequest == null || StringUtils.isEmpty(reelRequest.getUserEmail())) {
+                throw new IllegalArgumentException("PostRequest or userEmail cannot be null");
+            }
+            Post post = Post.builder()
+                    .content(reelRequest.getContent())
+                    .uploadDate(new Timestamp(System.currentTimeMillis()))
+                    .isPublic(reelRequest.getIsPublic())
+                    .isApproved(true)
+                    .status(PostStatus.ACTIVE)
+                    .isReel(true)
+                    .build();
+            post = postRepository.save(post); // Lưu Post để có ID
+            log.info("Saved post with ID: {}", post.getPostId());
+
+            // Lưu UserPost
+            User user = userRepository.getUserByEmail(reelRequest.getUserEmail())
+                    .orElseThrow(() -> new UserNotFoundException("User not found"));
+            UserPost userPost = UserPost.builder()
+                    .post(post)
+                    .user(user)
+                    .upload(true)
+                    .share(false)
+                    .save(false)
+                    .build();
+            userPostRepository.save(userPost);
+            log.info("Saved UserPost for user: {} and post ID: {}", reelRequest.getUserEmail(), post.getPostId());
+
+            // Xử lý video
+            MultipartFile videoFiles = reelRequest.getVideo();
+            if (videoFiles != null && !videoFiles.isEmpty()) {
+                    try {
+                        videoService.uploadVideoForPost(videoFiles, reelRequest.getUserEmail(), post);
+                        log.info("Uploaded video for post ID: {}", post.getPostId());
+                    } catch (Exception e) {
+                        log.error("Failed to upload video for post ID: {}", post.getPostId(), e);
+                        throw new RuntimeException("Failed to upload video", e);
+                    }
+
+            }
+            return postMapper.toReelResponse(postRepository.getOneReelByPostId(post.getPostId()));
+        } catch (Exception e) {
+            log.error("Failed to save post for user: {}", reelRequest.getUserEmail(), e);
+            throw new RuntimeException("Failed to save post", e);
+        }
+    }
+
+    @Override
+    public void shareOrSavePost(PostShareSaveRequest postShareSaveRequest, Integer userId) {
+        try{
+            User user =  userRepository.findById(userId)
+                    .orElseThrow(() -> new UserNotFoundException("User not found"));
+            Post post = postRepository.findById(postShareSaveRequest.getPostId())
+                    .orElseThrow(() -> new PostNotFoundException("Post not found"));
+            UserPost userPost = userPostRepository.findByUserAndPostAndUpload(user,post,true);
+            if(userPost == null && postShareSaveRequest.getStatus().equals("SHARE")){
+                UserPost newUserPost = UserPost.builder()
+                        .user(user)
+                        .post(post)
+                        .upload(false)
+                        .share(true)
+                        .save(false)
+                        .build();
+                userPostRepository.save(newUserPost);
+            }else if(userPost == null && postShareSaveRequest.getStatus().equals("SAVE")) {
+                UserPost newUserPost = UserPost.builder()
+                        .user(user)
+                        .post(post)
+                        .upload(false)
+                        .share(false)
+                        .save(true)
+                        .build();
+                userPostRepository.save(newUserPost);
+            }else {
+                userPost.setShare(true);
+                userPostRepository.save(userPost);
+            }
+        }catch (DataAccessException da){
+            throw new DataAccessException("Cannot access database");
         }
     }
 }

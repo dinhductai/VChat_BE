@@ -37,6 +37,9 @@ public class Post {
     @Column(name = "is_public")
     private Boolean isPublic = Boolean.TRUE;
 
+    @Column(name = "is_reel")
+    private Boolean isReel = Boolean.FALSE;
+
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private PostStatus status = PostStatus.ACTIVE;

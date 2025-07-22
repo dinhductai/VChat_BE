@@ -134,4 +134,5 @@ public class PhotoController {
         return ResponseEntity.ok(new ApiResponse<>(true,"Get owner story successful",
                 imageService.getOwnerStories(userId)));
     }
+
 }

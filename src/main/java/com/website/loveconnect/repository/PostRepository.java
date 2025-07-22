@@ -20,4 +20,10 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     @Query(value = PostQueries.GET_POSTS_BY_USERID,nativeQuery = true)
     Page<Tuple> getPostsByUserId(@Param("userId") Integer userId,Pageable pageable);
+
+    @Query(value = PostQueries.GET_ONE_REEL_BY_POST_ID,nativeQuery = true)
+    Tuple getOneReelByPostId(@Param("postId") Integer postId);
+
+    @Query(value = PostQueries.GET_RANDOM_REEL,nativeQuery = true)
+    Page<Tuple> getRandomReel(Pageable pageable);
 }
