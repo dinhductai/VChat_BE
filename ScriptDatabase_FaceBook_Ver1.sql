@@ -328,7 +328,6 @@ create table posts(
     status ENUM('ACTIVE', 'BLOCKED','DELETED') DEFAULT 'ACTIVE',
     FOREIGN KEY (reviewed_by) REFERENCES users(user_id) ON DELETE SET NULL
 );
-alter table video drop column is_reel ;
 
 create table user_posts(
 	user_id int not null,
@@ -340,6 +339,7 @@ create table user_posts(
     foreign key (user_id) references users(user_id) on delete cascade,
     foreign key (post_id) references posts(post_id) on delete cascade
 );
+alter table posts add column is_reel boolean default false;
 
 -- ========================
 -- Bảng liên kết post với nhiều ảnh (MỚI)
