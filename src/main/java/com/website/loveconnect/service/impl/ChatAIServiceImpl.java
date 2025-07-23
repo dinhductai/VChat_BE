@@ -1,42 +1,36 @@
 package com.website.loveconnect.service.impl;
 
-import com.website.loveconnect.dto.request.ChatAIRequest;
 import com.website.loveconnect.dto.response.ChatAIResponse;
 import com.website.loveconnect.exception.PromptEmptyException;
 import com.website.loveconnect.service.ChatAIService;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.messages.SystemMessage;
-import org.springframework.ai.chat.messages.UserMessage;
-import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.content.Media;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
-import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 
-@Slf4j
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@Transactional
 public class ChatAIServiceImpl implements ChatAIService {
     ChatClient chatClient;
-
-    public ChatAIServiceImpl(ChatClient.Builder builder) {
+    public ChatAIServiceImpl(ChatClient.Builder builder, ChatMemory chatMemory) {
         this.chatClient = builder
                 .defaultSystem(SYSTEM_PROMPT)
+                // Sửa lại dòng này để sử dụng builder
+                .defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory)
+                        .build())
                 .build();
     }
     private static final String SYSTEM_PROMPT = """
@@ -58,9 +52,12 @@ public class ChatAIServiceImpl implements ChatAIService {
             """;
 
     @Override
-    public List<ChatAIResponse> chat(String message, MultipartFile file){
+    public List<ChatAIResponse> chat(String message, MultipartFile file,String conversationId, Integer userId){
         try {
             List<Media> mediaList = new ArrayList<>();
+            //đang bị lỗi ở đoạn comment này
+//            ChatMemory chatMemory = chatAIMemoryService.getMemory(conversationId, userId);
+//            System.out.println("day la data cua chat memory"+chatMemory);
 
             if (file != null && !file.isEmpty()) {
                 mediaList.add(new Media(
@@ -73,6 +70,7 @@ public class ChatAIServiceImpl implements ChatAIService {
 
             }
             return chatClient.prompt()
+                    .advisors(advisorSpec -> advisorSpec.param(ChatMemory.CONVERSATION_ID, conversationId)) // <-- Truyền ID
                     .user(userSpec -> {
                         if (message != null && !message.isBlank()) {
                             userSpec.text(message);

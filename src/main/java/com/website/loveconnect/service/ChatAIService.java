@@ -8,5 +8,5 @@ import java.io.IOException;
 import java.util.List;
 
 public interface ChatAIService {
-    List<ChatAIResponse> chat(String message, MultipartFile file);
+    List<ChatAIResponse> chat(String message, MultipartFile file,String conversationId, Integer userId) ;
 }
