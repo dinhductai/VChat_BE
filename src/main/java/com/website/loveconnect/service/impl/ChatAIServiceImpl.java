@@ -1,6 +1,7 @@
 package com.website.loveconnect.service.impl;
 
 import com.website.loveconnect.dto.request.ChatAIRequest;
+import com.website.loveconnect.dto.response.ChatAIResponse;
 import com.website.loveconnect.exception.PromptEmptyException;
 import com.website.loveconnect.service.ChatAIService;
 import jakarta.transaction.Transactional;
@@ -13,12 +14,14 @@ import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.content.Media;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -55,7 +58,7 @@ public class ChatAIServiceImpl implements ChatAIService {
             """;
 
     @Override
-    public String chat(String message, MultipartFile file){
+    public List<ChatAIResponse> chat(String message, MultipartFile file){
         try {
             List<Media> mediaList = new ArrayList<>();
 
@@ -81,7 +84,9 @@ public class ChatAIServiceImpl implements ChatAIService {
                         }
                     })
                     .call()
-                    .content();
+                    //convert dữ liệu text thành dl response
+                    .entity(new ParameterizedTypeReference<List<ChatAIResponse>>() {
+                    });
         }catch (Exception e){
             e.printStackTrace();
             return null;
