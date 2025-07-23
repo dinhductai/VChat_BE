@@ -409,3 +409,12 @@ INSERT INTO emotions (emotion_name) VALUES
 ('WOW'),
 ('SAD'),
 ('ANGRY');
+
+create table chat_ai_memory(
+	chat_id int auto_increment primary key,
+    conversation_id text not null,
+    role char(50) not null,
+    content text ,
+    create_at datetime default current_timestamp,
+    user_id int not null
+);
