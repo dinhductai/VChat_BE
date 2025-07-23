@@ -384,4 +384,14 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorDetail, HttpStatus.CONFLICT);
     }
+
+    @ExceptionHandler(PromptEmptyException.class)
+    public ResponseEntity<ErrorDetailResponse> handlePromptEmptyException(PromptEmptyException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
+                LocalDateTime.now(),
+                "No prompt found",
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetail, HttpStatus.BAD_REQUEST);
+    }
 }

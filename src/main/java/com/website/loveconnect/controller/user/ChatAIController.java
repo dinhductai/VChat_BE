@@ -1,16 +1,21 @@
 package com.website.loveconnect.controller.user;
 
 import com.website.loveconnect.dto.request.ChatAIRequest;
+import com.website.loveconnect.dto.response.ApiResponse;
 import com.website.loveconnect.service.ChatAIService;
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping(value = "/api")
@@ -20,9 +25,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class ChatAIController {
 
     ChatAIService chatAIService;
-
-    @PostMapping(value = "/open-ai")
-    public String openAI(@RequestBody ChatAIRequest chatAIRequest) {
-        return chatAIService.chatAI(chatAIRequest);
+    @Operation(summary = "Chat with AI", description = "Chat with text only, image only, or both")
+    @PostMapping(value = "/open-ai", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<String>> chat(
+            @RequestParam(value = "message", required = false) String message,
+            @RequestParam(value = "file", required = false) MultipartFile file) {
+        String response = chatAIService.chat(message, file);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Request successful", response));
     }
 }
