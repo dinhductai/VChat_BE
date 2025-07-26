@@ -55,10 +55,6 @@ public class ChatAIServiceImpl implements ChatAIService {
     public List<ChatAIResponse> chat(String message, MultipartFile file,String conversationId, Integer userId){
         try {
             List<Media> mediaList = new ArrayList<>();
-            //đang bị lỗi ở đoạn comment này
-//            ChatMemory chatMemory = chatAIMemoryService.getMemory(conversationId, userId);
-//            System.out.println("day la data cua chat memory"+chatMemory);
-
             if (file != null && !file.isEmpty()) {
                 mediaList.add(new Media(
                         MimeTypeUtils.parseMimeType(Objects.requireNonNull(file.getContentType())),
