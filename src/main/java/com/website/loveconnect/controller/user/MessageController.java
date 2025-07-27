@@ -23,11 +23,11 @@ import static java.time.LocalTime.now;
 public class MessageController {
     private final SimpMessagingTemplate  messagingTemplate;
 
-    @PostMapping(value = "/send")
-    public ResponseEntity<?> sendMessage(@RequestBody MessageRequest message) {
-        message.setSendAt(new Timestamp(System.currentTimeMillis()));
-        messagingTemplate.convertAndSend("/topic/messages", message);
-        return ResponseEntity.ok("Đã gửi!");
-    }
+//    @PostMapping(value = "/send")
+//    public ResponseEntity<?> sendMessage(@RequestBody MessageRequest message) {
+//        message.setSendAt(new Timestamp(System.currentTimeMillis()));
+//        messagingTemplate.convertAndSend("/topic/messages", message);
+//        return ResponseEntity.ok("Đã gửi!");
+//    }
 
 }
