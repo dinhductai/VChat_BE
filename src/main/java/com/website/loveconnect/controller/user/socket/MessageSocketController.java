@@ -32,7 +32,7 @@ public class MessageSocketController {
         messagingTemplate.convertAndSend(chatChanel,messageResponse);
     }
 
-    @MessageMapping(value = "message.history")
+    @MessageMapping(value = "/message.history")
     public void fetchAllMessages(@AuthenticationPrincipal Jwt jwt,
                                  @Payload MessageLoadRequest messageLoadRequest) {
         Integer senderId=  Integer.parseInt(jwt.getSubject());
