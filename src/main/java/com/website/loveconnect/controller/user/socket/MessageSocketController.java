@@ -16,6 +16,8 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.security.Principal;
+
 @Controller
 @RequiredArgsConstructor
 public class MessageSocketController {
@@ -24,23 +26,23 @@ public class MessageSocketController {
     private final JwtDecoder jwtDecoder;
 
     @MessageMapping(value = "/message.private")
-    public void createMessage(@Payload MessageRequest messageRequest,
-                                         @AuthenticationPrincipal Jwt jwt) {
-        Integer senderId=  Integer.parseInt(jwt.getSubject());
+    public void createMessage(@Payload MessageRequest messageRequest) {
+        Jwt jwt = jwtDecoder.decode(messageRequest.getToken());
+        Integer senderId = Integer.parseInt(jwt.getSubject());
         MessageResponse messageResponse=  messageService.createMessage(messageRequest,senderId);
         String chatChanel = MessageUtil.createChatChannel(senderId,messageRequest.getReceiverId());
         messagingTemplate.convertAndSend(chatChanel,messageResponse);
     }
 
     @MessageMapping(value = "/message.history")
-    public void fetchAllMessages(@AuthenticationPrincipal Jwt jwt,
+    public void fetchAllMessages(Principal principal,
                                  @Payload MessageLoadRequest messageLoadRequest) {
-        Integer senderId=  Integer.parseInt(jwt.getSubject());
+        Integer senderId=  Integer.parseInt(principal.getName());
         Page<MessageResponse> messageResponses = messageService
                 .getAllMessageBySenderIdAndReceiverId(senderId, messageLoadRequest);
 
         messagingTemplate.convertAndSendToUser(
-                jwt.getSubject(),
+                principal.getName(),
                 "/queue/messages.history",
                 messageResponses
         );

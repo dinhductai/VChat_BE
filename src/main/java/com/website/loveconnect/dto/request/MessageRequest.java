@@ -11,6 +11,8 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 public class MessageRequest {
     @NonNull
+    private String token;
+    @NonNull
     private Integer receiverId;
     @NonNull
     private String message;

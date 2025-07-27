@@ -8,6 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MessageLoadRequest {
+    @NonNull
     private Integer receiverId;
     private int page=0;
     private int size=20;

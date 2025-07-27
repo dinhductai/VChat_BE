@@ -23,12 +23,12 @@ public class NotificationSocketController {
     private final JwtDecoder jwtDecoder;
 
     @MessageMapping(value = "/notification.history")
-    public void getAllNotification(@AuthenticationPrincipal Jwt jwt, @Payload NotificationLoadRequest request) {
-        Integer userId =  Integer.parseInt(jwt.getSubject());
+    public void getAllNotification(Principal principal, @Payload NotificationLoadRequest request) {
+        Integer userId =  Integer.parseInt(principal.getName());
         Page<NotificationResponse> responses = notificationService.getNewNotifications(userId,request.getPage()
                 ,request.getSize());
         messagingTemplate.convertAndSendToUser(
-                jwt.getSubject(),
+                principal.getName(),
                 "/queue/notification.history",
                 responses
         );
