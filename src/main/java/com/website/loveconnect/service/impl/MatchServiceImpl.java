@@ -9,6 +9,7 @@ import com.website.loveconnect.entity.Match;
 import com.website.loveconnect.entity.User;
 import com.website.loveconnect.enumpackage.MatchStatus;
 import com.website.loveconnect.exception.DataAccessException;
+import com.website.loveconnect.exception.MatchAlreadyExistingException;
 import com.website.loveconnect.exception.MatchNotFoundException;
 import com.website.loveconnect.exception.UserNotFoundException;
 import com.website.loveconnect.mapper.MatchMapper;
@@ -136,15 +137,20 @@ public class MatchServiceImpl implements MatchService {
                     .orElseThrow(() -> new UserNotFoundException("Sender not found"));
             User receiver = userRepository.findById(receiverId)
                     .orElseThrow(() -> new UserNotFoundException("Receiver not found"));
-
-            Match match = Match.builder()
-                    .sender(sender)
-                    .receiver(receiver)
-                    .matchDate(new Timestamp(System.currentTimeMillis()))
-                    .status(MatchStatus.PENDING)
-                    .build();
-            matchRepository.save(match);
-            notificationService.createNotificationRequestFriend(sender,receiver);
+            Match checkMatched1 = matchRepository.findBySenderAndReceiverAndStatus(sender,receiver,MatchStatus.PENDING) ;
+            Match checkMatched2 = matchRepository.findBySenderAndReceiverAndStatus(receiver,sender,MatchStatus.PENDING);
+            if(checkMatched1!=null || checkMatched2!=null){
+                throw new MatchAlreadyExistingException("Friend request already exists");
+            }else {
+                Match match = Match.builder()
+                        .sender(sender)
+                        .receiver(receiver)
+                        .matchDate(new Timestamp(System.currentTimeMillis()))
+                        .status(MatchStatus.PENDING)
+                        .build();
+                matchRepository.save(match);
+                notificationService.createNotificationRequestFriend(sender,receiver);
+            }
         }catch (Exception e){
             e.printStackTrace();
         }
