@@ -149,7 +149,7 @@ public class MatchServiceImpl implements MatchService {
                         .status(MatchStatus.PENDING)
                         .build();
                 matchRepository.save(match);
-                notificationService.createNotificationRequestFriend(sender,receiver);
+                notificationService.createNotificationRequestFriend(sender,receiver,MatchStatus.PENDING);
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -164,15 +164,33 @@ public class MatchServiceImpl implements MatchService {
             User receiver = userRepository.findById(receiverId)
                     .orElseThrow(() -> new UserNotFoundException("Receiver not found"));
 
-            Match match = matchRepository.findBySenderAndReceiver(receiver,sender)
-                    .orElseThrow(()->new MatchNotFoundException("Match not found"));
-            if(matchStatus.equals(MatchStatus.MATCHED)){
-                match.setStatus(MatchStatus.MATCHED);
-                matchRepository.save(match);
-            }else if(matchStatus.equals(MatchStatus.REJECTED)){
-                match.setStatus(MatchStatus.REJECTED);
-                matchRepository.save(match);
+            Match checkMatched1 = matchRepository.findBySenderAndReceiverAndStatus(sender,receiver,MatchStatus.PENDING) ;
+            Match checkMatched2 = matchRepository.findBySenderAndReceiverAndStatus(receiver,sender,MatchStatus.PENDING);
+            if(checkMatched1!=null){
+                if(matchStatus.equals(MatchStatus.MATCHED)){
+                    checkMatched1.setStatus(MatchStatus.MATCHED);
+                    matchRepository.save(checkMatched1);
+                    notificationService.createNotificationRequestFriend(sender,receiver,matchStatus);
+                }else if(matchStatus.equals(MatchStatus.REJECTED)){
+                    checkMatched1.setStatus(MatchStatus.REJECTED);
+                    matchRepository.save(checkMatched1);
+                    notificationService.createNotificationRequestFriend(sender,receiver,matchStatus);
+                }
+            }else
+            if(checkMatched2!=null){
+                if(matchStatus.equals(MatchStatus.MATCHED)){
+                    checkMatched2.setStatus(MatchStatus.MATCHED);
+                    matchRepository.save(checkMatched2);
+                    notificationService.createNotificationRequestFriend(sender,receiver,matchStatus);
+                }else if(matchStatus.equals(MatchStatus.REJECTED)){
+                    checkMatched2.setStatus(MatchStatus.REJECTED);
+                    matchRepository.save(checkMatched2);
+                    notificationService.createNotificationRequestFriend(sender,receiver,matchStatus);
+                }
+            } else{
+                throw new MatchNotFoundException("Match not found");
             }
+
 
         }catch (Exception e){
             e.printStackTrace();

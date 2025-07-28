@@ -2,6 +2,7 @@ package com.website.loveconnect.service.impl;
 
 import com.website.loveconnect.dto.response.NotificationResponse;
 import com.website.loveconnect.entity.*;
+import com.website.loveconnect.enumpackage.MatchStatus;
 import com.website.loveconnect.enumpackage.NotificationType;
 import com.website.loveconnect.exception.DataAccessException;
 import com.website.loveconnect.exception.NotificationNotFoundException;
@@ -20,12 +21,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.config.http.MatcherType;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -40,16 +43,22 @@ public class NotificationServiceImpl implements NotificationService {
     UserProfileRepository userProfileRepository;
     NotificationMapper notificationMapper;
     @Override
-    public void createNotificationRequestFriend(User sender,User receiver) {
+    public void createNotificationRequestFriend(User sender, User receiver, MatchStatus status) {
         try {
             UserProfile userProfile = userProfileRepository.findByUser_UserId(sender.getUserId())
                     .orElseThrow(()->new UserNotFoundException("User not found"));
-            Notification notification = Notification.builder()
-                    .notificationType(NotificationType.MATCH)
-                    .content(userProfile.getFullName() + " just sent you a friend request")
-                    .createdAt(new Timestamp(System.currentTimeMillis()))
-                    .sender(sender)
-                    .build();
+            Notification notification = new Notification();
+                notification.setSender(sender);
+                notification.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+                notification.setNotificationType(NotificationType.MATCH);
+                if(status.equals(MatchStatus.PENDING)){
+                    notification.setContent(userProfile.getFullName() + " just sent you a friend request");
+                }else if(status.equals(MatchStatus.MATCHED)){
+                        notification.setContent(userProfile.getFullName() + " accept your friend request");
+                    }
+                    else if(status.equals(MatchStatus.REJECTED)){
+                        notification.setContent(userProfile.getFullName() + " reject your friend request");
+                }
             notificationRepository.save(notification);
             UserNotification userNotification = UserNotification.builder()
                     .user(receiver)
