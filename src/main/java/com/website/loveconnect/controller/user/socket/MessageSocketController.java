@@ -34,17 +34,17 @@ public class MessageSocketController {
         messagingTemplate.convertAndSend(chatChanel,messageResponse);
     }
 
-    @MessageMapping(value = "/message.history")
-    public void fetchAllMessages(Principal principal,
-                                 @Payload MessageLoadRequest messageLoadRequest) {
-        Integer senderId=  Integer.parseInt(principal.getName());
-        Page<MessageResponse> messageResponses = messageService
-                .getAllMessageBySenderIdAndReceiverId(senderId, messageLoadRequest);
-
-        messagingTemplate.convertAndSendToUser(
-                principal.getName(),
-                "/queue/messages.history",
-                messageResponses
-        );
-    }
+//    @MessageMapping(value = "/message.history")
+//    public void fetchAllMessages(Principal principal,
+//                                 @Payload MessageLoadRequest messageLoadRequest) {
+//        Integer senderId=  Integer.parseInt(principal.getName());
+//        Page<MessageResponse> messageResponses = messageService
+//                .getAllMessageBySenderIdAndReceiverId(senderId, messageLoadRequest);
+//
+//        messagingTemplate.convertAndSendToUser(
+//                principal.getName(),
+//                "/queue/messages.history",
+//                messageResponses
+//        );
+//    }
 }

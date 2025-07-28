@@ -49,11 +49,11 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public Page<MessageResponse> getAllMessageBySenderIdAndReceiverId(Integer senderId, MessageLoadRequest messageLoadRequest) {
+    public Page<MessageResponse> getAllMessageBySenderIdAndReceiverId(Integer senderId,Integer receiverId, int page,int size) {
         try{
-            Pageable pageable = PageRequest.of(messageLoadRequest.getPage(), messageLoadRequest.getSize());
+            Pageable pageable = PageRequest.of(page,size);
             Page<MessageResponse> messageResponses = messageRepository.findAllMessageBySenderIdAndReceiverId(senderId,
-                            messageLoadRequest.getReceiverId(), pageable)
+                            receiverId, pageable)
                     .map(messageMapper::toMessageResponse);
             return messageResponses;
         }catch (Exception e){

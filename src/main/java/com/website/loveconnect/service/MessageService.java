@@ -11,6 +11,6 @@ import java.util.List;
 
 public interface MessageService {
     List<Message> getAllMessageBySenderIdAndReceiverId(Integer senderId, Integer receiverId);
-    Page<MessageResponse> getAllMessageBySenderIdAndReceiverId(Integer senderId, MessageLoadRequest messageLoadRequest);
+    Page<MessageResponse> getAllMessageBySenderIdAndReceiverId(Integer senderId,Integer receiverId, int page,int size);
     MessageResponse createMessage(MessageRequest messageRequest,Integer senderId);
 }
