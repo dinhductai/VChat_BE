@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserPostRepository extends JpaRepository<UserPost, Integer> {
     UserPost findByUserAndPostAndUpload(User user, Post post,Boolean upload);
-
+    void deleteByUserAndPost(User user, Post post);
 }

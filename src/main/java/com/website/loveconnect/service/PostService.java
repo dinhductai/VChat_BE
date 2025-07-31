@@ -2,6 +2,7 @@ package com.website.loveconnect.service;
 
 import com.website.loveconnect.dto.request.PostRequest;
 import com.website.loveconnect.dto.request.PostShareSaveRequest;
+import com.website.loveconnect.dto.request.PostUpdateRequest;
 import com.website.loveconnect.dto.request.ReelRequest;
 import com.website.loveconnect.dto.response.PostResponse;
 import com.website.loveconnect.dto.response.ReelResponse;
@@ -18,5 +19,7 @@ public interface PostService {
     Page<ReelResponse> getReelRandom(int page,int size);
     ReelResponse createReel(ReelRequest reelRequest);
     void shareOrSavePost(PostShareSaveRequest postShareSaveRequest, Integer userId);
+    void deletePost(Integer postId,Integer userId);
+    PostResponse updatePostById(PostUpdateRequest postUpdateRequest,Integer userId);
 
 }

@@ -99,4 +99,17 @@ public class PostController {
         return ResponseEntity.ok(new ApiResponse<>(true,"Share or save post successful", null));
     }
 
+
+    @Operation(summary = "Delete post",description = "Delete a post by postId")
+    @DeleteMapping(value = "/post/delete")
+    public ResponseEntity<ApiResponse<String>> deletePost(@RequestParam("postId") Integer postId,
+                                                          @AuthenticationPrincipal Jwt jwt){
+        Integer userId = Integer.parseInt(jwt.getSubject());
+        postService.deletePost(postId,userId);
+        return ResponseEntity.noContent().build();
+    }
+
+
+
+
 }
