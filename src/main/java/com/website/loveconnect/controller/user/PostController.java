@@ -3,6 +3,7 @@ package com.website.loveconnect.controller.user;
 import com.cloudinary.Api;
 import com.website.loveconnect.dto.request.PostRequest;
 import com.website.loveconnect.dto.request.PostShareSaveRequest;
+import com.website.loveconnect.dto.request.PostUpdateRequest;
 import com.website.loveconnect.dto.request.ReelRequest;
 import com.website.loveconnect.dto.response.ApiResponse;
 import com.website.loveconnect.dto.response.PostResponse;
@@ -109,7 +110,14 @@ public class PostController {
         return ResponseEntity.noContent().build();
     }
 
-
+    @Operation(summary = "Update post",description = "Update content post by postId")
+    @PatchMapping(value = "/post/update")
+    public ResponseEntity<ApiResponse<PostResponse>> updatePost(@RequestBody PostUpdateRequest request,
+                                                                @AuthenticationPrincipal Jwt jwt){
+        Integer userId = Integer.parseInt(jwt.getSubject());
+        return ResponseEntity.ok(new ApiResponse<>(true,"Update post successful",
+                postService.updatePostById(request,userId)));
+    }
 
 
 }

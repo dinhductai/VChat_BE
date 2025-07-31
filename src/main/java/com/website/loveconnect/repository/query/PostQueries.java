@@ -55,8 +55,8 @@ public class PostQueries {
                             "ORDER BY RAND();";
 
     public static final String GET_ONE_POST_BY_POST_ID =
-            "SELECT DISTINCT\n" +
-                    "    u.user_id as userId,\n" +
+            "SELECT\n" +
+                    "    DISTINCT u.user_id as userId,\n" +
                     "    up.full_name as fullName,\n" +
                     "    up.bio as bio,\n" +
                     "    u.phone_number as phoneNumber,\n" +
@@ -68,18 +68,43 @@ public class PostQueries {
                     "    p.is_public as isPublic,\n" +
                     "    GROUP_CONCAT(DISTINCT ph.photo_url SEPARATOR ', ') AS photosUrl,\n" +
                     "    GROUP_CONCAT(DISTINCT v.video_url SEPARATOR ', ') AS videosUrl\n" +
-                    "FROM posts p\n" +
-                    "JOIN user_posts upo ON p.post_id = upo.post_id\n" +
-                    "JOIN users u ON upo.user_id = u.user_id\n" +
-                    "JOIN user_profiles up ON u.user_id = up.user_id\n" +
-                    "LEFT JOIN photos prof_pic \n" +
-                    "    ON prof_pic.user_id = u.user_id AND prof_pic.is_profile_picture = TRUE\n" +
-                    "LEFT JOIN post_photos pp ON p.post_id = pp.post_id\n" +
-                    "LEFT JOIN photos ph ON pp.photo_id = ph.photo_id\n" +
-                    "LEFT JOIN post_videos pv ON p.post_id = pv.post_id\n" +
-                    "LEFT JOIN video v ON pv.video_id = v.video_id\n" +
-                    "WHERE p.post_id = :postId \n" +
-                    "GROUP BY \n" +
+                    "FROM\n" +
+                    "    posts p\n" +
+                    "JOIN\n" +
+                    "    user_posts upo ON p.post_id = upo.post_id\n" +
+                    "JOIN\n" +
+                    "    users u ON upo.user_id = u.user_id\n" +
+                    "JOIN\n" +
+                    "    user_profiles up ON u.user_id = up.user_id\n" +
+                    "LEFT JOIN (\n" +
+                    "    SELECT\n" +
+                    "        p.user_id,\n" +
+                    "        p.photo_url\n" +
+                    "    FROM photos AS p\n" +
+                    "    INNER JOIN (\n" +
+                    "        SELECT\n" +
+                    "            user_id,\n" +
+                    "            MAX(upload_date) AS latest_date\n" +
+                    "        FROM photos\n" +
+                    "        WHERE is_profile_picture = TRUE\n" +
+                    "        GROUP BY user_id\n" +
+                    "    ) AS latest_pic_dates\n" +
+                    "        ON p.user_id = latest_pic_dates.user_id AND p.upload_date = latest_pic_dates.latest_date\n" +
+                    "    WHERE p.is_profile_picture = TRUE\n" +
+                    "\n" +
+                    ") AS prof_pic\n" +
+                    "    ON u.user_id = prof_pic.user_id\n" +
+                    "LEFT JOIN\n" +
+                    "    post_photos pp ON p.post_id = pp.post_id\n" +
+                    "LEFT JOIN\n" +
+                    "    photos ph ON pp.photo_id = ph.photo_id\n" +
+                    "LEFT JOIN\n" +
+                    "    post_videos pv ON p.post_id = pv.post_id\n" +
+                    "LEFT JOIN\n" +
+                    "    video v ON pv.video_id = v.video_id\n" +
+                    "WHERE\n" +
+                    "    p.post_id = :postId\n" +
+                    "GROUP BY\n" +
                     "    p.post_id,\n" +
                     "    u.user_id,\n" +
                     "    up.full_name,\n" +
@@ -89,7 +114,7 @@ public class PostQueries {
                     "    p.content,\n" +
                     "    p.upload_date,\n" +
                     "    p.status,\n" +
-                    "    p.is_public ;";
+                    "    p.is_public;";
 
     public static final String GET_POSTS_BY_USERID =
             "SELECT DISTINCT\n" +
