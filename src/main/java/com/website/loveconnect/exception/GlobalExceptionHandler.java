@@ -394,4 +394,14 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorDetail, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(MatchAlreadyExistingException.class)
+    public ResponseEntity<ErrorDetailResponse> handleMatchAlreadyExistingException(MatchAlreadyExistingException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
+                LocalDateTime.now(),
+                "Match already exist",
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetail, HttpStatus.CONFLICT);
+    }
 }

@@ -13,29 +13,27 @@ public class NotificationQueries {
                     "    user_notifications un\n" +
                     "JOIN\n" +
                     "    notifications n ON un.notification_id = n.notification_id\n" +
+                    "-- SỬA ĐỔI QUAN TRỌNG BẮT ĐẦU TỪ ĐÂY --\n" +
                     "JOIN\n" +
-                    "    matches m ON m.receiver_id = un.user_id AND m.sender_id = n.sender_id \n" +
+                    "    matches m ON\n" +
+                    "    -- Trường hợp 1: Người gửi thông báo là người gửi lời mời\n" +
+                    "    (m.sender_id = n.sender_id AND m.receiver_id = un.user_id)\n" +
+                    "    OR\n" +
+                    "    -- Trường hợp 2: Người gửi thông báo là người nhận lời mời (trường hợp phản hồi)\n" +
+                    "    (m.receiver_id = n.sender_id AND m.sender_id = un.user_id)\n" +
+                    "-- SỬA ĐỔI KẾT THÚC --\n" +
                     "LEFT JOIN (\n" +
                     "    -- Subquery để lấy ảnh mới nhất của người gửi\n" +
-                    "    SELECT\n" +
-                    "        user_id,\n" +
-                    "        photo_url\n" +
-                    "    FROM (\n" +
-                    "        SELECT\n" +
-                    "            user_id,\n" +
-                    "            photo_url,\n" +
-                    "            ROW_NUMBER() OVER(PARTITION BY user_id ORDER BY upload_date DESC) as rn\n" +
-                    "        FROM\n" +
-                    "            photos\n" +
+                    "    SELECT user_id, photo_url FROM (\n" +
+                    "        SELECT user_id, photo_url, ROW_NUMBER() OVER(PARTITION BY user_id ORDER BY upload_date DESC) as rn\n" +
+                    "        FROM photos\n" +
                     "    ) AS ranked_photos\n" +
-                    "    WHERE\n" +
-                    "        rn = 1\n" +
+                    "    WHERE rn = 1\n" +
                     ") AS latest_photo ON n.sender_id = latest_photo.user_id\n" +
                     "WHERE\n" +
-                    "    un.user_id = :userId \n" +
+                    "    un.user_id = :userId\n" +
                     "    AND n.notification_type = 'MATCH'\n" +
-                    "    AND un.is_read = FALSE\n" +
-                    "    AND m.status = 'PENDING';";
+                    "    AND un.is_read = FALSE;\n";
 
 
     public static final String GET_MESSAGE_NOTIFICATION_BY_USER_ID =

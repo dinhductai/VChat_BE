@@ -2,19 +2,14 @@ package com.website.loveconnect.dto.request;
 
 import lombok.*;
 
-import java.sql.Timestamp;
-
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MessageRequest {
-    @NonNull
-    private String token;
+public class MessageLoadRequest {
     @NonNull
     private Integer receiverId;
-    @NonNull
-    private String message;
-
+    private int page=0;
+    private int size=20;
 }

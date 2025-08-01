@@ -3,6 +3,7 @@ package com.website.loveconnect.service.impl;
 import com.cloudinary.utils.StringUtils;
 import com.website.loveconnect.dto.request.PostRequest;
 import com.website.loveconnect.dto.request.PostShareSaveRequest;
+import com.website.loveconnect.dto.request.PostUpdateRequest;
 import com.website.loveconnect.dto.request.ReelRequest;
 import com.website.loveconnect.dto.response.PostResponse;
 import com.website.loveconnect.dto.response.ReelResponse;
@@ -250,6 +251,41 @@ public class PostServiceImpl implements PostService {
                 userPost.setShare(true);
                 userPostRepository.save(userPost);
             }
+        }catch (DataAccessException da){
+            throw new DataAccessException("Cannot access database");
+        }
+    }
+
+    @Override
+    public void deletePost(Integer postId, Integer userId) {
+        try{
+            User user =  userRepository.findById(userId)
+                    .orElseThrow(() -> new UserNotFoundException("User not found"));
+            Post post = postRepository.findById(postId)
+                    .orElseThrow(() -> new PostNotFoundException("Post not found"));
+            if(post!=null && user!=null){
+                userPostRepository.deleteByUserAndPost(user,post);
+            }
+
+        }catch (DataAccessException da){
+            throw new DataAccessException("Cannot access database");
+        }
+    }
+
+    @Override
+    public PostResponse updatePostById(PostUpdateRequest postUpdateRequest,Integer userId) {
+        try{
+            Boolean userExisting = userRepository.existsByUserId(userId);
+            Post post = postRepository.findById(postUpdateRequest.getPostId())
+                    .orElseThrow(() -> new PostNotFoundException("Post not found"));
+            if(userExisting && post!=null){
+                post.setContent(postUpdateRequest.getContent());
+                post.setUploadDate(new Timestamp(System.currentTimeMillis()));
+                postRepository.save(post);
+                return postMapper.toPostResponse(postRepository.getOnePostByPostId(post.getPostId()));
+            }
+            else return null;
+
         }catch (DataAccessException da){
             throw new DataAccessException("Cannot access database");
         }

@@ -30,4 +30,6 @@ public interface MatchRepository extends JpaRepository<Match, Integer> {
     List<Tuple> getFullNameAndProfileUserMatchedBySenderId(@Param("senderId") int senderId, Pageable pageable);
 
     Optional<Match> findBySenderAndReceiver(User sender, User receiver);
+
+    Match findBySenderAndReceiverAndStatus(User sender,User receiver, MatchStatus status);
 }
