@@ -173,6 +173,8 @@ public class MatchServiceImpl implements MatchService {
                     checkMatched1.setStatus(MatchStatus.REJECTED);
                     matchRepository.save(checkMatched1);
                     notificationService.createNotificationRequestFriend(sender,receiver,matchStatus);
+                }else if(matchStatus.equals(MatchStatus.CANCEL)){
+                    matchRepository.delete(checkMatched1);
                 }
             }else
             if(checkMatched2!=null){
@@ -184,6 +186,8 @@ public class MatchServiceImpl implements MatchService {
                     checkMatched2.setStatus(MatchStatus.REJECTED);
                     matchRepository.save(checkMatched2);
                     notificationService.createNotificationRequestFriend(sender,receiver,matchStatus);
+                }else if(matchStatus.equals(MatchStatus.CANCEL)){
+                    matchRepository.delete(checkMatched2);
                 }
             } else{
                 throw new MatchNotFoundException("Match not found");
