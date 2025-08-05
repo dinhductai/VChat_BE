@@ -1,12 +1,10 @@
 package com.website.loveconnect.service.impl;
 
 import com.website.loveconnect.dto.request.MatchRequestDTO;
-import com.website.loveconnect.dto.response.MatchBySenderResponse;
-import com.website.loveconnect.dto.response.MatchMatchIdResponse;
-import com.website.loveconnect.dto.response.MatchResponse;
-import com.website.loveconnect.dto.response.UserMatchedResponse;
+import com.website.loveconnect.dto.response.*;
 import com.website.loveconnect.entity.Match;
 import com.website.loveconnect.entity.User;
+import com.website.loveconnect.enumpackage.MatchResponseType;
 import com.website.loveconnect.enumpackage.MatchStatus;
 import com.website.loveconnect.exception.DataAccessException;
 import com.website.loveconnect.exception.MatchAlreadyExistingException;
@@ -194,6 +192,28 @@ public class MatchServiceImpl implements MatchService {
 
         }catch (Exception e){
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public MatchStatusResponse getMatchStatusType(Integer userId, Integer otherUserId) {
+        try{
+            MatchStatusResponse result = new MatchStatusResponse();
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new UserNotFoundException("Sender not found"));
+            User other = userRepository.findById(otherUserId)
+                    .orElseThrow(() -> new UserNotFoundException("Receiver not found"));
+            Integer matchStatus = matchRepository.checkMatchStatus(userId,otherUserId);
+            if(matchStatus==0){
+                result.setMatchResponseType(MatchResponseType.UNKNOWN);
+            }else if(matchStatus==1){
+                result.setMatchResponseType(MatchResponseType.PENDING);
+            }else if(matchStatus==2){
+                result.setMatchResponseType(MatchResponseType.MATCHED);
+            }
+            return result;
+        }catch (DataAccessException e){
+            throw new DataAccessException("Cannot access database");
         }
     }
 }

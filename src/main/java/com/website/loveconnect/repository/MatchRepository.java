@@ -1,5 +1,6 @@
 package com.website.loveconnect.repository;
 
+import com.website.loveconnect.dto.response.MatchStatusResponse;
 import com.website.loveconnect.entity.Match;
 import com.website.loveconnect.entity.User;
 import com.website.loveconnect.enumpackage.MatchStatus;
@@ -32,4 +33,7 @@ public interface MatchRepository extends JpaRepository<Match, Integer> {
     Optional<Match> findBySenderAndReceiver(User sender, User receiver);
 
     Match findBySenderAndReceiverAndStatus(User sender,User receiver, MatchStatus status);
+
+    @Query(value = MatchQueries.CHECK_MATCHED_STATUS_BY_USER_ID_AND_OTHER_ID,nativeQuery = true)
+    Integer checkMatchStatus(@Param("userId") Integer userId, @Param("otherUserId") Integer otherUserId);
 }

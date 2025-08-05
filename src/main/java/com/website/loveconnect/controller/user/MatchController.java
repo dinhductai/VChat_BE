@@ -1,9 +1,7 @@
 package com.website.loveconnect.controller.user;
 
-import com.website.loveconnect.dto.response.ApiResponse;
-import com.website.loveconnect.dto.response.MatchBySenderResponse;
-import com.website.loveconnect.dto.response.MatchMatchIdResponse;
-import com.website.loveconnect.dto.response.UserMatchedResponse;
+import com.cloudinary.Api;
+import com.website.loveconnect.dto.response.*;
 import com.website.loveconnect.enumpackage.MatchStatus;
 import com.website.loveconnect.service.MatchService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -74,5 +72,12 @@ public class MatchController {
         return ResponseEntity.ok(new ApiResponse<>(true,"Update request friend successful", null));
     }
 
-
+    @Operation(summary = "Check match status",description = "Check status match between user and other")
+    @GetMapping(value = "/match")
+    public ResponseEntity<ApiResponse<MatchStatusResponse>> getMatchStatus(@AuthenticationPrincipal Jwt jwt,
+                                                                           @RequestParam("otherUserId") Integer otherUserId){
+        Integer userId = Integer.parseInt(jwt.getSubject());
+        return ResponseEntity.ok(new ApiResponse<>(true,"Get match status successful",
+                matchService.getMatchStatusType(userId, otherUserId)));
+    }
 }
