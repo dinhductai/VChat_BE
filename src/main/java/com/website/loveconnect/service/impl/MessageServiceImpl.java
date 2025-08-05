@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -69,8 +70,12 @@ public class MessageServiceImpl implements MessageService {
                     .orElseThrow(()-> new UserNotFoundException("Sender cannot found"));
             User receiver = userRepository.findById(messageRequest.getReceiverId())
                     .orElseThrow(()-> new UserNotFoundException("Receiver cannot found"));
-            Match match = matchRepository.findBySenderAndReceiver(sender,receiver)
-                    .orElseThrow(()-> new MatchNotFoundException("Match cannot found"));
+            Optional<Match> matchOptional = matchRepository.findBySenderAndReceiver(sender, receiver);
+            if (matchOptional.isEmpty()) {
+                matchOptional = matchRepository.findBySenderAndReceiver(receiver, sender);
+            }
+            Match match = matchOptional.orElseThrow(() -> new MatchNotFoundException("Match cannot found"));
+
             Message message = Message.builder()
                     .match(match)
                     .sender(sender)
