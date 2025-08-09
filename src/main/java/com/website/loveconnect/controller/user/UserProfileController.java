@@ -32,10 +32,14 @@ public class UserProfileController {
     //lấy thông tin chi tiết người dùng
     @Operation(summary = "Get user profile",description = "Get all information detail of user")
     @GetMapping(value = "/user-profile")
-    public ResponseEntity<ApiResponse<ProfileDetailResponse>> getUserProfile(@AuthenticationPrincipal Jwt jwt){
-        Integer userId = Integer.parseInt(jwt.getSubject());
+    public ResponseEntity<ApiResponse<ProfileDetailResponse>> getUserProfile(@AuthenticationPrincipal Jwt jwt,
+                                                                             @RequestParam(name = "userId", required = false) Integer userId){
+        Integer finalId;
+        if(userId != null){
+            finalId=userId;
+        }else  finalId = Integer.parseInt(jwt.getSubject());
         return ResponseEntity.ok(new ApiResponse<>(true,"Get user profile successful",
-                userProfileService.getProfileDetail(userId)));
+                userProfileService.getProfileDetail(finalId)));
     }
 
     //cập nhật thông tin chi tiết người dùng
