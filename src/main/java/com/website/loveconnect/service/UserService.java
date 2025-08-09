@@ -19,5 +19,5 @@ public interface UserService {
     Page<UserAndPhotosResponse> getAllUsersAndPhotos(int page,int size,Integer userId);
     Page<UserFriendResponse> getAllFriendsMatched(int page,int size,Integer userId);
     Page<UserFriendResponse> getFiendsFriendsMatched(int page,int size,Integer userId);
-
+    Page<UserFriendResponse> getRandomFriends(int page,int size,Integer userId);
 }

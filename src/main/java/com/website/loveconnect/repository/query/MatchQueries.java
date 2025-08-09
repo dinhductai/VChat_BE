@@ -29,4 +29,28 @@ public class MatchQueries {
                     "Left join photos p on p.user_id =  u.user_id\n" +
                     "left JOIN user_profiles up ON u.user_id = up.user_id \n" +
                     "WHERE m.sender_id = :senderId and p.is_profile_picture = true and p.is_approved = true";
+
+    public static final String CHECK_MATCHED_STATUS_BY_USER_ID_AND_OTHER_ID =
+            "SELECT\n" +
+                    "    IFNULL(\n" +
+                    "        (\n" +
+                    "            SELECT\n" +
+                    "                CASE status\n" +
+                    "                    WHEN 'MATCHED' THEN 2\n" +
+                    "                    WHEN 'PENDING' THEN 1\n" +
+                    "                END AS relationship \n" +
+                    "            FROM\n" +
+                    "                matches\n" +
+                    "            WHERE\n" +
+                    "                (\n" +
+                    "                    (sender_id = :userId AND receiver_id = :otherUserId) OR\n" +
+                    "                    (sender_id = :otherUserId AND receiver_id = :userId)\n" +
+                    "                )\n" +
+                    "                AND status IN ('MATCHED', 'PENDING')\n" +
+                    "            ORDER BY\n" +
+                    "                relationship DESC \n" +
+                    "            LIMIT 1\n" +
+                    "        ),\n" +
+                    "        0\n" +
+                    "    ) AS relationshipStatus;";
 }

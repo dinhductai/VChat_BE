@@ -54,18 +54,18 @@ public  class UserQueries {
 
     public static final String GET_USER_BY_FILTERS =
             "Select u.user_id as userId, up.full_name as fullName, u.email as email, " +
-            "u.phone_number as phone, u.registration_date as registrationDate, u.account_status as accountStatus " +
-            "from users u " +
-            "join user_profiles up on up.user_id = u.user_id " +
-            "where u.account_status <> 'DELETED' " +
-            "and (:status IS NULL OR u.account_status = :status ) " +
-            "and (:gender IS NULL OR up.gender = :gender ) " +
-            "and (:keyword IS NULL OR up.full_name LIKE CONCAT('%', :keyword ,'%') ) " +
-            "ORDER BY " +
-            "CASE WHEN :sort = 'newest' THEN u.registration_date END DESC, " +
-            "CASE WHEN :sort = 'oldest' THEN u.registration_date END ASC, " +
-            "CASE WHEN :sort = 'name_asc' THEN up.full_name END ASC, " + //A-Z
-            "CASE WHEN :sort = 'name_desc' THEN up.full_name END DESC"; //từ Z-A
+                    "u.phone_number as phone, u.registration_date as registrationDate, u.account_status as accountStatus " +
+                    "from users u " +
+                    "join user_profiles up on up.user_id = u.user_id " +
+                    "where u.account_status <> 'DELETED' " +
+                    "and (:status IS NULL OR u.account_status = :status ) " +
+                    "and (:gender IS NULL OR up.gender = :gender ) " +
+                    "and (:keyword IS NULL OR up.full_name LIKE CONCAT('%', :keyword ,'%') ) " +
+                    "ORDER BY " +
+                    "CASE WHEN :sort = 'newest' THEN u.registration_date END DESC, " +
+                    "CASE WHEN :sort = 'oldest' THEN u.registration_date END ASC, " +
+                    "CASE WHEN :sort = 'name_asc' THEN up.full_name END ASC, " + //A-Z
+                    "CASE WHEN :sort = 'name_desc' THEN up.full_name END DESC"; //từ Z-A
 
     public static final String EXIST_USER_BY_ROLE_ADMIN_AND_STATUS_ACTIVE =
             "SELECT EXISTS ( SELECT 1 FROM users u " +
@@ -258,4 +258,50 @@ public  class UserQueries {
                     "WHERE\n" +
                     "    fof.fof_id != :userId\n" +
                     "    AND fof.fof_id NOT IN (SELECT friend_id FROM MyFriends);";
+
+
+    public static final String GET_RANDOM_FRIENDS =
+            "SELECT \n" +
+                    "    u.user_id As userId,\n" +
+                    "    up.full_name AS fullName,\n" +
+                    "    up.bio as bio,\n" +
+                    "    u.phone_number as phoneNumber,\n" +
+                    "    p.photo_url AS photoProfile\n" +
+                    "FROM \n" +
+                    "    users u\n" +
+                    "JOIN \n" +
+                    "    user_profiles up ON u.user_id = up.user_id\n" +
+                    "LEFT JOIN \n" +
+                    "    (\n" +
+                    "        SELECT \n" +
+                    "            p1.user_id, \n" +
+                    "            p1.photo_url\n" +
+                    "        FROM \n" +
+                    "            photos p1\n" +
+                    "        JOIN \n" +
+                    "            (\n" +
+                    "                SELECT \n" +
+                    "                    user_id, \n" +
+                    "                    MAX(upload_date) AS max_upload_date\n" +
+                    "                FROM \n" +
+                    "                    photos\n" +
+                    "                WHERE \n" +
+                    "                    is_profile_picture = TRUE\n" +
+                    "                GROUP BY \n" +
+                    "                    user_id\n" +
+                    "            ) latest ON p1.user_id = latest.user_id AND p1.upload_date = latest.max_upload_date\n" +
+                    "        WHERE \n" +
+                    "            p1.is_profile_picture = TRUE\n" +
+                    "    ) p ON p.user_id = u.user_id\n" +
+                    "WHERE \n" +
+                    "    u.user_id != :userId \n" +
+                    "    AND u.account_status = 'ACTIVE'\n" +
+                    "    AND u.user_id NOT IN (\n" +
+                    "        SELECT receiver_id FROM matches WHERE sender_id = :userId AND status IN ('MATCHED', 'PENDING')\n" +
+                    "        UNION\n" +
+                    "        SELECT sender_id FROM matches WHERE receiver_id = :userId AND status IN ('MATCHED', 'PENDING')\n" +
+                    "    )\n" +
+                    "ORDER BY " +
+                    "   RAND() ;";
+
 }

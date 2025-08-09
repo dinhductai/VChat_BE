@@ -108,12 +108,12 @@ public class CommentServiceImpl implements CommentService {
 //
 //    }
 //
-//    @Override
-//    public Page<CommentResponse> getComments(CommentGetRequest commentGetRequest, int page, int size) {
-//        Pageable pageable = PageRequest.of(page,size);
-//        return commentRepository.getComments(pageable,commentGetRequest.getPostId(),commentGetRequest.getLevel(),
-//                commentGetRequest.getParentCommentId()).map(commentMapper::toCommentResponse);
-//    }
+    @Override
+    public Page<CommentResponse> getComments(CommentGetRequest commentGetRequest, int page, int size) {
+        Pageable pageable = PageRequest.of(page,size);
+        return commentRepository.getComments(pageable,commentGetRequest.getPostId(),commentGetRequest.getLevel(),
+                commentGetRequest.getParentCommentId()).map(commentMapper::toCommentResponse);
+    }
 
     @Override
     public void editComment(CommentRequest commentRequest, Integer userId) {
@@ -125,10 +125,10 @@ public class CommentServiceImpl implements CommentService {
 
     }
 
-    @Override
-    public Page<CommentResponse> getComments(CommentGetRequest commentGetRequest, int page, int size) {
-        return null;
-    }
+//    @Override
+//    public Page<CommentResponse> getComments(CommentGetRequest commentGetRequest, int page, int size) {
+//        return null;
+//    }
 
     // Sửa lại các hàm create và rep để trả về CommentResponse
     @Override

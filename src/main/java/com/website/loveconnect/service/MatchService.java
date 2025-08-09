@@ -1,10 +1,7 @@
 package com.website.loveconnect.service;
 
 import com.website.loveconnect.dto.request.MatchRequestDTO;
-import com.website.loveconnect.dto.response.MatchBySenderResponse;
-import com.website.loveconnect.dto.response.MatchMatchIdResponse;
-import com.website.loveconnect.dto.response.MatchResponse;
-import com.website.loveconnect.dto.response.UserMatchedResponse;
+import com.website.loveconnect.dto.response.*;
 import com.website.loveconnect.entity.User;
 import com.website.loveconnect.enumpackage.MatchStatus;
 
@@ -20,4 +17,6 @@ public interface MatchService {
     List<UserMatchedResponse> getAllUserMatched(int userId,int page,int size);
     void createRequestFriend(Integer senderId, Integer receiverId);
     void updateRequestFriend(Integer senderId, Integer receiverId,MatchStatus matchStatus);
+    MatchStatusResponse getMatchStatusType(Integer userId,Integer otherUserId);
+
 }

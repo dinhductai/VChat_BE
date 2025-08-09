@@ -68,4 +68,14 @@ public class UserController {
         return ResponseEntity.ok(new ApiResponse<>(true,"Get friends friends successful",
                 userService.getFiendsFriendsMatched(page,size,userId)));
     }
+
+    @Operation(summary = "Get random friends",description = "Get random friends")
+    @GetMapping(value = "/user/random-friends")
+    public ResponseEntity<ApiResponse<Page<UserFriendResponse>>> getRandomFriends(@AuthenticationPrincipal Jwt jwt,
+                                                                                   @RequestParam(defaultValue = "0") int page,
+                                                                                   @RequestParam(defaultValue = "10") int size){
+        Integer userId = Integer.parseInt(jwt.getSubject());
+        return ResponseEntity.ok(new ApiResponse<>(true,"Get friends friends successful",
+                userService.getRandomFriends(page,size,userId)));
+    }
 }
