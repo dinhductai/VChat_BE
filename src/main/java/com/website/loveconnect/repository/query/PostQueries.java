@@ -187,7 +187,22 @@ public class PostQueries {
                     "JOIN user_posts upo ON p.post_id = upo.post_id\n" +
                     "JOIN users u ON upo.user_id = u.user_id\n" +
                     "JOIN user_profiles up ON u.user_id = up.user_id\n" +
-                    "LEFT JOIN photos prof_pic ON prof_pic.user_id = u.user_id AND prof_pic.is_profile_picture = TRUE\n" +
+                    "LEFT JOIN (\n" +
+                    "    SELECT\n" +
+                    "        user_id,\n" +
+                    "        photo_url\n" +
+                    "    FROM (\n" +
+                    "        SELECT\n" +
+                    "            user_id,\n" +
+                    "            photo_url,\n" +
+                    "            ROW_NUMBER() OVER(PARTITION BY user_id ORDER BY upload_date DESC) as rn\n" +
+                    "        FROM photos\n" +
+                    "        WHERE is_profile_picture = TRUE\n" +
+                    "    ) AS ranked_photos\n" +
+                    "    WHERE rn = 1\n" +
+                    ") AS prof_pic\n" +
+                    "    ON u.user_id = prof_pic.user_id\n" +
+                    "\n" +
                     "LEFT JOIN post_photos pp ON p.post_id = pp.post_id\n" +
                     "LEFT JOIN photos ph ON pp.photo_id = ph.photo_id\n" +
                     "LEFT JOIN post_videos pv ON p.post_id = pv.post_id\n" +
@@ -205,10 +220,10 @@ public class PostQueries {
                     "    p.upload_date,\n" +
                     "    p.status,\n" +
                     "    p.is_public,\n" +
-                    "    v.video_url ; ";
+                    "    v.video_url; ";
 
     public static final String GET_RANDOM_REEL =
-            "SELECT \n" +
+            "SELECT\n" +
                     "    u.user_id as userId,\n" +
                     "    up.full_name as fullName,\n" +
                     "    up.bio as bio,\n" +
@@ -224,8 +239,22 @@ public class PostQueries {
                     "JOIN user_posts upo ON p.post_id = upo.post_id\n" +
                     "JOIN users u ON upo.user_id = u.user_id\n" +
                     "JOIN user_profiles up ON u.user_id = up.user_id\n" +
-                    "LEFT JOIN photos prof_pic \n" +
-                    "    ON prof_pic.user_id = u.user_id AND prof_pic.is_profile_picture = TRUE\n" +
+                    "LEFT JOIN (\n" +
+                    "    SELECT\n" +
+                    "        user_id,\n" +
+                    "        photo_url\n" +
+                    "    FROM (\n" +
+                    "        SELECT\n" +
+                    "            user_id,\n" +
+                    "            photo_url,\n" +
+                    "            ROW_NUMBER() OVER(PARTITION BY user_id ORDER BY upload_date DESC) as rn\n" +
+                    "        FROM photos\n" +
+                    "        WHERE is_profile_picture = TRUE\n" +
+                    "    ) AS ranked_photos\n" +
+                    "    WHERE rn = 1\n" +
+                    ") AS prof_pic\n" +
+                    "    ON u.user_id = prof_pic.user_id\n" +
+                    "\n" +
                     "LEFT JOIN post_photos pp ON p.post_id = pp.post_id\n" +
                     "LEFT JOIN photos ph ON pp.photo_id = ph.photo_id\n" +
                     "LEFT JOIN post_videos pv ON p.post_id = pv.post_id\n" +
