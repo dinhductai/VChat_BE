@@ -21,5 +21,8 @@ public interface PostService {
     void shareOrSavePost(PostShareSaveRequest postShareSaveRequest, Integer userId);
     void deletePost(Integer postId,Integer userId);
     PostResponse updatePostById(PostUpdateRequest postUpdateRequest,Integer userId);
+    Page<PostResponse> getOwnPostShared(Integer userId,int page,int size);
+    Page<PostResponse> getOwnPostSaved(Integer userId,int page,int size);
+
 
 }
