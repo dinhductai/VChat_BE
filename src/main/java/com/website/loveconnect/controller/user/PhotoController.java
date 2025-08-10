@@ -93,18 +93,14 @@ public class PhotoController {
     }
 
     //lấy toàn bộ story
-    @Operation(summary = "Get all story", description = "Get stories of your friends, at least a day")
+    @Operation(summary = "Get all story", description = "Get stories of your friends, in a day")
     @GetMapping(value = "/story")
     public ResponseEntity<ApiResponse<Page<PhotoStoryResponse>>> getPhotoStory(@AuthenticationPrincipal Jwt jwt,
                                                                                @RequestParam(defaultValue = "0") int page,
-                                                                               @RequestParam(defaultValue = "4") int size,
-                                                                               @RequestParam(name = "userId", required = false) Integer userId){
-        Integer finalId;
-        if(userId != null){
-            finalId=userId;
-        }else  finalId = Integer.parseInt(jwt.getSubject());
+                                                                               @RequestParam(defaultValue = "4") int size){
+        Integer userId= Integer.parseInt(jwt.getSubject());
         return ResponseEntity.ok(new ApiResponse<>(true,"Get story successful",
-                imageService.photoStories(finalId,page,size)));
+                imageService.photoStories(userId,page,size)));
     }
 
     //tạo story
@@ -139,7 +135,7 @@ public class PhotoController {
     }
 
     //lấy toàn bộ story
-    @Operation(summary = "Get owner story", description = "Get owner stories , at least a day")
+    @Operation(summary = "Get owner story", description = "Get owner stories , in a day")
     @GetMapping(value = "/story/owner")
     public ResponseEntity<ApiResponse<List<PhotoStoryResponse>>> getOwnerStories(@AuthenticationPrincipal Jwt jwt,
                                                                                  @RequestParam(name = "userId", required = false) Integer userId){
