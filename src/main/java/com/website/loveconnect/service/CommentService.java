@@ -13,7 +13,7 @@ public interface CommentService {
 //    void repComment(CommentRequest commentRequest,Integer userId);
     void editComment(CommentRequest commentRequest,Integer userId);
     void deleteComment(CommentRequest commentRequest,Integer userId);
-    Page<CommentResponse> getComments(CommentGetRequest commentGetRequest,int page, int size);
+    Page<CommentResponse> getComments(Integer postId,Integer level,Integer parentCommentId,int page, int size);
 
     CommentResponse createComment(CommentRequest commentRequest, Integer userId);
     CommentResponse repComment(CommentRequest commentRequest, Integer userId);

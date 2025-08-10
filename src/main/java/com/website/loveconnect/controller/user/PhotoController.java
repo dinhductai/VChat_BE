@@ -55,12 +55,16 @@ public class PhotoController {
     }
 
     //lấy ảnh profile của user
-    @Operation(summary = "Get profile photo",description = "Get newest profile picture of owner")
+    @Operation(summary = "Get profile photo",description = "Get newest profile picture of user")
     @GetMapping(value = "/profile-photo")
-    public ResponseEntity<ApiResponse<String>> getProfileImage(@AuthenticationPrincipal Jwt jwt){
-        Integer userId = Integer.parseInt(jwt.getSubject());
+    public ResponseEntity<ApiResponse<String>> getProfileImage(@AuthenticationPrincipal Jwt jwt,
+                                                               @RequestParam(name = "userId", required = false) Integer userId){
+        Integer finalId;
+        if(userId != null){
+            finalId=userId;
+        }else  finalId = Integer.parseInt(jwt.getSubject());
         return ResponseEntity.ok(new ApiResponse<>(true,"Get profile image successful",
-                imageService.getProfileImage(userId)));
+                imageService.getProfileImage(finalId)));
     }
 
     //lấy toàn bộ ảnh của người dùng
@@ -68,9 +72,13 @@ public class PhotoController {
     @GetMapping(value = "/photo")
     public ResponseEntity<ApiResponse<Page<String>>> getPhotoAll(@AuthenticationPrincipal Jwt jwt,
                                                                  @RequestParam(defaultValue = "0") int page,
-                                                                 @RequestParam(defaultValue = "10") int size){
-        Integer userId = Integer.parseInt(jwt.getSubject());
-        Page<String> urlPhotos = imageService.getOwnedPhotos(userId,page,size);
+                                                                 @RequestParam(defaultValue = "10") int size,
+                                                                 @RequestParam(name = "userId", required = false) Integer userId){
+        Integer finalId;
+        if(userId != null){
+            finalId=userId;
+        }else  finalId = Integer.parseInt(jwt.getSubject());
+        Page<String> urlPhotos = imageService.getOwnedPhotos(finalId,page,size);
         return ResponseEntity.ok(new ApiResponse<>(true,"Get photos successful",urlPhotos));
     }
 
@@ -89,10 +97,14 @@ public class PhotoController {
     @GetMapping(value = "/story")
     public ResponseEntity<ApiResponse<Page<PhotoStoryResponse>>> getPhotoStory(@AuthenticationPrincipal Jwt jwt,
                                                                                @RequestParam(defaultValue = "0") int page,
-                                                                               @RequestParam(defaultValue = "4") int size){
-        Integer userId = Integer.parseInt(jwt.getSubject());
+                                                                               @RequestParam(defaultValue = "4") int size,
+                                                                               @RequestParam(name = "userId", required = false) Integer userId){
+        Integer finalId;
+        if(userId != null){
+            finalId=userId;
+        }else  finalId = Integer.parseInt(jwt.getSubject());
         return ResponseEntity.ok(new ApiResponse<>(true,"Get story successful",
-                imageService.photoStories(userId,page,size)));
+                imageService.photoStories(finalId,page,size)));
     }
 
     //tạo story
@@ -129,10 +141,14 @@ public class PhotoController {
     //lấy toàn bộ story
     @Operation(summary = "Get owner story", description = "Get owner stories , at least a day")
     @GetMapping(value = "/story/owner")
-    public ResponseEntity<ApiResponse<List<PhotoStoryResponse>>> getOwnerStories(@AuthenticationPrincipal Jwt jwt){
-        Integer userId = Integer.parseInt(jwt.getSubject());
+    public ResponseEntity<ApiResponse<List<PhotoStoryResponse>>> getOwnerStories(@AuthenticationPrincipal Jwt jwt,
+                                                                                 @RequestParam(name = "userId", required = false) Integer userId){
+        Integer finalId;
+        if(userId != null){
+            finalId=userId;
+        }else  finalId = Integer.parseInt(jwt.getSubject());
         return ResponseEntity.ok(new ApiResponse<>(true,"Get owner story successful",
-                imageService.getOwnerStories(userId)));
+                imageService.getOwnerStories(finalId)));
     }
 
 }
