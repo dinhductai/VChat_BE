@@ -290,4 +290,29 @@ public class PostServiceImpl implements PostService {
             throw new DataAccessException("Cannot access database");
         }
     }
+
+    @Override
+    public Page<PostResponse> getOwnPostShared(Integer userId, int page, int size) {
+        try{
+            Pageable pageable = PageRequest.of(page,size);
+            return postRepository.getPostsSharedByUserId(userId, pageable).map(postMapper::toPostResponse);
+        }catch (DataAccessException e){
+            throw new DataAccessException("Cannot access database");
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public Page<PostResponse> getOwnPostSaved(Integer userId, int page, int size) {
+        try{
+            Pageable pageable = PageRequest.of(page,size);
+            return postRepository.getPostsSavedByUserId(userId, pageable).map(postMapper::toPostResponse);
+        }catch (DataAccessException e){
+            throw new DataAccessException("Cannot access database");
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }    }
 }

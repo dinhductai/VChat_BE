@@ -39,10 +39,14 @@ public class VideoController {
     @GetMapping(value = "/video")
     public ResponseEntity<ApiResponse<Page<Video>>> getVideo(@AuthenticationPrincipal Jwt jwt,
                                                              @RequestParam(defaultValue = "0") int page,
-                                                             @RequestParam(defaultValue = "10") int size){
-        Integer userId = Integer.parseInt(jwt.getSubject());
+                                                             @RequestParam(defaultValue = "10") int size,
+                                                             @RequestParam(name = "userId", required = false) Integer userId){
+        Integer finalId;
+        if(userId != null){
+            finalId=userId;
+        }else  finalId = Integer.parseInt(jwt.getSubject());
         return ResponseEntity.ok(new ApiResponse<>(true,"Get video successful",
-                videoService.getOwnedVideos(userId,page,size)));
+                videoService.getOwnedVideos(finalId,page,size)));
     }
 
     @Operation(summary = "Delete video",description = "Delete owner video")

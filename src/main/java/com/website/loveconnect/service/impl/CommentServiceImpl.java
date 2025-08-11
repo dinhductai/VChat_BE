@@ -109,10 +109,9 @@ public class CommentServiceImpl implements CommentService {
 //    }
 //
     @Override
-    public Page<CommentResponse> getComments(CommentGetRequest commentGetRequest, int page, int size) {
+    public Page<CommentResponse> getComments(Integer postId,Integer level,Integer parentCommentId, int page, int size) {
         Pageable pageable = PageRequest.of(page,size);
-        return commentRepository.getComments(pageable,commentGetRequest.getPostId(),commentGetRequest.getLevel(),
-                commentGetRequest.getParentCommentId()).map(commentMapper::toCommentResponse);
+        return commentRepository.getComments(pageable,postId,level,parentCommentId).map(commentMapper::toCommentResponse);
     }
 
     @Override

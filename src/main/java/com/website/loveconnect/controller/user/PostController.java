@@ -66,10 +66,14 @@ public class PostController {
     @GetMapping(value = "/post/owner")
     public ResponseEntity<ApiResponse<Page<PostResponse>>> getOwnPosts(@RequestParam(defaultValue = "0") int page,
                                                                        @RequestParam(defaultValue = "3") int size,
-                                                                       @AuthenticationPrincipal Jwt jwt){
-        Integer userId = Integer.parseInt(jwt.getSubject());
+                                                                       @AuthenticationPrincipal Jwt jwt,
+                                                                       @RequestParam(name = "userId", required = false) Integer userId){
+        Integer finalId;
+        if(userId != null){
+            finalId=userId;
+        }else  finalId = Integer.parseInt(jwt.getSubject());
         return ResponseEntity.ok(new ApiResponse<>(true,"Get own posts successful",
-                postService.getOwnPost(userId,page,size)));
+                postService.getOwnPost(finalId,page,size)));
     }
 
     @Operation(summary = "Create reel",description = "Create a reel with text and post")
@@ -119,5 +123,24 @@ public class PostController {
                 postService.updatePostById(request,userId)));
     }
 
+    @Operation(summary = "Get own posts shared",description = "Get all post shared of owner")
+    @GetMapping(value = "/post/share")
+    public ResponseEntity<ApiResponse<Page<PostResponse>>> getOwnPostsShared(@RequestParam(defaultValue = "0") int page,
+                                                                       @RequestParam(defaultValue = "3") int size,
+                                                                       @AuthenticationPrincipal Jwt jwt){
+        Integer userId = Integer.parseInt(jwt.getSubject());
+        return ResponseEntity.ok(new ApiResponse<>(true,"Get own posts successful",
+                postService.getOwnPostShared(userId,page,size)));
+    }
+
+    @Operation(summary = "Get own posts saved",description = "Get all post saved of owner")
+    @GetMapping(value = "/post/save")
+    public ResponseEntity<ApiResponse<Page<PostResponse>>> getOwnPostsSaved(@RequestParam(defaultValue = "0") int page,
+                                                                       @RequestParam(defaultValue = "3") int size,
+                                                                       @AuthenticationPrincipal Jwt jwt){
+            Integer userId = Integer.parseInt(jwt.getSubject());
+        return ResponseEntity.ok(new ApiResponse<>(true,"Get own posts successful",
+                postService.getOwnPostSaved(userId,page,size)));
+    }
 
 }
