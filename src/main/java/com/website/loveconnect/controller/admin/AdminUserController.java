@@ -32,37 +32,51 @@ public class AdminUserController {
     UserService userService;
     PhotoService imageService;
 
-    //lấy tất cả người dùng
+    //lấy tất cả người dùng hoặc search
     @GetMapping(value = "/users")
-    public ResponseEntity<ApiResponse<Page<ListUserResponse>>> getAllUser(@RequestParam(defaultValue = "0") int page,
-                                                                          @RequestParam(defaultValue = "10") int size) {
-        return  ResponseEntity.ok(new ApiResponse<>(true,"get list user successful",
-                userService.getAllUser(page,size)));
+    public ResponseEntity<ApiResponse<Page<ListUserResponse>>> getAllUser(
+            @RequestParam(name = "status",required = false) String status,
+            @RequestParam(name = "gender",required = false) String gender,
+            //key sort: newest, oldest, name_asc, name_desc
+            @RequestParam(name = "sort", required = false) String sort,
+            @RequestParam(name = "keyword", required = false) String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        if (status != null || gender != null || keyword != null || sort != null) {
+            return ResponseEntity.ok(new ApiResponse<>(true,
+                    "Get list user by filters successful",
+                    userService.getAllUserByFilters(status, gender, sort, keyword, page, size)));
+        } else {
+            return ResponseEntity.ok(new ApiResponse<>(true,
+                    "Get list user successful",
+                    userService.getAllUser(page, size)));
+        }
     }
 
-    //lấy thông tin chi tiết người dùng
+    //lấy thông tin chi tiết người dùng cho detail
     @GetMapping(value = "/users/{userId}")
     public ResponseEntity<ApiResponse<UserViewResponse>> getUserById(@PathVariable int userId) {
-        UserViewResponse user = userService.getUserById(userId);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Get user successful", user));
+            UserViewResponse user = userService.getUserById(userId);
+            return ResponseEntity.ok(new ApiResponse<>(true, "Get user detail successful", user));
+
     }
 
-    //block người dùng bằng id
-    @PutMapping(value = "/users/{userId}/block")
-    public ResponseEntity<ApiResponse<String>> blockUser(@PathVariable int userId) {
-        userService.blockUser(userId);
-        return ResponseEntity.ok(new ApiResponse<>(true,"User blocked successfully", null));
+    //block hoặc unlock người dùng bằng id
+    @PatchMapping(value = "/users/{userId}")
+    public ResponseEntity<ApiResponse<?>> blockOrActiveUser(@PathVariable int userId,
+                                                         @RequestParam(defaultValue = "block") String status) {
+        if("active".equalsIgnoreCase(status)) {
+            userService.unblockUser(userId);
+            return ResponseEntity.ok(new ApiResponse<>(true,"User unblocked successfully", null));
+        }else {
+            userService.blockUser(userId);
+            return ResponseEntity.ok(new ApiResponse<>(true, "User blocked successfully", null));
+        }
     }
 
-    //unblock người dùng bằng id
-    @PutMapping(value = "/users/{userId}/unblock")
-    public ResponseEntity<ApiResponse<String>> unblockUser(@PathVariable int userId) {
-        userService.unblockUser(userId);
-        return ResponseEntity.ok(new ApiResponse<>(true,"User unblocked successfully", null));
-    }
 
     //lấy thông tin người dùng cần sửa
-    @GetMapping(value = "/users/{userId}/update")
+    @GetMapping(value = "/users/{userId}/edit")
     public ResponseEntity<ApiResponse<UserUpdateResponse>> getUserUpdateById(@PathVariable int userId) {
         UserUpdateResponse user = userService.getUserUpdateById(userId);
         return ResponseEntity.ok(new ApiResponse<>(true,"Get user successful",user));
@@ -70,7 +84,7 @@ public class AdminUserController {
 
 
     //cập nhật người dùng
-    @PutMapping(value = "/users/{userId}/update")
+    @PutMapping(value = "/users/{userId}")
     public ResponseEntity<ApiResponse<UserUpdateResponse>> updateUserById(@PathVariable int userId,
                                                                           @RequestBody UserUpdateRequest userUpdateRequest) {
         UserUpdateResponse user = userService.updateUser(userId,userUpdateRequest);
@@ -78,43 +92,33 @@ public class AdminUserController {
     }
 
     //xóa người dùng
-    @DeleteMapping(value = "/users/{userId}/delete")
+    @DeleteMapping(value = "/users/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable int userId) {
         userService.deleteUser(userId);
         return ResponseEntity.noContent().build();
     }
 
     //tạo người dùng
-    @PostMapping(value = "/users/create")
+    @PostMapping(value = "/users")
     public ResponseEntity<ApiResponse<String>> createUser(@RequestBody UserCreateRequest userCreateRequest){
         userService.createUser(userCreateRequest);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiResponse<>(true,"Create user successful", null));
     }
 
-    //api dùng kèm với user create
-    //tạo ảnh profile với 1 file và user email
-    @PostMapping(value = "/users/profile-image/create",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<String>> createProfileImage(@RequestParam("file")MultipartFile file,
-                                                   @RequestParam("userEmail") String userEmail) throws IOException {
-        String urlImage = imageService.uploadImageProfile(file,userEmail);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ApiResponse<>(true,"Save profile image successful", urlImage));
-    }
-
     //lấy danh sách người dùng bằng filter
-    @GetMapping(value = "/users/search")
-    public ResponseEntity<ApiResponse<Page<ListUserResponse>>> getAllUserByFilters(
-            @RequestParam(name = "status",required = false) String status,
-            @RequestParam(name = "gender",required = false) String gender,
-            //key sort: newest, oldest, name_asc, name_desc
-            @RequestParam(name = "sort", required = false) String sort,
-            @RequestParam(name = "keyword", required = false) String keyword,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size){
-        return ResponseEntity.ok(new ApiResponse<>(true,"Get list user by filters successful",
-                userService.getAllUserByFilters(status,gender,sort,keyword,page,size)));
-    }
+//    @GetMapping(value = "/users/search")
+//    public ResponseEntity<ApiResponse<Page<ListUserResponse>>> getAllUserByFilters(
+//            @RequestParam(name = "status",required = false) String status,
+//            @RequestParam(name = "gender",required = false) String gender,
+//            //key sort: newest, oldest, name_asc, name_desc
+//            @RequestParam(name = "sort", required = false) String sort,
+//            @RequestParam(name = "keyword", required = false) String keyword,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size){
+//        return ResponseEntity.ok(new ApiResponse<>(true,"Get list user by filters successful",
+//                userService.getAllUserByFilters(status,gender,sort,keyword,page,size)));
+//    }
 
 
 }
