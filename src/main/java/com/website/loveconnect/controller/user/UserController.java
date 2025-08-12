@@ -49,33 +49,76 @@ public class UserController {
                 userService.getAllUserByKeyword(keyword,page,size)));
     }
 
-    @Operation(summary = "Get friends",description = "Get all friend matched with owner")
+
+    @Operation(summary = "Get friends by type", description = "Get friends list based on type")
     @GetMapping(value = "/user/friends")
-    public ResponseEntity<ApiResponse<Page<UserFriendResponse>>> getFriends(@AuthenticationPrincipal Jwt jwt,
-                                                                            @RequestParam(defaultValue = "0") int page,
-                                                                            @RequestParam(defaultValue = "10") int size){
+    public ResponseEntity<ApiResponse<Page<UserFriendResponse>>> getFriendsByType(
+            @AuthenticationPrincipal Jwt jwt,
+            @RequestParam(defaultValue = "matched") String type,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
         Integer userId = Integer.parseInt(jwt.getSubject());
-        return ResponseEntity.ok(new ApiResponse<>(true,"Get friends successful",
-                userService.getAllFriendsMatched(page,size,userId)));
+        Page<UserFriendResponse> result;
+
+        switch (type.toLowerCase()) {
+            case "matched":
+                result = userService.getAllFriendsMatched(page, size, userId);
+                break;
+            case "friends_of_friends":
+                result = userService.getFiendsFriendsMatched(page, size, userId);
+                break;
+            case "random":
+                result = userService.getRandomFriends(page, size, userId);
+                break;
+            case "pending":
+                result = userService.getAllFriendsPending(page, size, userId);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid type: " + type);
+        }
+
+        return ResponseEntity.ok(new ApiResponse<>(true, "Get friends successful", result));
     }
 
-    @Operation(summary = "Get friends friends",description = "Get all friend matched with owner friends")
-    @GetMapping(value = "/user/friends-friends")
-    public ResponseEntity<ApiResponse<Page<UserFriendResponse>>> getFriendsFriends(@AuthenticationPrincipal Jwt jwt,
-                                                                            @RequestParam(defaultValue = "0") int page,
-                                                                            @RequestParam(defaultValue = "10") int size){
-        Integer userId = Integer.parseInt(jwt.getSubject());
-        return ResponseEntity.ok(new ApiResponse<>(true,"Get friends friends successful",
-                userService.getFiendsFriendsMatched(page,size,userId)));
-    }
-
-    @Operation(summary = "Get random friends",description = "Get random friends")
-    @GetMapping(value = "/user/random-friends")
-    public ResponseEntity<ApiResponse<Page<UserFriendResponse>>> getRandomFriends(@AuthenticationPrincipal Jwt jwt,
-                                                                                   @RequestParam(defaultValue = "0") int page,
-                                                                                   @RequestParam(defaultValue = "10") int size){
-        Integer userId = Integer.parseInt(jwt.getSubject());
-        return ResponseEntity.ok(new ApiResponse<>(true,"Get friends friends successful",
-                userService.getRandomFriends(page,size,userId)));
-    }
+//
+//    @Operation(summary = "Get friends",description = "Get all friend matched with owner")
+//    @GetMapping(value = "/user/friends")
+//    public ResponseEntity<ApiResponse<Page<UserFriendResponse>>> getFriends(@AuthenticationPrincipal Jwt jwt,
+//                                                                            @RequestParam(defaultValue = "0") int page,
+//                                                                            @RequestParam(defaultValue = "10") int size){
+//        Integer userId = Integer.parseInt(jwt.getSubject());
+//        return ResponseEntity.ok(new ApiResponse<>(true,"Get friends successful",
+//                userService.getAllFriendsMatched(page,size,userId)));
+//    }
+//
+//    @Operation(summary = "Get friends friends",description = "Get all friend matched with owner friends")
+//    @GetMapping(value = "/user/friends-friends")
+//    public ResponseEntity<ApiResponse<Page<UserFriendResponse>>> getFriendsFriends(@AuthenticationPrincipal Jwt jwt,
+//                                                                            @RequestParam(defaultValue = "0") int page,
+//                                                                            @RequestParam(defaultValue = "10") int size){
+//        Integer userId = Integer.parseInt(jwt.getSubject());
+//        return ResponseEntity.ok(new ApiResponse<>(true,"Get friends friends successful",
+//                userService.getFiendsFriendsMatched(page,size,userId)));
+//    }
+//
+//    @Operation(summary = "Get random friends",description = "Get random friends")
+//    @GetMapping(value = "/user/random-friends")
+//    public ResponseEntity<ApiResponse<Page<UserFriendResponse>>> getRandomFriends(@AuthenticationPrincipal Jwt jwt,
+//                                                                                   @RequestParam(defaultValue = "0") int page,
+//                                                                                   @RequestParam(defaultValue = "10") int size){
+//        Integer userId = Integer.parseInt(jwt.getSubject());
+//        return ResponseEntity.ok(new ApiResponse<>(true,"Get friends friends successful",
+//                userService.getRandomFriends(page,size,userId)));
+//    }
+//
+//    @Operation(summary = "Get friends",description = "Get all friend matched with owner")
+//    @GetMapping(value = "/user/friends-pending")
+//    public ResponseEntity<ApiResponse<Page<UserFriendResponse>>> getFriendsPending(@AuthenticationPrincipal Jwt jwt,
+//                                                                            @RequestParam(defaultValue = "0") int page,
+//                                                                            @RequestParam(defaultValue = "10") int size){
+//        Integer userId = Integer.parseInt(jwt.getSubject());
+//        return ResponseEntity.ok(new ApiResponse<>(true,"Get friends successful",
+//                userService.getAllFriendsPending(page,size,userId)));
+//    }
 }

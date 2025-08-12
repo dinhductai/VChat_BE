@@ -57,4 +57,7 @@ public interface UserRepository extends JpaRepository<User, Integer>, UserReposi
 
         @Query(value = UserQueries.GET_RANDOM_FRIENDS,nativeQuery = true)
         Page<Tuple> getRandomFriends(@Param("userId") Integer userId,Pageable pageable);
+
+        @Query(value = UserQueries.GET_FRIENDS_PENDING,nativeQuery = true)
+        Page<Tuple> getAllFriendPending(@Param("userId") Integer userId,Pageable pageable);
 }

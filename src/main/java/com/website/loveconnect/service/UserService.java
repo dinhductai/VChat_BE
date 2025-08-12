@@ -20,4 +20,6 @@ public interface UserService {
     Page<UserFriendResponse> getAllFriendsMatched(int page,int size,Integer userId);
     Page<UserFriendResponse> getFiendsFriendsMatched(int page,int size,Integer userId);
     Page<UserFriendResponse> getRandomFriends(int page,int size,Integer userId);
+    Page<UserFriendResponse> getAllFriendsPending(int page,int size,Integer userId);
+
 }
