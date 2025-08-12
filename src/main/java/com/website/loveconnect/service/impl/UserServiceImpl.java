@@ -7,6 +7,7 @@ import com.website.loveconnect.dto.response.*;
 import com.website.loveconnect.entity.*;
 import com.website.loveconnect.enumpackage.AccountStatus;
         import com.website.loveconnect.enumpackage.RoleName;
+import com.website.loveconnect.enumpackage.StatusReport;
 import com.website.loveconnect.exception.*;
 import com.website.loveconnect.mapper.UserInterestMapper;
 import com.website.loveconnect.mapper.UserMapper;
@@ -55,7 +56,7 @@ public class UserServiceImpl implements UserService {
     UserInterestRepository userInterestRepository;
     UserInterestMapper userInterestMapper;
     UserRoleMapper userRoleMapper;
-
+    ReportRepository reportRepository;
     //hàm lấy tất cả thông tin người dùng
     @Override
     public Page<ListUserResponse> getAllUser(int page, int size) {
@@ -128,8 +129,14 @@ public class UserServiceImpl implements UserService {
             log.info("User with ID {} is already blocked", idUser);
             return;
         }
+
+        Report report = reportRepository.getOneByReported(userById)
+                .orElseThrow(()-> new ReportNotFoundException("Report not found"));
         userById.setAccountStatus(AccountStatus.BLOCKED);
         userRepository.save(userById);
+        report.setStatusReport(StatusReport.RESOLVED);
+        report.setReviewDate(new Timestamp(System.currentTimeMillis()));
+        reportRepository.save(report);
         log.info("User with ID {} has been blocked successfully", idUser);
     }
 
