@@ -17,7 +17,7 @@ public class ReportMapper {
                 .reportStatus(tuple.get("reportStatus", String.class) != null ?
                         StatusReport.valueOf(tuple.get("reportStatus", String.class)) : null)
                 .detail(tuple.get("detail", String.class))
-                .reviewDate(tuple.get("reviewDate", Date.class))
+                .reviewDate(tuple.get("reviewDate", Timestamp.class))
                 .reporterFullName(tuple.get("reporterFullName", String.class))
                 .reportedFullName(tuple.get("reportedFullName", String.class))
                 .reportTypeName(tuple.get("reportTypeName", String.class))

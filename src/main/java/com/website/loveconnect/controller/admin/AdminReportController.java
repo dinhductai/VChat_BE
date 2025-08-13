@@ -5,6 +5,9 @@ import com.website.loveconnect.dto.response.ApiResponse;
 import com.website.loveconnect.dto.response.ReportResponse;
 import com.website.loveconnect.entity.Report;
 import com.website.loveconnect.service.ReportService;
+import io.swagger.v3.oas.annotations.OpenAPI31;
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -21,13 +24,16 @@ import java.util.List;
 public class AdminReportController {
     ReportService reportService;
 
-    @PostMapping(value = "/reports/update")
+
+    @Operation(summary = "Update status report")
+    @PutMapping(value = "/reports/check")
     public ResponseEntity<ApiResponse<String>> updateReport(
-            @RequestBody ReportUpdateStatusRequest reportUpdateStatusRequest) {
+           @Valid @RequestBody ReportUpdateStatusRequest reportUpdateStatusRequest) {
         reportService.updateStatusReport(reportUpdateStatusRequest);
         return ResponseEntity.ok(new ApiResponse<>(true,"Update report status successful",null));
     }
 
+    @Operation(summary = "Get all report",description = "Get all user reported")
     @GetMapping(value = "/reports")
     public ResponseEntity<ApiResponse<List<ReportResponse>>> getAllReports() {
         return ResponseEntity.ok(new ApiResponse<>(true,"Get all report successful",
