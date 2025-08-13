@@ -8,6 +8,7 @@ import com.website.loveconnect.dto.response.UserUpdateResponse;
 import com.website.loveconnect.dto.response.UserViewResponse;
 import com.website.loveconnect.service.PhotoService;
 import com.website.loveconnect.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -63,6 +64,7 @@ public class AdminUserController {
     }
 
     //block hoặc unlock người dùng bằng id
+    @Operation(summary = "Block and active",description = "Block or reactive user account")
     @PatchMapping(value = "/users/{userId}")
     public ResponseEntity<ApiResponse<?>> blockOrActiveUser(@PathVariable int userId,
                                                          @RequestParam(defaultValue = "block") String status) {

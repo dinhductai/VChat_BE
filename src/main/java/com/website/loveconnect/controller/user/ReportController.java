@@ -34,6 +34,7 @@ public class ReportController {
                 .body(new ApiResponse<>(true,"Create report successful",null));
     }
 
+    @Operation(summary = "Get report types",description = "Get all report type for user")
     @GetMapping(value = "/report-types")
     public ResponseEntity<ApiResponse<List<ReportTypeResponse>>> getAllReportTypes() {
         return ResponseEntity.ok(new ApiResponse<>(true,"Get all report types",
