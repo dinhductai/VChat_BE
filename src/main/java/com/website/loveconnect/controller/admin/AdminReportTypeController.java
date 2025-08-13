@@ -25,14 +25,14 @@ import java.util.List;
 public class AdminReportTypeController {
     ReportTypeService reportTypeService;
 
-    @PostMapping(value = "/create-reporttype")
+    @PostMapping(value = "/report-types")
     public ResponseEntity<ApiResponse<String>> createReportType(@RequestBody ReportTypeRequest newReportType) {
         reportTypeService.createReport(newReportType);
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(true,
                 "Create new report type successfull",null));
     }
 
-    @PutMapping(value = "/update-reporttype/{idReportType}")
+    @PutMapping(value = "/report-types/{idReportType}")
     public ResponseEntity<ApiResponse<String>> updateReportType(
             @PathVariable int idReportType,
             @RequestBody ReportTypeRequest reportTypeUpdate) {
@@ -40,7 +40,7 @@ public class AdminReportTypeController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Update report type successfull",null));
     }
 
-    @DeleteMapping(value = "/delete-reporttype/{idReportType}")
+    @DeleteMapping(value = "/report-types/{idReportType}")
     public ResponseEntity<Void> deleteReportType(@PathVariable int idReportType) {
         reportTypeService.deleteReport(idReportType);
         return ResponseEntity.noContent().build();

@@ -8,6 +8,7 @@ import com.website.loveconnect.dto.response.UserUpdateResponse;
 import com.website.loveconnect.dto.response.UserViewResponse;
 import com.website.loveconnect.service.PhotoService;
 import com.website.loveconnect.service.UserService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -86,7 +87,7 @@ public class AdminUserController {
     //cập nhật người dùng
     @PutMapping(value = "/users/{userId}")
     public ResponseEntity<ApiResponse<UserUpdateResponse>> updateUserById(@PathVariable int userId,
-                                                                          @RequestBody UserUpdateRequest userUpdateRequest) {
+                                                                          @Valid @RequestBody UserUpdateRequest userUpdateRequest) {
         UserUpdateResponse user = userService.updateUser(userId,userUpdateRequest);
         return ResponseEntity.ok(new ApiResponse<>(true,"Get user successful",user));
     }
