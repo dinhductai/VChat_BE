@@ -9,6 +9,7 @@ import com.website.loveconnect.service.PhotoService;
 import com.website.loveconnect.service.UserProfileService;
 import com.website.loveconnect.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -29,14 +30,7 @@ public class UserController {
     UserProfileService userProfileService;
     LikeService likeService;
 
-    //tạo tài khoản người dùng
-    @Operation(summary = "Create account",description = "User create a new account")
-    @PostMapping(value = "/sign-up")
-    public ResponseEntity<ApiResponse<String>> signUpAccount(@RequestBody UserCreateRequest userCreateRequest){
-        userService.createUser(userCreateRequest);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ApiResponse<>(true,"Create account successful", null));
-    }
+
 
     //search người dùng khác
     @Operation(summary = "Search other user", description = "User find other by keyword")

@@ -5,14 +5,18 @@ import com.nimbusds.jose.JOSEException;
 import com.website.loveconnect.dto.request.AuthenticationRequest;
 import com.website.loveconnect.dto.request.IntrospectRequest;
 import com.website.loveconnect.dto.request.LogoutRequest;
+import com.website.loveconnect.dto.request.UserCreateRequest;
 import com.website.loveconnect.dto.response.ApiResponse;
 import com.website.loveconnect.dto.response.AuthenticationResponse;
 import com.website.loveconnect.dto.response.IntrospectResponse;
 import com.website.loveconnect.service.AuthenticationService;
+import com.website.loveconnect.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,6 +31,16 @@ import java.text.ParseException;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationController {
     AuthenticationService authenticationService;
+    UserService userService;
+
+    //tạo tài khoản người dùng
+    @Operation(summary = "Create account",description = "User create a new account")
+    @PostMapping(value = "/sign-up")
+    public ResponseEntity<ApiResponse<String>> signUpAccount(@Valid @RequestBody UserCreateRequest userCreateRequest){
+        userService.createUser(userCreateRequest);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ApiResponse<>(true,"Create account successful", null));
+    }
 
     //đăng nhập với email và password
     @PostMapping(value = "/log-in")
