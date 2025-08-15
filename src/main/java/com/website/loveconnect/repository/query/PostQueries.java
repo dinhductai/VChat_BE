@@ -236,33 +236,32 @@ public class PostQueries {
                     "    p.upload_date as uploadDate,\n" +
                     "    p.status as status,\n" +
                     "    p.is_public as isPublic,\n" +
-                    "    v.video_url  AS videosUrl\n" +
+                    "    v.video_url AS videosUrl\n" +
                     "FROM posts p\n" +
                     "JOIN user_posts upo ON p.post_id = upo.post_id\n" +
                     "JOIN users u ON upo.user_id = u.user_id\n" +
                     "JOIN user_profiles up ON u.user_id = up.user_id\n" +
+                    "-- Sửa lại subquery lấy ảnh đại diện giống với query GET_RANDOM_POST\n" +
                     "LEFT JOIN (\n" +
                     "    SELECT\n" +
-                    "        user_id,\n" +
-                    "        photo_url\n" +
-                    "    FROM (\n" +
+                    "        ph.user_id,\n" +
+                    "        ph.photo_url\n" +
+                    "    FROM photos AS ph\n" +
+                    "    INNER JOIN (\n" +
                     "        SELECT\n" +
                     "            user_id,\n" +
-                    "            photo_url,\n" +
-                    "            ROW_NUMBER() OVER(PARTITION BY user_id ORDER BY upload_date DESC) as rn\n" +
+                    "            MAX(upload_date) AS latest_date\n" +
                     "        FROM photos\n" +
                     "        WHERE is_profile_picture = TRUE\n" +
-                    "    ) AS ranked_photos\n" +
-                    "    WHERE rn = 1\n" +
-                    ") AS prof_pic\n" +
-                    "    ON u.user_id = prof_pic.user_id\n" +
-                    "\n" +
-                    "LEFT JOIN post_photos pp ON p.post_id = pp.post_id\n" +
-                    "LEFT JOIN photos ph ON pp.photo_id = ph.photo_id\n" +
+                    "        GROUP BY user_id\n" +
+                    "    ) AS latest_pic_dates\n" +
+                    "    ON ph.user_id = latest_pic_dates.user_id AND ph.upload_date = latest_pic_dates.latest_date\n" +
+                    "    WHERE ph.is_profile_picture = TRUE\n" +
+                    ") AS prof_pic ON u.user_id = prof_pic.user_id\n" +
                     "LEFT JOIN post_videos pv ON p.post_id = pv.post_id\n" +
                     "LEFT JOIN video v ON pv.video_id = v.video_id\n" +
-                    "WHERE p.is_public = TRUE and p.is_reel = TRUE\n" +
-                    "GROUP BY \n" +
+                    "WHERE p.is_public = TRUE AND p.is_reel = TRUE\n" +
+                    "GROUP BY\n" +
                     "    p.post_id,\n" +
                     "    u.user_id,\n" +
                     "    up.full_name,\n" +

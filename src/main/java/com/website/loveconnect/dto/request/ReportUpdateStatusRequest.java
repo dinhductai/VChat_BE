@@ -13,6 +13,6 @@ import lombok.*;
 public class ReportUpdateStatusRequest {
     @NotNull
     private int reportId;
-    @NotBlank
+    @NotNull
     private StatusReport statusReport;
 }
