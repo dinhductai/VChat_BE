@@ -62,7 +62,7 @@ public class SecurityConfig {
         String[] publicPostEndpoint = {
                 AUTH_API_PREFIX+"/log-in",
                 AUTH_API_PREFIX+"/logout",
-                USER_API_PREFIX+"/sign-up"
+                AUTH_API_PREFIX+"/sign-up"
 
         };
 

@@ -76,7 +76,6 @@ public class GlobalExceptionHandler {
                 request.getDescription(false)
         );
         return new ResponseEntity<>(errorDetail, HttpStatus.INTERNAL_SERVER_ERROR);
-    // trường hợp cho cả ko tìm thấy user
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
