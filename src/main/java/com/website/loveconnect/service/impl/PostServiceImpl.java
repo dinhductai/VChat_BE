@@ -53,15 +53,6 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostResponse savePost(PostRequest postRequest) {
         try {
-            // Kiểm tra dữ liệu đầu vào
-            if (postRequest == null || StringUtils.isEmpty(postRequest.getUserEmail())) {
-                throw new IllegalArgumentException("PostRequest or userEmail cannot be null");
-            }
-//            boolean isPublic = true;
-//            if(postRequest.getIsPublic() == 0){
-//                isPublic = false;
-//            }
-            // Tạo và lưu Post trước
             Post post = Post.builder()
                     .content(postRequest.getContent())
                     .uploadDate(new Timestamp(System.currentTimeMillis()))
@@ -70,8 +61,7 @@ public class PostServiceImpl implements PostService {
                     .isReel(false)
                     .status(PostStatus.ACTIVE)
                     .build();
-            post = postRepository.save(post); // Lưu Post để có ID
-            log.info("Saved post with ID: {}", post.getPostId());
+            post = postRepository.save(post);
 
             // Lưu UserPost
             User user = userRepository.getUserByEmail(postRequest.getUserEmail())
@@ -84,8 +74,6 @@ public class PostServiceImpl implements PostService {
                     .save(false)
                     .build();
             userPostRepository.save(userPost);
-            log.info("Saved UserPost for user: {} and post ID: {}", postRequest.getUserEmail(), post.getPostId());
-
             // Xử lý ảnh
             List<MultipartFile> imageFiles = postRequest.getListImage();
             if (imageFiles != null && !imageFiles.isEmpty()) {
@@ -114,9 +102,8 @@ public class PostServiceImpl implements PostService {
                 }
             }
             return postMapper.toPostResponse(postRepository.getOnePostByPostId(post.getPostId()));
-        } catch (Exception e) {
-            log.error("Failed to save post for user: {}", postRequest.getUserEmail(), e);
-            throw new RuntimeException("Failed to save post", e);
+        } catch (DataAccessException da) {
+            throw new DataAccessException("Cannot access database");
         }
     }
 
@@ -128,9 +115,6 @@ public class PostServiceImpl implements PostService {
         }
         catch (DataAccessException e) {
             throw new DataAccessException("Cannot access database");
-        }catch (Exception e){
-            e.printStackTrace();
-            return null;
         }
     }
 
@@ -152,9 +136,6 @@ public class PostServiceImpl implements PostService {
             return postRepository.getPostsByUserId(userId, pageable).map(postMapper::toPostResponse);
         }catch (DataAccessException e){
             throw new DataAccessException("Cannot access database");
-        }catch (Exception e){
-            e.printStackTrace();
-            return null;
         }
     }
 
@@ -275,10 +256,12 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostResponse updatePostById(PostUpdateRequest postUpdateRequest,Integer userId) {
         try{
-            Boolean userExisting = userRepository.existsByUserId(userId);
+//            Boolean userExisting = userRepository.existsByUserId(userId);
+            User userExisting = userRepository.findById(userId)
+                    .orElseThrow(()->new UserNotFoundException("User not found"));
             Post post = postRepository.findById(postUpdateRequest.getPostId())
                     .orElseThrow(() -> new PostNotFoundException("Post not found"));
-            if(userExisting && post!=null){
+            if(userExisting !=null && post!=null){
                 post.setContent(postUpdateRequest.getContent());
                 post.setUploadDate(new Timestamp(System.currentTimeMillis()));
                 postRepository.save(post);
