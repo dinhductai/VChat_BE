@@ -36,4 +36,8 @@ public interface MatchRepository extends JpaRepository<Match, Integer> {
 
     @Query(value = MatchQueries.CHECK_MATCHED_STATUS_BY_USER_ID_AND_OTHER_ID,nativeQuery = true)
     Integer checkMatchStatus(@Param("userId") Integer userId, @Param("otherUserId") Integer otherUserId);
+
+    @Query(value = MatchQueries.GET_MATCHED_ID,nativeQuery = true)
+    Integer getMatchedId(@Param("senderId") Integer senderId,@Param("receiverId") Integer receiverId);
+
 }

@@ -53,4 +53,16 @@ public class MatchQueries {
                     "        ),\n" +
                     "        0\n" +
                     "    ) AS relationshipStatus;";
+
+
+    public static final String GET_MATCHED_ID =
+            "SELECT match_id\n" +
+                    "FROM matches\n" +
+                    "WHERE\n" +
+                    "    status = 'MATCHED'\n" +
+                    "    AND (\n" +
+                    "        (sender_id = :senderId AND receiver_id = :receiverId )\n" +
+                    "        OR\n" +
+                    "        (sender_id = :receiverId AND receiver_id = :senderId )\n" +
+                    "    );";
 }
