@@ -161,7 +161,11 @@ public class MatchServiceImpl implements MatchService {
                     .orElseThrow(() -> new UserNotFoundException("Sender not found"));
             User receiver = userRepository.findById(receiverId)
                     .orElseThrow(() -> new UserNotFoundException("Receiver not found"));
-
+            Integer idMatched = matchRepository.getMatchedId(sender.getUserId(),receiver.getUserId());
+            if(idMatched!=null && matchStatus.equals(MatchStatus.CANCEL)){
+                matchRepository.deleteById(idMatched);
+                return;
+            }
             Match checkMatched1 = matchRepository.findBySenderAndReceiverAndStatus(sender,receiver,MatchStatus.PENDING) ;
             Match checkMatched2 = matchRepository.findBySenderAndReceiverAndStatus(receiver,sender,MatchStatus.PENDING);
             if(checkMatched1!=null){
@@ -189,7 +193,7 @@ public class MatchServiceImpl implements MatchService {
                 }else if(matchStatus.equals(MatchStatus.CANCEL)){
                     matchRepository.delete(checkMatched2);
                 }
-            } else{
+            }else{
                 throw new MatchNotFoundException("Match not found");
             }
 
