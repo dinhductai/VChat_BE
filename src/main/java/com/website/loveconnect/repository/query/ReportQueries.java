@@ -8,7 +8,9 @@ public class ReportQueries {
                     "r.status_report as reportStatus,\n" +
                     "r.additional_details as detail,\n" +
                     "r.review_date as reviewDate,\n" +
+                    "r.reporter_id AS reporterId,\n"+
                     "reporter_up.full_name AS reporterFullName,\n" +
+                    "r.reported_id AS reportedId,\n" +
                     "reported_up.full_name AS reportedFullName,\n" +
                     "rt.type_name AS reportTypeName,\n" +
                     "reviewer_up.full_name AS reviewerFullName\n" +
