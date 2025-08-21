@@ -423,4 +423,14 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorDetail, HttpStatus.FORBIDDEN);
     }
+
+    @ExceptionHandler(MessageAlreadyDeleted.class)
+    public ResponseEntity<ErrorDetailResponse> handleMessageAlreadyDeleted(MessageAlreadyDeleted ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
+                LocalDateTime.now(),
+                ex.getMessage(),
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetail, HttpStatus.CONFLICT);
+    }
 }
