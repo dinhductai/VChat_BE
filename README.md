@@ -1,68 +1,76 @@
-📘 VChat - Backend REST API
-This is the backend for VChat, a social networking application built with Java Spring Boot. It provides a complete set of REST APIs for features like posting, real-time chat, friend management, and AI interaction, along with a robust authorization system.
+# 📘 VChat - Backend REST API
 
-🚀 Tech Stack
-Language: Java 21
+VChat is a **social networking application** backend built with **Java Spring Boot**.  
+It provides a complete set of **REST APIs** for posting, chatting in real-time, friend management, and AI interaction – all secured with a robust **JWT-based authorization system**.
 
-Framework: Spring Boot
+---
 
-Security: Spring Security & JWT (JSON Web Token)
+## 🚀 Tech Stack
 
-Real-time: WebSocket
+- **Language:** Java 21  
+- **Framework:** Spring Boot  
+- **Security:** Spring Security + JWT (JSON Web Token)  
+- **Real-time:** WebSocket  
+- **Database:** MySQL 8.4  
+- **AI Integration:** Spring AI (OpenAI)  
+- **Media Storage:** Cloudinary  
+- **API Documentation:** Swagger  
+- **Architecture:** REST API  
 
-Database: MySQL 8.4
+---
 
-AI Integration: Spring AI with OpenAI
+## ✨ Features
 
-Media Storage: Cloudinary
+### 👨‍💻 User Features
 
-API Docs: Swagger
+#### 🔑 Authentication & Account
+- ✅ Secure registration, login & logout with JWT  
+- ✅ Profile management: update info, avatar & cover photo  
+- ✅ Change password  
 
-Architecture: REST API
+#### 🤝 Social Interaction
+- ✅ Friend requests: send, accept, cancel  
+- ✅ View friend lists  
+- ✅ Like & comment on posts (create / edit / delete)  
 
-✨ Features
-The project features a clear role-based access control system for USER and ADMIN roles.
+#### 📝 Content & Media
+- ✅ Posts: text, images, videos (create / view / edit / delete)  
+- ✅ Stories & Reels: short-form videos & stories  
+- ✅ Save & share posts  
 
-👨‍💻 User Features
-Authentication & Account
+#### 💬 Messaging & AI
+- ✅ Real-time private chat with friends  
+- ✅ Chat with integrated AI assistant  
 
-✅ Secure registration, login, and logout with JWT.
+---
 
-✅ Profile management: Update personal information, profile picture, and cover photo.
+### 👮‍♂️ Admin Features
 
-✅ Password change functionality.
+#### ⚙️ System Management
+- ✅ User Management: view list, ban/unban accounts  
+- ✅ Report Management: review & handle reports (content / behavior)  
+- ✅ Role-Based Access Control: USER / ADMIN  
 
-Social Interaction
+---
 
-✅ Friend management: Send, accept, and cancel friend requests.
+## 📖 API Documentation
 
-✅ View friend lists.
+Swagger UI: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
 
-✅ Interact with posts: Like and comment (create/edit/delete).
+---
 
-Content & Media
+## 📌 Project Highlights
+- 🔒 **Role-based access control (RBAC)**  
+- ⚡ **Real-time WebSocket chat**  
+- ☁️ **Cloudinary for media storage**  
+- 🤖 **AI-powered chatbot with OpenAI**  
+- 🗄️ **Robust relational schema in MySQL**  
 
-✅ Posts: Create new posts (text, images, videos), as well as view, edit, and delete personal posts.
+---
 
-✅ Stories & Reels: Create and view short-form stories and videos.
+## 🛠️ Installation & Setup
 
-✅ Save & Share: Save interesting posts and share them on your own profile.
 
-Messaging & AI
 
-✅ Real-time Chat: Engage in private, real-time conversations with friends.
-
-✅ Chat with AI: Interact with an integrated AI chatbot for assistance or conversation.
-
-👮‍♂️ Admin Features
-System Management
-
-✅ User Management: View the user list, and ban/unban user accounts for violations.
-
-✅ Report Management: Review and handle reports from users regarding inappropriate content or behavior.
-
-✅ Role-Based Access Control implementation.
-
-More and more
-
-Swagger UI Link: http://localhost:8080/swagger-ui/index.html
+# Run the application
+./mvnw spring-boot:run
