@@ -2,6 +2,7 @@ package com.website.loveconnect.controller.user.socket;
 
 import com.website.loveconnect.dto.request.MessageLoadRequest;
 import com.website.loveconnect.dto.request.MessageRequest;
+import com.website.loveconnect.dto.request.MessageUpdateRequest;
 import com.website.loveconnect.dto.response.MessageResponse;
 import com.website.loveconnect.service.MessageService;
 import com.website.loveconnect.util.MessageUtil;
@@ -32,6 +33,18 @@ public class MessageSocketController {
         MessageResponse messageResponse=  messageService.createMessage(messageRequest,senderId);
         String chatChanel = MessageUtil.createChatChannel(senderId,messageRequest.getReceiverId());
         messagingTemplate.convertAndSend(chatChanel,messageResponse);
+    }
+
+    @MessageMapping(value = "/message.edit")
+    public void editMessage(@Payload MessageUpdateRequest request) {
+        Jwt jwt = jwtDecoder.decode(request.getToken());
+        Integer senderId = Integer.parseInt(jwt.getSubject());
+        MessageResponse updatedMessageResponse = messageService.updateMessage(request,senderId);
+        String chatChannel = MessageUtil.createChatChannel(
+                updatedMessageResponse.getSenderId(),
+                updatedMessageResponse.getReceiverId()
+        );
+        messagingTemplate.convertAndSend(chatChannel, updatedMessageResponse);
     }
 
 //    @MessageMapping(value = "/message.history")

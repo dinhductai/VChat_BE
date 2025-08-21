@@ -1,6 +1,7 @@
 package com.website.loveconnect.controller.user;
 
 import com.website.loveconnect.dto.request.MessageRequest;
+import com.website.loveconnect.dto.request.MessageUpdateRequest;
 import com.website.loveconnect.dto.response.ApiResponse;
 import com.website.loveconnect.dto.response.MessageResponse;
 import com.website.loveconnect.service.MessageService;
@@ -48,4 +49,12 @@ public class MessageController {
                 messageService.getAllMessageBySenderIdAndReceiverId(senderId,receiverId,page,size)));
     }
 
+    @PutMapping(value = "/message")
+    public ResponseEntity<ApiResponse<MessageResponse>> updateMessage(@AuthenticationPrincipal Jwt jwt,
+                                                                      @RequestBody MessageUpdateRequest messageRequest){
+        Integer senderId = Integer.parseInt(jwt.getSubject());
+//        messageService.updateMessage(messageRequest);
+        return ResponseEntity.ok(new ApiResponse<>(true,"Update message successful",
+                messageService.updateMessage(messageRequest,senderId)));
+    }
 }

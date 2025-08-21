@@ -403,4 +403,24 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorDetail, HttpStatus.CONFLICT);
     }
+
+    @ExceptionHandler(MessageNotFoundException.class)
+    public ResponseEntity<ErrorDetailResponse> handleMessageNotFoundException(MessageNotFoundException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
+                LocalDateTime.now(),
+                "Message not found",
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetail, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ErrorDetailResponse> handleForbiddenException(ForbiddenException ex, WebRequest request) {
+        ErrorDetailResponse errorDetail = new ErrorDetailResponse(
+                LocalDateTime.now(),
+                ex.getMessage(),
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetail, HttpStatus.FORBIDDEN);
+    }
 }
