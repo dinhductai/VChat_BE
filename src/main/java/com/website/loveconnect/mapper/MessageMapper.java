@@ -13,6 +13,7 @@ public class MessageMapper {
         return MessageResponse.builder()
                 .senderId(tuple.get("senderId",Integer.class))
                 .receiverId(tuple.get("receiverId",Integer.class))
+                .messageId(tuple.get("messageId",Integer.class))
                 .message(tuple.get("message",String.class))
                 .sentAt(tuple.get("sentAt", Timestamp.class))
                 .build();
