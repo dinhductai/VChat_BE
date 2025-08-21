@@ -16,7 +16,9 @@ public class ReportResponse {
     private StatusReport reportStatus;
     private String detail;
     private Timestamp reviewDate;
+    private Integer reporterId;
     private String reporterFullName;
+    private Integer reportedId;
     private String reportedFullName;
     private String reportTypeName;
     private String reviewerFullName;
