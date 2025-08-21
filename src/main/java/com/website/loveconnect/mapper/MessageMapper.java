@@ -16,6 +16,7 @@ public class MessageMapper {
                 .messageId(tuple.get("messageId",Integer.class))
                 .message(tuple.get("message",String.class))
                 .sentAt(tuple.get("sentAt", Timestamp.class))
+                .isDeleted(tuple.get("isDeleted",Boolean.class))
                 .build();
     }
 }

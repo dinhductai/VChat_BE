@@ -15,5 +15,6 @@ public class MessageResponse {
     private Integer messageId;
     private String message;
     private Timestamp sentAt;
+    private Boolean isDeleted;
 
 }

@@ -1,5 +1,6 @@
 package com.website.loveconnect.controller.user.socket;
 
+import com.website.loveconnect.dto.request.MessageDeleteRequest;
 import com.website.loveconnect.dto.request.MessageLoadRequest;
 import com.website.loveconnect.dto.request.MessageRequest;
 import com.website.loveconnect.dto.request.MessageUpdateRequest;
@@ -45,6 +46,18 @@ public class MessageSocketController {
                 updatedMessageResponse.getReceiverId()
         );
         messagingTemplate.convertAndSend(chatChannel, updatedMessageResponse);
+    }
+
+    @MessageMapping(value = "/message.delete")
+    public void deleteMessage(@Payload MessageDeleteRequest request) {
+        Jwt jwt = jwtDecoder.decode(request.getToken());
+        Integer senderId = Integer.parseInt(jwt.getSubject());
+        MessageResponse deletedMessageResponse = messageService.deleteMessage(request, senderId);
+        String chatChannel = MessageUtil.createChatChannel(
+                deletedMessageResponse.getSenderId(),
+                deletedMessageResponse.getReceiverId()
+        );
+        messagingTemplate.convertAndSend(chatChannel, deletedMessageResponse);
     }
 
 //    @MessageMapping(value = "/message.history")

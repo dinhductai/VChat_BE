@@ -28,6 +28,9 @@ public class Message {
     @Column(name = "is_read")
     private Boolean isRead;
 
+    @Column(name = "is_delete")
+    private Boolean isDelete;
+
     @ManyToOne
     @JsonIgnore
     @JoinColumn(name = "match_id",nullable = false)
@@ -42,6 +45,8 @@ public class Message {
     @JsonIgnore
     @JoinColumn(name = "receiver_id",nullable = false)
     private User receiver;
+
+
 
 
 

@@ -1,5 +1,6 @@
 package com.website.loveconnect.controller.user;
 
+import com.website.loveconnect.dto.request.MessageDeleteRequest;
 import com.website.loveconnect.dto.request.MessageRequest;
 import com.website.loveconnect.dto.request.MessageUpdateRequest;
 import com.website.loveconnect.dto.response.ApiResponse;
@@ -53,8 +54,15 @@ public class MessageController {
     public ResponseEntity<ApiResponse<MessageResponse>> updateMessage(@AuthenticationPrincipal Jwt jwt,
                                                                       @RequestBody MessageUpdateRequest messageRequest){
         Integer senderId = Integer.parseInt(jwt.getSubject());
-//        messageService.updateMessage(messageRequest);
         return ResponseEntity.ok(new ApiResponse<>(true,"Update message successful",
                 messageService.updateMessage(messageRequest,senderId)));
+    }
+
+    @DeleteMapping(value = "/message")
+    public ResponseEntity<ApiResponse<MessageResponse>> deleteMessage(@AuthenticationPrincipal Jwt jwt,
+                                                                      MessageDeleteRequest messageDeleteRequest){
+        Integer senderId = Integer.parseInt(jwt.getSubject());
+        return ResponseEntity.ok(new ApiResponse<>(true,"Delete message successful",
+                messageService.deleteMessage(messageDeleteRequest,senderId)));
     }
 }

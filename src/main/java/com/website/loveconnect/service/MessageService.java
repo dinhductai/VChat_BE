@@ -1,5 +1,6 @@
 package com.website.loveconnect.service;
 
+import com.website.loveconnect.dto.request.MessageDeleteRequest;
 import com.website.loveconnect.dto.request.MessageLoadRequest;
 import com.website.loveconnect.dto.request.MessageRequest;
 import com.website.loveconnect.dto.request.MessageUpdateRequest;
@@ -15,4 +16,5 @@ public interface MessageService {
     Page<MessageResponse> getAllMessageBySenderIdAndReceiverId(Integer senderId,Integer receiverId, int page,int size);
     MessageResponse createMessage(MessageRequest messageRequest,Integer senderId);
     MessageResponse updateMessage(MessageUpdateRequest messageRequest,Integer senderId);
+    MessageResponse deleteMessage(MessageDeleteRequest messageDeleteRequest, Integer senderId);
 }
