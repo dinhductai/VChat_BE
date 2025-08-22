@@ -1,13 +1,14 @@
 package com.website.loveconnect.service.impl;
 
+import com.website.loveconnect.dto.request.MessageDeleteRequest;
 import com.website.loveconnect.dto.request.MessageLoadRequest;
 import com.website.loveconnect.dto.request.MessageRequest;
+import com.website.loveconnect.dto.request.MessageUpdateRequest;
 import com.website.loveconnect.dto.response.MessageResponse;
 import com.website.loveconnect.entity.Match;
 import com.website.loveconnect.entity.Message;
 import com.website.loveconnect.entity.User;
-import com.website.loveconnect.exception.MatchNotFoundException;
-import com.website.loveconnect.exception.UserNotFoundException;
+import com.website.loveconnect.exception.*;
 import com.website.loveconnect.mapper.MessageMapper;
 import com.website.loveconnect.repository.MatchRepository;
 import com.website.loveconnect.repository.MessageRepository;
@@ -82,17 +83,82 @@ public class MessageServiceImpl implements MessageService {
                     .receiver(receiver)
                     .messageText(messageRequest.getMessage())
                     .sentAt(new Timestamp(System.currentTimeMillis()))
+                    .isDelete(Boolean.FALSE)
                     .build();
             messageRepository.save(message);
             return MessageResponse.builder()
                     .senderId(sender.getUserId())
                     .receiverId(receiver.getUserId())
+                    .messageId(message.getMessageId())
                     .message(message.getMessageText())
                     .sentAt(message.getSentAt())
+                    .isDeleted(message.getIsDelete())
                     .build();
         }catch (Exception e){
             e.printStackTrace();
             return null;
+        }
+    }
+
+    @Override
+    public MessageResponse updateMessage(MessageUpdateRequest messageRequest,Integer senderId) {
+        try{
+            User sender = userRepository.findById(senderId)
+                    .orElseThrow(()->new UserNotFoundException("User not found"));
+            User receiver =  userRepository.findById(messageRequest.getReceiverId())
+                    .orElseThrow(()->new UserNotFoundException("User not found"));
+            Message message = messageRepository.findById(messageRequest.getMessageId())
+                    .orElseThrow(()-> new MessageNotFoundException("Message not found"));
+
+            if(!message.getSender().getUserId().equals(sender.getUserId())){
+                throw new ForbiddenException("You are not authorized to edit this message");
+            }else if(message.getIsDelete()){
+                throw new MessageAlreadyDeleted("Message already deleted");
+            }
+            message.setMessageText(messageRequest.getMessage());
+            messageRepository.save(message);
+            return MessageResponse.builder()
+                    .senderId(sender.getUserId())
+                    .receiverId(receiver.getUserId())
+                    .messageId(message.getMessageId())
+                    .message(message.getMessageText())
+                    .isDeleted(message.getIsDelete())
+                    .build();
+        }
+        catch (DataAccessException e){
+            throw  new DataAccessException("Cannot access database");
+        }
+    }
+
+    @Override
+    public MessageResponse deleteMessage(MessageDeleteRequest messageRequest, Integer senderId) {
+        try{
+            User sender = userRepository.findById(senderId)
+                    .orElseThrow(()->new UserNotFoundException("User not found"));
+            User receiver =  userRepository.findById(messageRequest.getReceiverId())
+                    .orElseThrow(()->new UserNotFoundException("User not found"));
+            Message message = messageRepository.findById(messageRequest.getMessageId())
+                    .orElseThrow(()-> new MessageNotFoundException("Message not found"));
+
+            if(!message.getSender().getUserId().equals(sender.getUserId())){
+                throw new ForbiddenException("You are not authorized to edit this message");
+            }else if(message.getIsDelete()){
+                throw new MessageAlreadyDeleted("Message already deleted");
+            }
+            message.setMessageText("Message deleted");
+            message.setIsDelete(Boolean.TRUE);
+            messageRepository.save(message);
+            return MessageResponse.builder()
+                    .senderId(sender.getUserId())
+                    .receiverId(receiver.getUserId())
+                    .messageId(message.getMessageId())
+                    .message(message.getMessageText())
+                    .isDeleted(message.getIsDelete())
+                    .build();
+
+        }catch (DataAccessException e){
+            throw  new DataAccessException("Cannot access database");
+
         }
     }
 }

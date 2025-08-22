@@ -155,6 +155,9 @@ CREATE TABLE messages (
     FOREIGN KEY (receiver_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
+alter table messages add column is_delete boolean default false;
+
+
 -- drop table notifications
 -- ====================================
 -- 12. Bảng NOTIFICATIONS: Lưu thông báo

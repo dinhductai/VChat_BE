@@ -5,8 +5,10 @@ public class MessageQueries {
             "SELECT\n" +
                     "    m.sender_id as senderId,\n" +
                     "    m.receiver_id as receiverId,\n" +
+                    "    m.message_id as messageId,\n"+
                     "    m.message_text as message,\n" +
-                    "    m.sent_at as sentAt\n" +
+                    "    m.sent_at as sentAt,\n" +
+                    "    m.is_delete as isDeleted\n" +
                     "FROM\n" +
                     "    messages m\n" +
                     "WHERE\n" +

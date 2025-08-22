@@ -12,7 +12,9 @@ import java.sql.Timestamp;
 public class MessageResponse {
     private Integer senderId;
     private Integer receiverId;
+    private Integer messageId;
     private String message;
     private Timestamp sentAt;
+    private Boolean isDeleted;
 
 }

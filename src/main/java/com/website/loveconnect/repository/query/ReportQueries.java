@@ -21,5 +21,6 @@ public class ReportQueries {
                     "JOIN user_profiles reported_up ON reported_u.user_id = reported_up.user_id\n" +
                     "JOIN report_types rt ON r.report_type_id = rt.report_type_id\n" +
                     "LEFT JOIN users reviewer_u ON r.reviewed_by = reviewer_u.user_id\n" +
-                    "LEFT JOIN user_profiles reviewer_up ON reviewer_u.user_id = reviewer_up.user_id";
+                    "LEFT JOIN user_profiles reviewer_up ON reviewer_u.user_id = reviewer_up.user_id\n"+
+                    "where reported_u.account_status = 'ACTIVE'";
 }
