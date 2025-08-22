@@ -130,7 +130,7 @@ public class UserServiceImpl implements UserService {
             return;
         }
 
-        Report report = reportRepository.getOneByReported(userById)
+        Report report = reportRepository.findFirstByReported(userById)
                 .orElseThrow(()-> new ReportNotFoundException("Report not found"));
         userById.setAccountStatus(AccountStatus.BLOCKED);
         userRepository.save(userById);

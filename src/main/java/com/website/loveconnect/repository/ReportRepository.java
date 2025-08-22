@@ -17,7 +17,7 @@ public interface ReportRepository extends JpaRepository<Report, Integer> {
     @Query(value = ReportQueries.FIND_ALL_REPORT,nativeQuery = true)
     List<Tuple> findAllReport();
 
-    Optional<Report> getOneByReported(User reported);
+    Optional<Report> findFirstByReported(User reported);
 
 
 
