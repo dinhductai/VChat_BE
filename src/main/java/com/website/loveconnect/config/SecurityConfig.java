@@ -59,6 +59,10 @@ public class SecurityConfig {
     private void configureAuthorization(AuthorizeHttpRequestsConfigurer<HttpSecurity>
                                                 .AuthorizationManagerRequestMatcherRegistry registry){
         //endpoint công khai cho tất cả role và chưa đăng nhập
+        String[] publicGetEndpoint = {
+                USER_API_PREFIX+"/interests-name"
+        };
+
         String[] publicPostEndpoint = {
                 AUTH_API_PREFIX+"/log-in",
                 AUTH_API_PREFIX+"/logout",
@@ -123,6 +127,8 @@ public class SecurityConfig {
         registry.requestMatchers(apiDocumentEndpoint).permitAll();
         registry.requestMatchers("/ws/**").permitAll();
         //api không cần đăng nhập
+        registry.requestMatchers(HttpMethod.GET, publicGetEndpoint).permitAll();
+
         registry.requestMatchers(HttpMethod.POST, publicPostEndpoint).permitAll();
         //api các role dùng chung
         registry.requestMatchers(HttpMethod.POST, generalPostEndpoint)
