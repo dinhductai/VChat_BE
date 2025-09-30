@@ -3,6 +3,7 @@ package com.website.loveconnect.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Synchronize;
 
 import java.sql.Timestamp;
 import java.util.List;

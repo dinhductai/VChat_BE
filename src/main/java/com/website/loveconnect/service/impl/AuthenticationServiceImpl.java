@@ -13,6 +13,7 @@ import com.website.loveconnect.dto.response.IntrospectResponse;
 import com.website.loveconnect.entity.InvalidatedToken;
 import com.website.loveconnect.entity.User;
 import com.website.loveconnect.entity.UserProfile;
+import com.website.loveconnect.enumpackage.AccountStatus;
 import com.website.loveconnect.exception.ExpiredJwtException;
 import com.website.loveconnect.exception.UserNotFoundException;
 import com.website.loveconnect.mapper.RoleMapper;
@@ -21,6 +22,7 @@ import com.website.loveconnect.repository.RoleRepository;
 import com.website.loveconnect.repository.UserProfileRepository;
 import com.website.loveconnect.repository.UserRepository;
 import com.website.loveconnect.service.AuthenticationService;
+import com.website.loveconnect.util.AuthenticationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -49,60 +51,35 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     RoleMapper roleMapper;
     InvalidatedTokenRepository invalidatedTokenRepository;
 
-
     @NonFinal
-    @Value("${jwt.secret}")
+    @Value("${jwt.secret}") //secret key ngẫu nhiên 32 bytes, vì HMAC cần key có độ dài tối thiểu để an toàn,
+    // dùng HS256,512 thì cần >= 32 bytes, càng dài càng tốt
     protected String SIGNED_KEY;
 
 
     //hàm xác thực tài khoản người dùng bằng email và password
     @Override
-    public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest) throws JOSEException {
+    public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest)
+            throws JOSEException {
         //tìm thông tin người dùng bằng email
         User user = userRepository.getUserByEmail(authenticationRequest.getEmail())
                 .orElseThrow(()->new UserNotFoundException("User not found with email: " +
                         authenticationRequest.getEmail()));
+        //nếu account bị block hay đã xóa thì thì từ chối
+        AuthenticationUtil.checkAccountDeleteOrBlock(user);
 
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         //check password vừa đc gửi về (raw pass) với password trong db đã được mã hóa
-        boolean checkAuthenticate = passwordEncoder.matches(authenticationRequest.getPassword(),
-                user.getPassword());
-        if(!checkAuthenticate) {
-            throw new BadCredentialsException("Incorrect email or password");
-        }
+        AuthenticationUtil.checkPassword(authenticationRequest.getPassword(),user.getPassword());
 
         //dựa vào iduser,tìm userprofile để lấy tên tài khoản cho token payload
         UserProfile userProfile = userProfileRepository.findByUser_UserId(user.getUserId())
                 .orElseThrow(()-> new UserNotFoundException("User not found with id: " + user.getUserId()));
 
-        //lấy các role thuộc user đang đăng nhập để phân quyền
+        //lấy các role thuộc user đang đăng nhập để phân quyền, vì một acc có thể có nhiều role
         List<String> listRoleUser = userRepository.getUserRoleByUserId(user.getUserId());
-        StringBuilder scopeBuilder = new StringBuilder();
-        // Thêm role vào đầu tiên
-        for (String role : listRoleUser) {
-            if (scopeBuilder.length() > 0) {
-                scopeBuilder.append(" "); // thêm dấu cách nếu không phải phần tử đầu
-            }
-            scopeBuilder.append(role);
-        }
 
-        //gộp permission từ tất cả role, loại bỏ trùng lặp
-        Set<String> uniquePermissions = new HashSet<>(); //set để loại bỏ trùng lặp
-        for (String role : listRoleUser) {
-            List<String> listPermissionByRole = roleMapper
-                    .toListPermissionByRoleName(roleRepository.getPermissionByRoleName(role));
-            uniquePermissions.addAll(listPermissionByRole); //thêm tất cả permission, tự động loại trùng
-        }
-
-        //thêm permission vào scope, tách permission riêng ra
-        for (String permission : uniquePermissions) {
-            if (scopeBuilder.length() > 0) {
-                scopeBuilder.append(" "); // Thêm dấu cách
-            }
-            scopeBuilder.append(permission);
-        }
-
-        String scope = scopeBuilder.toString();
+        String scope = buildScope(listRoleUser);
+        //sinh token dựa vào data truyền vào
         String token = generateToken(user.getUserId(),scope,user.getEmail());
         return AuthenticationResponse.builder()
                 .token(token)
@@ -166,6 +143,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     //hàm sinh token bằng HS512 và secret key
     private String generateToken(Integer userId,String roleString,String email) throws JOSEException {
         //thuật toán mã hóa header
+        //dùng hs512 vì có độ dài lớn hơn, khó bị tấn công hơn, nhanh hơn so với thuật toán bất đối xứng
+        //-> phù hợp RestApi, nơi server vừa tạo vừa xác thực,
+        //phổ biến và dễ dùng,dễ triển khai
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
         //set claim
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
@@ -193,5 +173,34 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             log.error("Cannot create token", e);
             throw e;
         }
+    }
+
+    //hàm build scope cho token
+    private String buildScope(List<String> listRoleUser){
+        StringBuilder scopeBuilder = new StringBuilder();
+        // Thêm role vào đầu tiên
+        for (String role : listRoleUser) {
+            if (scopeBuilder.length() > 0) {
+                scopeBuilder.append(" "); // thêm dấu cách nếu không phải phần tử đầu
+            }
+            scopeBuilder.append(role);
+        }
+
+        //gộp permission từ tất cả role, loại bỏ trùng lặp
+        Set<String> uniquePermissions = new HashSet<>(); //set để loại bỏ trùng lặp
+        for (String role : listRoleUser) {
+            List<String> listPermissionByRole = roleMapper
+                    .toListPermissionByRoleName(roleRepository.getPermissionByRoleName(role));
+            uniquePermissions.addAll(listPermissionByRole); //thêm tất cả permission, tự động loại trùng
+        }
+
+        //thêm permission vào scope, tách permission riêng ra
+        for (String permission : uniquePermissions) {
+            if (scopeBuilder.length() > 0) {
+                scopeBuilder.append(" "); // Thêm dấu cách
+            }
+            scopeBuilder.append(permission);
+        }
+        return scopeBuilder.toString();
     }
 }
