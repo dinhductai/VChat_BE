@@ -59,12 +59,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     //hàm xác thực tài khoản người dùng bằng email và password
     @Override
-    public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest)
-            throws JOSEException {
+    public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest) throws JOSEException {
         //tìm thông tin người dùng bằng email
         User user = userRepository.getUserByEmail(authenticationRequest.getEmail())
-                .orElseThrow(()->new UserNotFoundException("User not found with email: " +
-                        authenticationRequest.getEmail()));
+                .orElseThrow(()->new UserNotFoundException("User not found with email: "
+                        + authenticationRequest.getEmail()));
         //nếu account bị block hay đã xóa thì thì từ chối
         AuthenticationUtil.checkAccountDeleteOrBlock(user);
 
@@ -77,7 +76,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         //lấy các role thuộc user đang đăng nhập để phân quyền, vì một acc có thể có nhiều role
         List<String> listRoleUser = userRepository.getUserRoleByUserId(user.getUserId());
-
+        //build scope
         String scope = buildScope(listRoleUser);
         //sinh token dựa vào data truyền vào
         String token = generateToken(user.getUserId(),scope,user.getEmail());
